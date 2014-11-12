@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" ng-csp="">
+<head>
+    <title>Paranoia Password Manager Configuration</title>
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/angular-csp.css" />
+    <link rel="stylesheet" type="text/css" href="../../../cli_old/css/options.css" />
+    <script type="text/javascript" src="../../js/angularjs/angular.min.js"></script>
+    <script type="text/javascript" src="../../js/angularjs/ui-bootstrap-tpls-0.10.0.min.js"></script>
+    <script type="text/javascript" src="../../js/jquery/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="../../js/interface/tests.js"></script>
+</head>
+<body ng-controller="TestCtrl">
+<div class="container">
+    <h1>TESTS</h1>
+
+
+    <button type="button" ng-click="openModal()" class="btn btn-xs btn-primary">
+        <span class="glyphicon glyphicon-wrench"></span>OPEN MODAL
+    </button>
+    <div ng-show="selected">Selection from a modal: <b>{{ selected }}</b></div>
+
+</div>
+</body>
+</html>

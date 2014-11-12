@@ -1,0 +1,29 @@
+{
+   "background": {
+      "page": "background.html"
+   },
+   "browser_action": {
+      "default_icon": {
+         "19": "images/state_icons/offline.png"
+      },
+      "default_popup": "popup.html",
+      "default_title": "ChromePpm"
+   },
+   "content_security_policy": "default-src 'self' 'unsafe-eval'; connect-src http://* https://*; script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com; img-src 'self' http://www.google-analytics.com/__utm.gif; object-src 'self'; style-src 'self' 'unsafe-inline'",
+   "default_locale": "en",
+   "description": "__MSG_extDescription__",
+   "icons": {
+      "128": "images/paranoia_128.png",
+      "32": "images/paranoia_32.png",
+      "48": "images/paranoia_48.png",
+      "64": "images/paranoia_64.png"
+   },
+   "manifest_version": 2,
+   "name": "ChromePpm",
+   "omnibox": {
+      "keyword": "ParanoiaPasswordManager"
+   },
+   "options_page": "options.html#ppmoptions",
+   "permissions": [ "tabs", "idle", "storage", "http://*/*", "https://*/*" ],
+   "version": "1.4.0"
+}
