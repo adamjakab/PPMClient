@@ -1,0 +1,64 @@
+<div class="modal-header">
+    <h3 class="modal-title">Modify Server Configuration</h3>
+</div>
+<div class="modal-body">
+    <form name="srvEditForm" class="form-horizontal">
+
+        <div class="form-group">
+            <label for="server_name" class="col-sm-4 control-label">Name</label>
+            <div class="col-sm-8">
+                <input id="server_name" ng-model="server.name" type="text" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="server_type" class="col-sm-4 control-label">Type</label>
+            <div class="col-sm-8">
+                <select id="server_type" ng-model="server.type" class="form-control" >
+                    <option value="master">Master</option>
+                    <option value="mirror">Mirror</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="server_url" class="col-sm-4 control-label">Url</label>
+            <div class="col-sm-8">
+                <input id="server_url" ng-model="server.url" type="text" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="server_username" class="col-sm-4 control-label">Username</label>
+            <div class="col-sm-8">
+                <input id="server_username" ng-model="server.username" type="text" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="server_password" class="col-sm-4 control-label">Password</label>
+            <div class="col-sm-8">
+                <input id="server_password" ng-model="server.password" type="text" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="server_master_key" class="col-sm-4 control-label">Encryption Key</label>
+            <div class="col-sm-8">
+                <input id="server_master_key" ng-model="server.master_key" type="text" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="server_ping_interval" class="col-sm-4 control-label">Ping Interval</label>
+            <div class="col-sm-8">
+                <input id="server_ping_interval" ng-model="server.ping_interval" type="text" class="form-control" />
+            </div>
+        </div>
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" ng-click="save()" class="btn btn-primary">Save changes</button>
+    <button type="button" ng-click="cancel()" class="btn btn-warning" >Close</button>
+</div>

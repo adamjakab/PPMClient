@@ -1,0 +1,15 @@
+/*UI-BOOTSTRAP FIX*/
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+button.btn-topright{margin-top:-45px;}
+button.btn.btn-xs span.glyphicon {margin-right:5px;}
+
+/*Logs Table*/
+table.logtable{
+    table-layout: fixed;
+    word-wrap: break-word;
+    font-size: 10px;
+}
+table.table.logtable td{
+    padding: 0 5px;
+}

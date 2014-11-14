@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="" ng-csp="">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/angular-csp.css" />
+    <link rel="stylesheet" type="text/css" href="css/popup.css" />
+
+    <script type="text/javascript" src="js/jquery/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/interface/popup.js"></script>
+</head>
+<body ng-controller="PopupCtrl">
+
+    <div ng-show="alertMessageVisible()" class="profileAlert alert alert-danger">
+        <h4>{{alert_message_title}}</h4>
+        <p>{{alert_message_text}}</p>
+        <p>
+            <button ng-click="executeAlertAction(alert_message_button_1_action)" type="button" class="btn btn-danger">{{alert_message_button_1}}</button>
+            <button ng-click="executeAlertAction('close')" type="button" class="btn btn-default">{{alert_message_button_2}}</button>
+        </p>
+    </div>
+
+    <div ng-show="loginPanelVisible()" class="profileLogin">
+        <div class="container">
+            <h4>Paranoia Password Manager</h4>
+            <form name="loginForm">
+                <div class="form-group">
+                    <label for="profileSel">Profile</label>
+                    <select id="profileSel" ng-model="profile" required ng-options="p for p in profiles" class="form-control"></select>
+                </div>
+                <div class="form-group" ng-class="{'has-error': !loginForm.masterKey.$valid}">
+                    <label for="masterKey">Master Key</label>
+                    <input id="masterKey" name="masterKey" ng-model="masterKey" type="password" required class="form-control" />
+                </div>
+                <button type="button" ng-click="login()" class="btn btn-block btn-primary"
+                        ng-class="{'disabled': !loginForm.$valid}">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div ng-show="menuPanelVisible()" class="profileMenu">
+        <ul class="nav nav-pills nav-stacked">
+            <li ng-repeat="pc in passCards">
+                <a ng-click="fillInPasscard(pc.id)">
+                    <span class="glyphicon glyphicon-share-alt"></span>
+                    {{pc.name}}({{pc.id}})
+                </a>
+            </li>
+            <li><hr /></li>
+            <li><a ng-click="newPasscard()"><span class="glyphicon glyphicon-plus-sign"></span>New Passcard</a></li>
+            <li><a ng-click="passwordGenerator()"><span class="glyphicon glyphicon-lock"></span>Password Generator</a></li>
+            <li><a ng-click="configuration()"><span class="glyphicon glyphicon-cog"></span>Configuration</a></li>
+            <li><a ng-click="info()"><span class="glyphicon glyphicon-question-sign"></span>Info</a></li>
+            <li><hr /></li>
+            <li><a ng-click="logoutConfirm()"><span class="glyphicon glyphicon-off"></span>Logout</a></li>
+        </ul>
+    </div>
+
+</body>
+</html>

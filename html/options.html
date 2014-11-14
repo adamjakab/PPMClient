@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" ng-csp="">
+<head>
+    <title>Paranoia Password Manager Configuration</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/angular-csp.css" />
+    <link rel="stylesheet" type="text/css" href="css/options.css" />
+    <script type="text/javascript" src="js/angularjs/angular.min.js"></script>
+    <script type="text/javascript" src="js/angularjs/ui-bootstrap-tpls-0.11.0.min.js"></script>
+    <script type="text/javascript" src="js/jquery/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="js/interface/options.js"></script>
+</head>
+<body ng-controller="OptionsCtrl">
+    <div class="container-fluid">
+        <!-- Nav tabs -->
+        <tabset>
+            <tab heading="Passcards" select="tabSelection('passcards')" active="tabs.passcards">
+                <h1>Passcards</h1>
+            </tab>
+
+            <tab heading="Servers" select="tabSelection('servers')" active="tabs.servers">
+                <h1>Servers({{numberOfServers}})</h1>
+                <table class="table table-striped">
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Url</th>
+                        <th>State</th>
+                        <th>Operations</th>
+                    </tr>
+                    <tr ng-repeat="($i, server) in serversCfgData">
+                        <td>{{server.name}}</td>
+                        <td>{{server.type}}</td>
+                        <td>{{server.url}}</td>
+                        <td>{{PPMServerStates[$i] | json}}</td>
+                        <td>
+                            <button type="button" ng-click="server_edit($i)"  class="btn btn-xs btn-primary"><span class="glyphicon glyphicon-wrench"></span>Edit</button>
+                            <button type="button" ng-click="server_connect($i)" ng-hide="PPMServerStates[$i].connected" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-off"></span>Connect</button>
+                            <button type="button" ng-click="server_disconnect($i)" ng-show="PPMServerStates[$i].connected" class="btn btn-xs btn-warning"><span class="glyphicon glyphicon-off"></span>Disconnect</button>
+                            <button type="button" ng-click="server_delete($i)" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span>Remove</button>
+                        </td>
+                    </tr>
+                </table>
+            </tab>
+
+            <tab heading="Options" select="tabSelection('options')" active="tabs.options">
+                <button type="button" ng-click="" class="btn btn-xs btn-warning btn-topright pull-right">
+                    <span class="glyphicon glyphicon-lock"></span>Change Profile Password</button>
+
+                <h1>Options</h1>
+                <form name="optionsForm" class="form-horizontal">
+                    <div class="form-group">
+                        <label for="pwgen_specialchars" class="col-sm-4 control-label">Password generator special characters</label>
+                        <div class="col-sm-8">
+                            <input id="pwgen_specialchars" ng-model="editableOptions.pwgen_specialchars" type="text" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="passcard_default_username" class="col-sm-4 control-label">Default username for new Passcards</label>
+                        <div class="col-sm-8">
+                            <input id="passcard_default_username" ng-model="editableOptions.passcard_default_username" type="text" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Autofill password for new Passcards</label>
+                        <div class="col-sm-8">
+                            <div class="btn-group">
+                                <a href="#" ng-click="editableOptions.passcard_autofill_password = true" ng-class="{'active btn-success':editableOptions.passcard_autofill_password, 'btn-default': !editableOptions.passcard_autofill_password}" class="btn">Yes</a>
+                                <a href="#" ng-click="editableOptions.passcard_autofill_password = false" ng-class="{'active btn-danger':!editableOptions.passcard_autofill_password, 'btn-default': editableOptions.passcard_autofill_password}" class="btn">No</a>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <button type="button" ng-click="options_save()" class="btn btn-primary pull-right"
+                            ng-class="{'disabled': !optionsForm.$valid}">Save options</button>
+                </form>
+            </tab>
+
+            <tab heading="Logs" select="tabSelection('logs')" active="tabs.logs">
+                <h1>Logs</h1>
+                <table class="table table-striped table-bordered logtable">
+                    <tr>
+                        <th style="width:60px;">#</th>
+                        <th style="width:100px;">Date/Time</th>
+                        <th style="width:300px;">Zone</th>
+                        <th style="width:60px;">Type</th>
+                        <th>Message</th>
+                    </tr>
+                    <tr ng-repeat="($i, LO) in PPMLogs | orderBy:'index':true track by LO.index">
+                        <td>{{LO.index}}</td>
+                        <td>{{LO.datetime}}</td>
+                        <td>{{LO.zone}}</td>
+                        <td>{{LO.type}}</td>
+                        <td>{{LO.msg}}</td>
+                    </tr>
+                </table>
+            </tab>
+        </tabset>
+    </div>
+</body>
+</html>

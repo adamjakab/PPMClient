@@ -1,5 +1,5 @@
 # Bower project dependencies
-bower
+js/bower
 
 # NodeJS project dependencies
 node_modules
