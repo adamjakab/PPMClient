@@ -1,0 +1,19 @@
+{
+  "name": "PPMClient",
+  "version": "0.0.1",
+  "description": "Google Chrome Paranoia Password Manager Extension",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "password",
+    "chrome",
+    "extension"
+  ],
+  "author": "Adam Jakab",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.5"
+  }
+}
