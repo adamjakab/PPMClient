@@ -108,25 +108,25 @@ popupApp.controller('PopupCtrl', [ '$scope',
 
         $scope.configuration = function() {
             log("called: CONFIGURATION");
-            var configPageUrl = "chrome-extension://"+chrome.runtime.id+"/options.html";
+            var configPageUrl = "chrome-extension://"+chrome.runtime.id+"/html/options.html";
             chrome.tabs.query({url:configPageUrl}, function(tabs) {
                 if (tabs.length) {
                     var tab = tabs[0];
                     chrome.windows.getCurrent({populate:false}, function(win) {
                         if(tab.windowId == win.id) {
-                            chrome.tabs.update(tab.id, {url: 'options.html', active: true}, function(tab){
+                            chrome.tabs.update(tab.id, {url: 'html/options.html', active: true}, function(tab){
                                 window.close();//close popup
                             });
                         } else {
                             chrome.tabs.move(tab.id, {windowId: win.id, index:-1}, function(tab) {
-                                chrome.tabs.update(tab.id, {url: 'options.html', active: true}, function(tab){
+                                chrome.tabs.update(tab.id, {url: 'html/options.html', active: true}, function(tab){
                                     window.close();//close popup
                                 });
                             });
                         }
                     });
                 } else {
-                    chrome.tabs.create({url: 'options.html'}, function(tab){
+                    chrome.tabs.create({url: 'html/options.html'}, function(tab){
                         window.close();//close popup
                     });
                 }
