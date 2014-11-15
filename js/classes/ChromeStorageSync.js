@@ -4,8 +4,8 @@
  * all data here will be encrypted(by selected ES) before writing it out
  *
  * TODOS:
- *      1) //we need flag to be able to track if changes were made since last setOption
- *      2) check and push changed configuration data to storage at regular intervals(5/10min) - even though it is saved on logout
+ *      1) we need flag to be able to track if changes were made since last setOption
+ *      2) check and push changed configuration data to storage at regular intervals(5/10min) - check profile_data_changed
  *
  */
 
@@ -28,12 +28,14 @@ function ChromeStorageSync(PPM, options) {
      */
     var cfg = new ConfigOptions({
         initialized: false,
+        profile_data_changed: false,
         default_profile_name: "DEFAULT",
         default_master_key: "Paranoia",
         storage_profile_name: null,
         storage_profile_master_key: null,
-        rawStorageData: null
-    }, log);
+        rawStorageData: null,
+        autoSaveInterval: 600
+    }, null);//put "log" here for debugging
     cfg.merge(options);
 
     /**
@@ -43,8 +45,9 @@ function ChromeStorageSync(PPM, options) {
      */
     var defaultProfileData = {
         //general options
-        logincount: 0,
-        logindate: "",
+        login_count: 0,
+        login_date: "",
+        login_ip: "",
 
         //default server configuration
         srv: {
@@ -95,80 +98,60 @@ function ChromeStorageSync(PPM, options) {
      */
     this.init = function(profile, masterKey, cb) {
         profile = (profile?profile:cfg.get("default_profile_name"));
-        log("INITIALIZED" + JSON.stringify(cfg.getRecursiveOptions()), "info");
+        log("INITIALIZED: " + JSON.stringify(cfg.getRecursiveOptions()), "info");
 
         var unlockProfile = function() {
-            log("Now trying to unlock profile: " + profile + " with MK: " + masterKey);
+            if(masterKey) {
+                var rawStorageData = cfg.get("rawStorageData");
+                if(rawStorageData instanceof ConfigOptions) {
+                    var CPDENC = rawStorageData.get(profile);
+                    log("Trying to decrypt data for profile["+profile+"]...");
+                    /** @type PPMCryptor CRYPTOR */
+                    var CRYPTOR = PPM.getComponent("CRYPTOR");
+                    /** @type PPMUtils UTILS */
+                    var UTILS = PPM.getComponent("UTILS");
+                    var profileDataObject = CRYPTOR.decrypt(CPDENC, masterKey, true);
+                    if(UTILS.isObject(profileDataObject)) {
+                        //log("DECRYPTED PROFILE DATA["+profile+"]: " + JSON.stringify(profileDataObject));
+                        log("PROFILE DATA DECRYPTED", "info");
+                        storageData = new ConfigOptions(profileDataObject);
+                        /**
+                         * We need to merge possible new keys in defaultProfileData
+                         * This can happen when in a new version we introduce additional profile data keys
+                         */
+                        var hasChanges = storageData.merge(defaultProfileData);
+                        //
+                        cfg.set("initialized", true);
+                        cfg.set("storage_profile_name", profile);
+                        cfg.set("storage_profile_master_key", masterKey);
+                        cfg.set("profile_data_changed", hasChanges);
+                    } else {
+                        log("This MasterKey does not open the door!", "error");
+                    }
+                }
+            } else {
+                log("No MK supplied to decrypt profile["+profile+"]!");
+            }
+            if(PPM.getComponent("UTILS").isFunction(cb)) {cb();}
         };
 
+        //load raw data
         chrome.storage.sync.get(null, function(rawStorageData){
-            log("LOADED(RAW): " + JSON.stringify(rawStorageData));
+            //log("LOADED(RAW): " + JSON.stringify(rawStorageData));
             cfg.set("rawStorageData", rawStorageData);
             var profiles = self.getAvailableProfiles();
             if(profiles.indexOf(profile) == -1) {
-                log("The requested profile("+profile+") does not exist!");
                 if(profile != cfg.get("default_profile_name")) {
+                    log("The requested profile("+profile+") does not exist!", "error");
                     log("AVAILABLE PROFILES: " + JSON.stringify(profiles));
+                    if(PPM.getComponent("UTILS").isFunction(cb)) {cb();}
                 } else {
+                    //must be a first-runner - let's create default profile
                     _createAndStoreDefaultProfile(unlockProfile);
                 }
             } else {
                 unlockProfile();
             }
-        });
-    };
-
-
-
-
-    this.initOld = function(profile, masterKey, cb) {
-        var self = this;
-        var settingsObject = null;
-        profile = (profile?profile:cfg.get("default_profile_name"));
-        log("INITIALIZED" + JSON.stringify(cfg.getRecursiveOptions()), "info");
-        chrome.storage.sync.get(null, function(d){
-            log("LOADED(RAW): " + JSON.stringify(d));
-            cfg.set("rawStorageData", d);
-
-
-            if(!d.hasOwnProperty(profile)) {
-                log("PROFILE["+profile+"] DOES NOT EXIST!");
-                if(profile == cfg.get("default_profile_name")) {
-                    log("CREATING DEFAULT PROFILE["+profile+"]...");
-                    settingsObject = {};
-                    cfg.set("storage_profile_name", cfg.get("default_profile_name"));
-                    cfg.set("storage_profile_master_key", cfg.get("default_master_key"));
-                }
-            } else {
-                if(masterKey) {
-                    var cryptedSettings = d[profile];
-                    log("RAW PROFILE DATA["+profile+"]: " + JSON.stringify(cryptedSettings));
-                    /** @type PPMCryptor CRYPTOR */
-                    var CRYPTOR = PPM.getComponent("CRYPTOR");
-                    var so = CRYPTOR.decrypt(cryptedSettings, masterKey, true);
-                    log("DECRYPTED PROFILE DATA["+profile+"]: " + JSON.stringify(so));
-                    //if (so!==false && typeof(so) == "object") {
-                    if (PPM.getComponent("UTILS").getType(so) == "object") {
-                        cfg.set("storage_profile_name", profile);
-                        cfg.set("storage_profile_master_key", masterKey);
-                        settingsObject = so;
-                        cfg.set("initialized", true);
-                    } else {
-                        log("This MasterKey does not open the door!");
-                    }
-                } else {
-                    log("No MK supplied to decrypt profile["+profile+"]!");
-                }
-            }
-            if(settingsObject !== null) {
-                if (_checkAndInsertMissingDataKeys(settingsObject)) {
-                    log("Loaded data was updated and needs to be saved.");
-                    _writeOutStorageData(null);
-                }
-            } else {
-                log("No profile data was loaded!");
-            }
-            if(PPM.getComponent("UTILS").isFunction(cb)) {cb();}
         });
     };
 
@@ -180,7 +163,7 @@ function ChromeStorageSync(PPM, options) {
     };
 
     /**
-     * Returns true if storage has decrypted data
+     * Returns true if storage has been initialized (has decrypted data)
      * @returns {boolean}
      */
     this.isInited = function() {
@@ -193,7 +176,7 @@ function ChromeStorageSync(PPM, options) {
      */
     this.getAvailableProfiles = function() {
         var answer = [];
-        var rawStorageData = cfg.get("rawStorageData", {});
+        var rawStorageData = cfg.get("rawStorageData");
         if(rawStorageData instanceof ConfigOptions) {
             answer = rawStorageData.getKeys();
         }
@@ -213,72 +196,14 @@ function ChromeStorageSync(PPM, options) {
      * Setter
      * @param {string} key
      * @param {*} val
-     * @param {function} [cb]
      */
-    this.setOption = function(key, val, cb) {
+    this.setOption = function(key, val) {
         storageData.set(key, val);
-    };
-
-    this.setServerData = function(index, key, val) {
-        log("setServerData is disabled!");
-        //_setServerData(index, key, val);
+        cfg.set("profile_data_changed", true);
     };
 
 
     /*------------------------------------------------------------PRIVATE METHODS - */
-    /*
-    //todo: this is not compatible with ConfigOption class!!!
-    var _getOption = function(key) {
-        var answer = null;
-        if(data.hasOwnProperty(key)) {
-            answer = data[key];
-        }
-        return(answer);
-    };
-
-    //todo: this is not compatible with ConfigOption class!!!
-    var _setOption = function(key, val) {
-        data[key] = val;
-        log("SET("+key+"):"+val);
-    };
-
-    //todo: this is not compatible with ConfigOption class!!!
-    var _setServerData = function(index, key, val) {
-        if(!data["srv"].hasOwnProperty(index)) {
-            data["srv"][index] = {};
-        }
-        var server = data["srv"][index];
-        server[key] = val;
-        log("SET SERVER["+index+"]("+key+"):"+val);
-    };
-    */
-
-    /**
-     * @todo: IMPORTANT - THIS CLASS IS NOT YET FINISHED!!!
-     * @todo: use PPMCryptor.md5Hash to confront data
-     * Merges locally defined (default) data with loaded data and returns true on change
-     * @param localdata
-     * @return {boolean}
-     */
-    var _checkAndInsertMissingDataKeys = function(localdata) {
-        var answer = false;
-        /*
-        for(var k in data) {
-            if (data.hasOwnProperty(k) && !localdata.hasOwnProperty(k)) {
-                _setOption(k, data[k]);
-                answer = true;
-            }
-        }
-        for(k in localdata) {
-            if (localdata.hasOwnProperty(k)) {
-                data[k] = localdata[k];
-            }
-        }
-        //log("CHECKED DATA: " + JSON.stringify(data));
-        */
-        return(answer);
-    };
-
     /**
      * Called by init when there is no default profile defined.
      * It creates and stores it by duplicating the defaultProfileData

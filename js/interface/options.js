@@ -73,6 +73,7 @@ optionsApp.controller('OptionsCtrl', [ '$scope', '$modal', '$timeout',
                 log("Saving Server Data: " + JSON.stringify(server));
                 //todo: check data
                 //$scope.serversCfgData[$scope.currSrvIndex] = server;
+                //todo: CHROMESTORAGE.setServerData does not exist anymore!!!
                 CHROMESTORAGE.setServerData($scope.currSrvIndex, "name", server.name);
                 CHROMESTORAGE.setServerData($scope.currSrvIndex, "type", server.type);
                 CHROMESTORAGE.setServerData($scope.currSrvIndex, "url", server.url);

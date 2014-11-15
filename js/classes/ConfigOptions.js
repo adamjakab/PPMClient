@@ -60,15 +60,25 @@ function ConfigOptions(options, logger) {
     };
 
     /**
-     * Merge additional options
-     * @param options
+     * Merge additional options to current object and return boolean to indicate if current object has changed
+     * @param {object} options
+     * @param {boolean} [force] - if true values in options object will overwrite the current ones (default: false)
+     * @returns boolean
      */
-    this.merge = function(options) {
-        for (var key in options) {
-            if(options.hasOwnProperty(key)) {
-                this.set(key, options[key]);
+    this.merge = function(options, force) {
+        force = (force===true);
+        var hasChanges = false;
+        if (_getType(options) == "object") {
+            for (var key in options) {
+                if (options.hasOwnProperty(key)) {
+                    if(_OPT.hasOwnProperty(key) === false || force) {
+                        this.set(key, options[key]);
+                        hasChanges = true;
+                    }
+                }
             }
         }
+        return hasChanges;
     };
 
     /**

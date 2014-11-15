@@ -3,7 +3,7 @@
  */
 function ParanoiaPasswordManager() {
     var self = this;
-    var _DO_AUTOLOGIN_ = false;//TESTING ONLY
+    var _DO_AUTOLOGIN_ = true;//TESTING ONLY
     var _components = {
         "LOGGER":           {component: null, type: PPMLogger},
         "UTILS":            {component: null, type: PPMUtils},
@@ -111,19 +111,6 @@ function ParanoiaPasswordManager() {
         var _phase_4 = function() {
             _log("PHASE 4(DONE)...","Main");
             if(_getComponent("UTILS").isFunction(cb)) {cb();}
-
-            //@TODO: AUTOLOGIN!!! - remove this!!!
-            //---------------------------------------------------------------------------------
-            if (_DO_AUTOLOGIN_) {
-                _DO_AUTOLOGIN_ = false;
-                if(!_getComponent("CHROMESTORAGE").isInited()) {
-                    _log("TRYING AUTOLOGIN...", "Main");
-                    _init("DEFAULT", "Paranoia", function() {
-                        _log("PHASE 2/AUTOLOGIN: DONE("+(_getComponent("CHROMESTORAGE").isInited()?"SUCCESS":"FAILED")+")", "Main");
-                    });
-                }
-            }
-            //----------------------------------------------------------------------------------
         };
 
         //START PHASE 2
@@ -187,9 +174,18 @@ function ParanoiaPasswordManager() {
 
     //auto fire-up!
     console.log("Firing up Paranoia Password Manager...");
-    _init(null, null, function() {
-        _log("PPM is ready.", "Main");
-    });
+
+    //@TODO: AUTOLOGIN!!! - remove this!!! - For testing only
+    if (_DO_AUTOLOGIN_) {
+        _init("DEFAULT", "Paranoia", function() {
+            _log("PHASE 4/AUTOLOGIN: DONE("+(_getComponent("CHROMESTORAGE").isInited()?"SUCCESS":"FAILED")+")", "Main");
+        });
+    } else {
+        _init(null, null, function() {
+            _log("PPM is ready.", "Main");
+        });
+    }
+
 }
 
 

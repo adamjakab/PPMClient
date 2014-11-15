@@ -68,20 +68,10 @@ function ChromeStorage(PPM, options) {
      */
     this.setOption = function(location, key, val) {
         if(location == "local") {
-            local_storage.setOption(key, val, null);
+            local_storage.setOption(key, val);
         } else if (location == "sync") {
-            sync_storage.setOption(key, val, null);
+            sync_storage.setOption(key, val);
         }
-    };
-
-    /**
-     * SET SYNC STORAGE SERVER DATA
-     * @param {int} index - The index of the server
-     * @param {string} key - Name of the key to set
-     * @param {*} val - Value of the key to set
-     */
-    this.setServerData = function(index, key, val) {
-        sync_storage.setServerData(index, key, val);
     };
 
     /**

@@ -55,9 +55,9 @@ function ChromeStorageLocal(PPM, options) {
      * @param {*} val
      * @param {function} [cb]
      */
-    this.setOption = function(key, val, cb) {
+    this.setOption = function(key, val) {
         storageData.set(key, val);
-        _storeConfiguration(cb);
+        _storeConfiguration();
     };
 
 
