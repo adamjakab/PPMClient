@@ -13,6 +13,9 @@ function ParanoiaServer(PPM, config) {
         reconnect_after_secs: 30,       //if server disconnects after this number of seconds server will try to reconnect
         disconnection_ts: 0,
         last_ping_ts: 0,
+        //ping_interval should be set in server config so it is only for to be on safe side here
+        //todo: really it is the server which should tell hos long is its session.lifetime
+        ping_interval: 60,
         //
         seed_length_min: 24,
         seed_length_max: 32,
@@ -72,6 +75,7 @@ function ParanoiaServer(PPM, config) {
         });
 
         function _connect_phase_2(SCO) {
+            log("connect(PHASE2)..." );
             cfg.set("is_connected", (SCO.success===true));
             log("connect(PHASE2)..." + (SCO.success?"OK":"ERR!"));
             _keepAliveServiceStart();
@@ -162,7 +166,7 @@ function ParanoiaServer(PPM, config) {
                         //REGISTER NEW SEED
                         SCO.hasNewSeed = _register_new_seed(SCO);
                         _setIdle();
-                        if(UTILS.isFunction(SCO.callback)) {SCO.callback();}
+                        if(UTILS.isFunction(SCO.callback)) {SCO.callback(SCO);}
                     } else{
                         throw("Unable to parse server response!");
                     }
@@ -248,7 +252,8 @@ function ParanoiaServer(PPM, config) {
         //#2 - CHECK FOR OPERATION IN QUEUE - IF ANY - AND EXECUTE
 
         //#3 - PING
-        if ((cfg.get("last_ping_ts") + parseInt(cfg.get("ping_interval"))) < _getTimestamp()) {
+        log("PING? " + cfg.get("last_ping_ts") + "/" + cfg.get("ping_interval"));
+        if (parseInt(cfg.get("last_ping_ts") + parseInt(cfg.get("ping_interval"))) < _getTimestamp()) {
             cfg.set("last_ping_ts", _getTimestamp());
             _ping();
         }

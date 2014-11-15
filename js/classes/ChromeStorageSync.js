@@ -58,7 +58,7 @@ function ChromeStorageSync(PPM, options) {
                 username: "your-user-name",
                 password: "(:-very_secure_password-:)",
                 master_key: "Paranoia",
-                ping_interval: 120
+                ping_interval: 60
             }
         },
 
