@@ -54,8 +54,35 @@ function PPMStorage(PPM, options) {
     var _registerServers = function() {
         servers = [];
         queue = [];
-        var srvList = CHROMESTORAGE.getOption("sync", "srv");
-        log("Registering Paranoia Servers...");
+        /** @type ConfigOptions srvList */
+        var serverList = CHROMESTORAGE.getOption("sync", "srv");
+        var serverKeys = serverList.getKeys();
+        var serverCount = serverKeys.length;
+        if(serverCount) {
+            log("Found "+serverCount+" Paranoia Servers.");
+            var serverConfig, PPMServer;
+            for(var serverIndex in serverKeys) {
+                if(serverKeys.hasOwnProperty(serverIndex)) {
+                    serverConfig = serverList.get(serverIndex);
+                    if(serverConfig instanceof ConfigOptions) {
+                        log("Registering Paranoia Server #" + serverIndex);
+                        serverConfig.set("index", serverIndex);
+                        PPMServer = new ParanoiaServer(PPM, serverConfig);
+                        servers[serverIndex] = PPMServer;
+                        PPMServer.connect(function(index, success) {
+                            log("Server["+index+"] connection was: " + (success?"Successful":"Fail"));
+                        });
+                    } else {
+                        log("Paranoia Server #" + serverIndex + " has bad configuration!", "error");
+                    }
+                }
+            }
+        } else {
+            log("There are no Paranoia Servers to be registered!", "error");
+        }
+
+
+        /*
         for(var srvIndex in srvList) {
             if(srvList.hasOwnProperty(srvIndex)) {
                 var srvConfig = srvList[srvIndex];
@@ -71,7 +98,7 @@ function PPMStorage(PPM, options) {
             log("There are no servers configured.");
         } else {
             log("Registered "+srvCnt+" servers successfully.");
-        }
+        }*/
     };
 
     var _unregisterServers = function() {

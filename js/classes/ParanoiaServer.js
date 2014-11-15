@@ -1,65 +1,65 @@
 /**
  * @param {ParanoiaPasswordManager} PPM
- * @param {Object} cfg
+ * @param {ConfigOptions} config
  * @constructor
  */
-function ParanoiaServer(PPM, cfg) {
-    var config = cfg;
-    var is_connected = false;
-    var is_busy = false;
-    //
-    var reconnect_after_secs = 10;//if server disconnects after this number of seconds server will try to reconnect
-    var disconnection_ts = 0;
-    var last_ping_ts = 0;
-    //
-    var seed_length_min = 24;
-    var seed_length_max = 32;
-    var padding_length_min = 48;
-    var padding_length_max = 64;
-    //
-    var seed = null;
-    var timestamp = null;
-    var leftPadLength = null;
-    var rightPadLength = null;
-    //
-    var KASIREF = null;//KeepAliveService Interval Reference
-    var KASEI = 5000;//KeepAliveService Execution Interval
+function ParanoiaServer(PPM, config) {
+    /** @type ConfigOptions cfg */
+    var cfg = config;
+    cfg.merge({
+        is_connected: false,
+        is_busy: false,
+        //
+        reconnect_after_secs: 30,       //if server disconnects after this number of seconds server will try to reconnect
+        disconnection_ts: 0,
+        last_ping_ts: 0,
+        //
+        seed_length_min: 24,
+        seed_length_max: 32,
+        padding_length_min: 48,
+        padding_length_max: 64,
+        //
+        seed: null,
+        timestamp: null,
+        leftPadLength:null,
+        rightPadLength: null,
+        //
+        keepAliveExecInterval: 5000
+    });
 
+    var KASIREF = null;//KeepAliveService Interval Reference
 
     /** @type PPMUtils UTILS */
     var UTILS = PPM.getComponent("UTILS");
     /** @type PPMCryptor CRYPTOR */
     var CRYPTOR = PPM.getComponent("CRYPTOR");
 
-    var log = function(msg, type) {PPM.getComponent("LOGGER").log(msg, "ParanoiaServer["+config.index+"]", type);};
-    log("Setting up with config: " + JSON.stringify(config));
-
-
+    var log = function(msg, type) {PPM.getComponent("LOGGER").log(msg, "ParanoiaServer["+cfg.get("index")+"]", type);};
+    log("Setting up with config: " + JSON.stringify(cfg.getRecursiveOptions()));
 
     this.connect = function(cb) {
         _connect(function(success) {
-            log("Connect Done...");
-            if (UTILS.isFunction(cb)) {cb(config.index, success);}
+            log("Connection Successful");
+            if (UTILS.isFunction(cb)) {cb(cfg.get("index"), success);}
         });
     };
 
     this.disconnect = function(cb) {
         _disconnect(function(success) {
             log("Disconnect Done...");
-            if (UTILS.isFunction(cb)) {cb(config.index, success);}
+            if (UTILS.isFunction(cb)) {cb(cfg.get("index"), success);}
         });
     };
 
     this.getStateData = function() {
-        var answer = {
-            connected: is_connected,
-            busy: is_busy,
-            seed: seed,
-            timestamp: timestamp,
-            leftPadLength: leftPadLength,
-            rightPadLength: rightPadLength
-        };
-        return(answer);
+        return({
+            connected: cfg.get("is_connected"),
+            busy: cfg.get("is_busy"),
+            seed: cfg.get("seed"),
+            timestamp: cfg.get("timestamp"),
+            leftPadLength: cfg.get("leftPadLength"),
+            rightPadLength: cfg.get("rightPadLength")
+        });
     };
 
     //---------------------------------------------------------------------------------------------CONNECT SERVER
@@ -72,7 +72,7 @@ function ParanoiaServer(PPM, cfg) {
         });
 
         function _connect_phase_2(SCO) {
-            is_connected = SCO.success===true;
+            cfg.set("is_connected", (SCO.success===true));
             log("connect(PHASE2)..." + (SCO.success?"OK":"ERR!"));
             _keepAliveServiceStart();
             if (UTILS.isFunction(SCO.original_callback)) {SCO.original_callback(SCO.success);}
@@ -90,8 +90,8 @@ function ParanoiaServer(PPM, cfg) {
         });
 
         function _disconnect_phase_2(SCO) {
-            is_connected = (SCO.success===true?false:is_connected);
-            if(!is_connected) {_putServerInDisconnectedState();}
+            cfg.set("is_connected", (SCO.success===true?false:cfg.get("is_connected")));
+            if(!cfg.get("is_connected")) {_putServerInDisconnectedState();}
             log("disconnect(PHASE2)..." + (SCO.success?"OK":"ERR!"));
             if (UTILS.isFunction(SCO.original_callback)) {SCO.original_callback(SCO.success);}
         }
@@ -126,10 +126,10 @@ function ParanoiaServer(PPM, cfg) {
                 _prepareRawPostData(SCO);
                 _encryptRawPostData(SCO);
                 if(SCO.service != "ping") {
-                    log("SCO[postDataRaw]:"+JSON.stringify(SCO.postDataRaw));
+                    log("SCO["+SCO.service+"]:"+JSON.stringify(SCO.postDataRaw));
                 }
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", config.url, true);
+                xhr.open("POST", cfg.get("url"), true);
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 xhr.onreadystatechange = function(ev) {
                     if (ev.target && ev.target.readyState == 4) {
@@ -162,9 +162,7 @@ function ParanoiaServer(PPM, cfg) {
                         //REGISTER NEW SEED
                         SCO.hasNewSeed = _register_new_seed(SCO);
                         _setIdle();
-                        if (SCO.callback && typeof SCO.callback == "function") {
-                            SCO.callback(SCO);
-                        }
+                        if(UTILS.isFunction(SCO.callback)) {SCO.callback();}
                     } else{
                         throw("Unable to parse server response!");
                     }
@@ -191,11 +189,11 @@ function ParanoiaServer(PPM, cfg) {
         function _register_new_seed(SCO) {
             try {
                 if (SCO.service != "logout") {
-                    seed = SCO.responseObject.seed;
-                    timestamp = SCO.responseObject.timestamp;
-                    leftPadLength = SCO.responseObject.leftPadLength;
-                    rightPadLength = SCO.responseObject.rightPadLength;
-                    if (seed == null || timestamp == null || leftPadLength == null || rightPadLength == null) {
+                    cfg.set("seed", SCO.responseObject.seed);
+                    cfg.set("timestamp", SCO.responseObject.timestamp);
+                    cfg.set("leftPadLength", SCO.responseObject.leftPadLength);
+                    cfg.set("rightPadLength", SCO.responseObject.rightPadLength);
+                    if (cfg.get("seed") == null || cfg.get("timestamp") == null || cfg.get("leftPadLength") == null || cfg.get("rightPadLength") == null) {
                         throw ("Unable to extract Seed or Timestamp or PadLengths from server response");
                     }
                 }
@@ -219,24 +217,26 @@ function ParanoiaServer(PPM, cfg) {
     var _keepAliveServiceStart = function() {
         if(KASIREF == null) {
             log("Starting Keep Alive Service");
-            KASIREF = setInterval(_keepAliveServiceMainThread, KASEI);
+            KASIREF = setInterval(_keepAliveServiceMainThread, cfg.get("keepAliveExecInterval"));
         }
     };
+
     var _keepAliveServiceStop = function() {
         log("Stopping Keep Alive Service");
         clearInterval(KASIREF);
         KASIREF = null;
     };
+
     var _keepAliveServiceMainThread = function() {
         log("KAS...");
         //#1 - CHECK IF CONNECTED AND RECONNECT AUTOMATICALLY IF NOT
-        if (is_connected !== true){
+        if (cfg.get("is_connected") !== true){
             //OOOOPS WE ARE DISCONNECTED - LET'S WAIT UNTIL "reconnect_after_secs" passes and then lets try to reconnect
-            var connect_in_secs = disconnection_ts + reconnect_after_secs - _getTimestamp();
+            var connect_in_secs = cfg.get("disconnection_ts") + cfg.get("reconnect_after_secs") - _getTimestamp();
             //log("SERVER WAS DISCONNECTED @ " + disconnection_ts + " reconnecting in: " + connect_in_secs);
             if (connect_in_secs <= 0) {
-                disconnection_ts = _getTimestamp();
-                log("trying to reconnect(@"+disconnection_ts+")...");
+                cfg.set("disconnection_ts", _getTimestamp());
+                log("trying to reconnect(@"+cfg.get("disconnection_ts")+")...");
                 _connect(null);
             }
             return;//in any case don't go ahead 'coz we are not connected
@@ -248,11 +248,10 @@ function ParanoiaServer(PPM, cfg) {
         //#2 - CHECK FOR OPERATION IN QUEUE - IF ANY - AND EXECUTE
 
         //#3 - PING
-        if ((last_ping_ts + parseInt(config.ping_interval)) < _getTimestamp()) {
-            last_ping_ts = _getTimestamp();
+        if ((cfg.get("last_ping_ts") + parseInt(cfg.get("ping_interval"))) < _getTimestamp()) {
+            cfg.set("last_ping_ts", _getTimestamp());
             _ping();
         }
-
     };
 
 
@@ -265,25 +264,25 @@ function ParanoiaServer(PPM, cfg) {
     var _prepareRawPostData = function(SCO) {
         SCO.postDataRaw = {
             service:            SCO.service,
-            seed:               UTILS.getUglyString(seed_length_min, seed_length_max),
-            leftPadLength:      UTILS.getRandomNumberInRange(padding_length_min, padding_length_max),
-            rightPadLength:     UTILS.getRandomNumberInRange(padding_length_min, padding_length_max)
+            seed:               UTILS.getUglyString(cfg.get("seed_length_min"), cfg.get("seed_length_max")),
+            leftPadLength:      UTILS.getRandomNumberInRange(cfg.get("padding_length_min"), cfg.get("padding_length_max")),
+            rightPadLength:     UTILS.getRandomNumberInRange(cfg.get("padding_length_min"), cfg.get("padding_length_max"))
         };
     };
 
     var _encryptRawPostData = function(SCO) {
         var Ed2s;
         var str2crypt = JSON.stringify(SCO.postDataRaw);
-        if (seed == null) {
+        if (cfg.get("seed") == null) {
             //if we have no seed yet we must encrypt data with combination username & password (md5hash of it 'coz server has only that)
             //also padding will be done on both left and right side with the length of the username
-            Ed2s = CRYPTOR.encrypt(str2crypt, config.username);
-            Ed2s = CRYPTOR.encrypt(Ed2s, CRYPTOR.md5Hash(config.password));
-            Ed2s = UTILS.leftRightPadString(Ed2s, config.username.length, config.username.length);
+            Ed2s = CRYPTOR.encrypt(str2crypt, cfg.get("username"));
+            Ed2s = CRYPTOR.encrypt(Ed2s, CRYPTOR.md5Hash(cfg.get("password")));
+            Ed2s = UTILS.leftRightPadString(Ed2s, cfg.get("username").length, cfg.get("username").length);
         } else {
             //encrypt data normally with current seed, leftPadLength, rightPadLength
-            Ed2s = CRYPTOR.encrypt(str2crypt, seed);
-            Ed2s = UTILS.leftRightPadString(Ed2s, leftPadLength, rightPadLength);
+            Ed2s = CRYPTOR.encrypt(str2crypt, cfg.get("seed"));
+            Ed2s = UTILS.leftRightPadString(Ed2s, cfg.get("leftPadLength"), cfg.get("rightPadLength"));
         }
         SCO.postDataCrypted = Ed2s;
     };
@@ -294,18 +293,18 @@ function ParanoiaServer(PPM, cfg) {
     };
 
     var _putServerInDisconnectedState = function() {
-        is_connected = false;
-        seed = null;
-        timestamp = null;
-        leftPadLength = null;
-        rightPadLength = null;
-        disconnection_ts = _getTimestamp();//so we know when we disconnected and can do auto reconnection after some time
+        cfg.set("is_connected", false);
+        cfg.set("seed", null);
+        cfg.set("timestamp", null);
+        cfg.set("leftPadLength", null);
+        cfg.set("rightPadLength", null);
+        cfg.set("disconnection_ts", _getTimestamp());//so we know when we disconnected and can do auto reconnection after some time
     };
 
 
+    //todo: this is local timestamp - we need ts from remote
     var _getTimestamp = function() {return(Math.round((Date.now()/1000)));};
-
-    var _isBusy = function() {return(is_busy);};
-    var _setBusy = function() {is_busy = true;};
-    var _setIdle = function() {is_busy = false;}
+    var _isBusy = function() {return(cfg.get("is_busy"));};
+    var _setBusy = function() {cfg.set("is_busy", true);};
+    var _setIdle = function() {cfg.set("is_busy", false);}
 }
