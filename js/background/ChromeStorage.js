@@ -68,9 +68,9 @@ function ChromeStorage(PPM, options) {
      */
     this.setOption = function(location, key, val) {
         if(location == "local") {
-            local_storage.setOption(key, val);
+            local_storage.setOption(key, val, null);
         } else if (location == "sync") {
-            sync_storage.setOption(key, val);
+            sync_storage.setOption(key, val, null);
         }
     };
 
@@ -93,7 +93,7 @@ function ChromeStorage(PPM, options) {
     };
 
     this.getAvailableProfiles = function() {
-        return(sync_storage &&  sync_storage.getAvailableProfiles());
+        return(sync_storage && sync_storage.getAvailableProfiles());
     };
 
 

@@ -24,7 +24,7 @@ function ParanoiaPasswordManager() {
     };
 
     /**
-     * Get a main PPM component
+     * Get a component by name
      * @param name
      * @return {*} answer
      */
@@ -37,6 +37,7 @@ function ParanoiaPasswordManager() {
         }
         return(answer);
     };
+
     /**
      * @param name
      * @return {*} answer
@@ -47,15 +48,12 @@ function ParanoiaPasswordManager() {
 
     /**
      * AngularJs is loaded as background script so to minimize loading it into popup every time
-     * Bootstrap it manually (see: http://docs.angularjs.org/guide/bootstrap)
+     * It must be bootstrapped it manually (see: http://docs.angularjs.org/guide/bootstrap)
      * @returns {angular}
      */
     this.getAngularJs = function() {
         return(angular);
     };
-
-
-
 
     /**
      * Init/Re-Init PPM
@@ -98,20 +96,19 @@ function ParanoiaPasswordManager() {
         _components["PPMSTORAGE"].component = new PPMStorage(self);//ChromeStorage.js
         _getComponent("PPMSTORAGE").init();
 
-        //START PHASE 2
-        _phase_2();
 
-        function _phase_2() {
+
+        var _phase_2 = function() {
             _log("PHASE 2(DECRYPT PROFILE)...","Main");
             _getComponent("CHROMESTORAGE").setupLocalAndSyncedStorages(profile, masterKey, _phase_3);
-        }
+        };
 
-        function _phase_3() {
+        var _phase_3 = function() {
             _log("PHASE 3(SETUP SERVERS)...","Main");
             _getComponent("PPMSTORAGE").setupServers(_phase_4);
-        }
+        };
 
-        function _phase_4() {
+        var _phase_4 = function() {
             _log("PHASE 4(DONE)...","Main");
             if(_getComponent("UTILS").isFunction(cb)) {cb();}
 
@@ -127,7 +124,10 @@ function ParanoiaPasswordManager() {
                 }
             }
             //----------------------------------------------------------------------------------
-        }
+        };
+
+        //START PHASE 2
+        _phase_2();
     };
     this.reInit = function(profile, masterKey, cb) {
         _init(profile, masterKey, cb);
@@ -151,9 +151,11 @@ function ParanoiaPasswordManager() {
             });
         }
     };
+
     this.shutdown = function(cb) {
         _shutdown(cb);
     };
+
 
 
     /**
@@ -180,8 +182,8 @@ function ParanoiaPasswordManager() {
             log("customEventListener - Event type is not defined!", "Main");
         }
     };
-    //
     document.addEventListener("PPM", PpmCustomEventListener, false);
+
 
     //auto fire-up!
     console.log("Firing up Paranoia Password Manager...");
@@ -214,6 +216,5 @@ chrome.omnibox.onInputEntered.addListener(function(cmd) {
             alert('PPM - I do not understand the command: "' + cmd + '"');
             break;
     }
-
 });
 

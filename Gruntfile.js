@@ -4,14 +4,18 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
+        copy: {
+            main: {
+                files: [
+                    {expand: true, cwd: 'html', src: ['**/*.html'], dest: 'build/html'}
+                ]
+            }
+        },
+
         uglify: {
             options: {
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
             },
-            //build: {
-            //    src: 'js/background/ChromeStorage.js',
-            //    dest: 'build/js/background/ChromeStorage.js'
-            //},
             dynamic_mappings: {
                 files: [
                     {
@@ -29,16 +33,7 @@ module.exports = function(grunt) {
                     }
                 ]
             }
-        },
-
-        copy: {
-            main: {
-                files: [
-                    {expand: true, cwd: 'html', src: ['**/*.html'], dest: 'build/html'}
-                ]
-            }
         }
-
     });
 
     // Load the plugin that provides the "uglify" task.

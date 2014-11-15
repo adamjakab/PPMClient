@@ -42,11 +42,12 @@ function PPMUtils(PPM, options) {
         var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
         /** @type PPMStorage PPMSTORAGE */
         var PPMSTORAGE = PPM.getComponent("PPMSTORAGE");
+        var iconFolder = '../images/state_icons/';
         var connectionStateIcons = {
-            unauthenticated: "images/state_icons/offline.png",
-            loading: "images/state_icons/initing.png",
-            connected: "images/state_icons/ready.png",
-            disconnected: "images/state_icons/error.png"
+            unauthenticated: iconFolder + "offline.png",
+            loading: iconFolder + "initing.png",
+            connected: iconFolder + "ready.png",
+            disconnected: iconFolder + "error.png"
         };
         //SET BADGE TEXT
         badgeText = (badgeText?badgeText:"");

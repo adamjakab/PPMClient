@@ -4,13 +4,13 @@
  * @param {object} [options]
  */
 function ChromeStorageLocal(PPM, options) {
-    var cfg = new ConfigOptions({
+    var storageData = new ConfigOptions({
         "options": {
             "last_selected_tab": "passcards"
         },
         "popup": {}
     });
-    cfg.merge(options);
+    storageData.merge(options);
 
     var log = function(msg, type) {PPM.getComponent("LOGGER").log(msg, "ChromeStorageLocal", type);};
 
@@ -23,7 +23,7 @@ function ChromeStorageLocal(PPM, options) {
         chrome.storage.local.get(null, function(localStorageData){
             log("Loaded LocalStorageData:" + JSON.stringify(localStorageData));
             _checkAndInsertMissingDataKeys(localStorageData, function() {
-                log("Merged configuration: " + JSON.stringify(cfg.getRecursiveOptions()), "info");
+                log("Merged configuration: " + JSON.stringify(storageData.getRecursiveOptions()), "info");
                 if(PPM.getComponent("UTILS").isFunction(cb)) {cb();}
             });
         });
@@ -46,7 +46,7 @@ function ChromeStorageLocal(PPM, options) {
      * @returns {*}
      */
     this.getOption = function(key) {
-        return(cfg.get(key));
+        return(storageData.get(key));
     };
 
     /**
@@ -56,7 +56,7 @@ function ChromeStorageLocal(PPM, options) {
      * @param {function} [cb]
      */
     this.setOption = function(key, val, cb) {
-        cfg.set(key, val);
+        storageData.set(key, val);
         _storeConfiguration(cb);
     };
 
@@ -69,7 +69,7 @@ function ChromeStorageLocal(PPM, options) {
      * @private
      */
     var _checkAndInsertMissingDataKeys = function(localStorageData, cb) {
-        cfg.merge(localStorageData);
+        storageData.merge(localStorageData);
         _storeConfiguration(cb);
     };
 
@@ -79,7 +79,7 @@ function ChromeStorageLocal(PPM, options) {
      * @private
      */
     var _storeConfiguration = function(cb) {
-        chrome.storage.local.set(cfg.getRecursiveOptions(), function() {
+        chrome.storage.local.set(storageData.getRecursiveOptions(), function() {
             if(PPM.getComponent("UTILS").isFunction(cb)) {cb();}
         });
     }

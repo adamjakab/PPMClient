@@ -1,5 +1,5 @@
 {
-   "extDescription": {
-      "message": "Password manager for the paranoid - uses private server to store your passwords."
-   }
+    "extension_description": {
+        "message": "Password manager for the paranoid with private server storage."
+    }
 }

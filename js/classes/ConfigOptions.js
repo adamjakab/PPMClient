@@ -109,13 +109,24 @@ function ConfigOptions(options, logger) {
                     _log("Key("+key+") value("+val+") is of type: " + vT + " - DELETING!");
                     delete _OPT[key];
                     break;
+                case "string":
+                case "number":
+                case "boolean":
+                case "null":
+                    _log("Key("+key+") value("+val+") is of type: " + vT + " - ADDING");
+                    _OPT[key] = val;
+                    break;
                 case "object":
-                    _log("Key("+key+") value("+val+") is of type: " + vT + " - ADDING ConfigOptions!");
-                    _OPT[key] = new ConfigOptions(val, _logger);
+                    if(val instanceof ConfigOptions) {
+                        _log("Key("+key+") is of type: " + vT + "/ConfigOptions - ADDING");
+                        _OPT[key] = val;
+                    } else {
+                        _log("Key("+key+") value("+JSON.stringify(val)+") is of type: " + vT + " - CASTING TO ConfigOptions");
+                        _OPT[key] = new ConfigOptions(val, _logger);
+                    }
                     break;
                 default:
-                    _log("Key("+key+") value("+val+") is of type: " + vT);
-                    _OPT[key] = val;
+                    _log("Unknown key type("+vT+") for key("+key+") with value("+val+")! Skipped!");
                     break;
             }
         } else {
@@ -125,6 +136,20 @@ function ConfigOptions(options, logger) {
             _OPT[KP["key"]].set(KP["remaining"], val);
         }
         return(oldVal);
+    };
+
+    /**
+     * get all keys
+     * @returns {Array}
+     */
+    this.getKeys = function() {
+        var answer = [];
+        for (var key in _OPT) {
+            if(_OPT.hasOwnProperty(key)) {
+                answer.push(key);
+            }
+        }
+        return answer;
     };
 
     /**
