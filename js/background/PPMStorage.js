@@ -24,8 +24,8 @@ function PPMStorage(PPM, options) {
 
     this.setupServers = function(cb) {
         if(CHROMESTORAGE.isInited()) {
-            log("setting up servers...");
-            _registerServers();
+            log("setting up servers...NOT!");
+            //_registerServers();
         } else {
             log("not ready to set up servers...");
         }

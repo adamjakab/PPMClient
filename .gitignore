@@ -7,3 +7,6 @@ node_modules
 # The build directory where final minimized version of
 # the extension will be created
 build
+
+#my ideas playground
+ideas
