@@ -2,16 +2,20 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-        <!-- PROTOTYPE -->
-        <script type="text/javascript" src="../js/bower/prototypejs/dist/prototype.js"></script>
+        <!-- PROTOTYPE JS CANNOT BE LOADED WITH REQUIREJS WITH CURRENT RELEASE 1.7.1 -->
+        <script type="text/javascript" src="../bower/prototypejs/dist/prototype.js"></script>
 
-        <!-- BLUEBIRD PROMISES -->
+        <script data-main="../js/app.js" src="../bower/requirejs/require.js"></script>
+        <!--
+
+
+        <!-- BLUEBIRD PROMISES
         <script type="text/javascript" src="../js/bower/bluebird/js/browser/bluebird.js"></script>
 
-        <!-- MAIN APPLICATION -->
+        <!-- MAIN APPLICATION
         <script type="text/javascript" src="../js/background/ParanoiaPasswordManager.js"></script>
 
-        <!-- BACKGROUND SCRIPTS -->
+        <!-- BACKGROUND SCRIPTS
         <script type="text/javascript" src="../js/background/PPMLogger.js"></script>
         <script type="text/javascript" src="../js/background/PPMUtils.js"></script>
         <script type="text/javascript" src="../js/background/PPMCryptor.js"></script>
@@ -19,21 +23,20 @@
         <script type="text/javascript" src="../js/background/ChromeStorage.js"></script>
         <script type="text/javascript" src="../js/background/PPMStorage.js"></script>
 
-        <!-- CLASSES -->
+        <!-- CLASSES
         <script type="text/javascript" src="../js/classes/ConfigOptions.js"></script>
         <script type="text/javascript" src="../js/classes/ChromeStorageLocal.js"></script>
         <script type="text/javascript" src="../js/classes/ChromeStorageSync.js"></script>
         <script type="text/javascript" src="../js/classes/ParanoiaServer.js"></script>
 
-        <!-- UTILS -->
+        <!-- UTILS
         <script type="text/javascript" src="../js/utils/aesctr.js"></script>
         <script type="text/javascript" src="../js/utils/md5.js"></script>
 
-        <!-- ANGULARJS (PRELOADED FOR POPUP) -->
+        <!-- ANGULARJS (PRELOADED FOR POPUP)
         <script type="text/javascript" src="../js/bower/angular/angular.js"></script>
         <script type="text/javascript" src="../js/bower/angular-ui-bootstrap/dist/ui-bootstrap-tpls-0.11.2.js"></script>
-
-
+        -->
 	</head>
 	<body></body>
 </html>
