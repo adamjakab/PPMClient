@@ -1,18 +1,53 @@
 //ParanoiaPasswordManager main application
-define(['utils/ConfigOptions'], function (ConfigOptions) {
-
-    //var cfg = new ConfigOptions({"c":"111111"});
-    //cfg.set("x.y.z","CIAO");
-    //cfg.set("a","mitico");
-    //cfg.set("b",{"c":"113"});
-    //cfg.dump();
-    //console.log("GET: " + JSON.stringify(cfg.get("c")));
-
-
+/**
+ * @type {ConfigOptions} cfg
+ * @type {object} logger
+ * @type {object} utils
+ */
+define([
+    'config',
+    'app/PPMLogger',
+    'app/PPMUtils',
+    'app/PPMCryptor',
+    'app/GATracker',
+    'app/ChromeStorage',
+    'app/ServerConcentrator'
+], function (cfg, logger, utils, cryptor, GATracker, ChromeStorage, ServerConcentrator) {
+    /**
+     * Log facility
+     * @param msg
+     * @param type
+     */
+    var log = function(msg, type) {logger.log(msg, "PPM", type);};
 
     return {
-        t1 : function() {
-            console.log("T1");
+        initialize: function() {
+            log("Starting...");
+            log("Default configuration: " + JSON.stringify(cfg.getAll()));
+            utils.initialize();
+            cryptor.initialize();
+            GATracker.initialize();
+            ChromeStorage.initialize();
+            ServerConcentrator.initialize();
+        },
+
+        /**
+         * Main login interface
+         * @param {string} [profile]
+         * @param {string} [masterKey]
+         */
+        login: function(profile, masterKey) {
+            var setupPromise = ChromeStorage.setupLocalAndSyncedStorages(profile, masterKey);
+            setupPromise.then(function () {
+                log("starting with configuration: " + JSON.stringify(cfg.getAll()));
+
+
+
+            }).error(function (e) {
+                //logger.log("Rejected", e, logZone);
+            }).catch(Error, function (e) {
+                //logger.error("Error", e, logZone);
+            });
         }
 
 

@@ -42,7 +42,7 @@ define(['underscore'], function (_) {
      * @param {object} [options]
      * @constructor
      */
-    var ConfigOptions = function(options) {
+    return function(options) {
         /**
          * All options will be stored here
          * @type {Object}
@@ -51,21 +51,32 @@ define(['underscore'], function (_) {
         var _OPT = {};
 
         /**
-         * Set option value
-         * @param {string} key
+         * Set option value and return old value
+         * @param {string} key - a dot separated path to element like "sync.cryptor.bits"
          * @param {*} val
          * @returns {*}
          */
         this.set = function(key, val) {
             var oldValue = this.get(key);
             var keyElements = _getKeyElements(key);
+            var currentItem = _OPT;
+            var usedKeyElements = [];
+            var currentKey, usedKeyChain, isLastElement;
             while(keyElements.length != 0) {
-                var currentKey = keyElements.pop();
-                var currentValueObject = {};
-                currentValueObject[currentKey] = val;
-                val = currentValueObject;
+                currentKey = _.first(keyElements);
+                usedKeyElements.push(currentKey);
+                usedKeyChain = usedKeyElements.join(".");
+                keyElements = _.rest(keyElements);
+                isLastElement = (keyElements.length == 0);
+                if(!isLastElement) {
+                    if(!currentItem.hasOwnProperty(currentKey) || !_.isObject(currentItem[currentKey])) {
+                        currentItem[currentKey] = {};
+                    }
+                } else {
+                    currentItem[currentKey] = val;
+                }
+                currentItem = this.get(usedKeyChain);
             }
-            this.merge(val);
             return(oldValue);
         };
 
@@ -74,7 +85,7 @@ define(['underscore'], function (_) {
          * @param {*} [defaultValue]
          * @returns {*}
          */
-        this.get =function(key, defaultValue) {
+        this.get = function(key, defaultValue) {
             var keyElements = _getKeyElements(key);
             var currentValueObject = _OPT;
             while(!_.isNull(currentValueObject) && keyElements.length != 0) {
@@ -89,17 +100,25 @@ define(['underscore'], function (_) {
             return(!_.isNull(currentValueObject) ? currentValueObject : defaultValue);
         };
 
-
-        this.merge = function(source) {
-            _.extend(_OPT, source);
+        this.getAll = function() {
+            return _OPT;
         };
 
-        this.dump = function() {
-            console.log("_OPTIONS: " + JSON.stringify(_OPT));
+        /**
+         * @param {object} source
+         * @param {string} [key]
+         * @returns {boolean} - returns true if _OPT has changed
+         */
+        this.merge = function(source, key) {
+            var original = _.extend(_OPT, {});
+            if(!key) {
+                _OPT = _.extend(_OPT, source);
+            } else {
+                this.set(key, _.extend(this.get(key), source));
+            }
+            return(!_.isEqual(original, _OPT));
         };
-
 
         this.merge(options);
     };
-    return ConfigOptions;
 });
