@@ -39,6 +39,7 @@ define([
         login: function(profile, masterKey) {
             var setupPromise = ChromeStorage.setupLocalAndSyncedStorages(profile, masterKey);
             setupPromise.then(function () {
+                log("You are now logged in!", "info");
                 log("starting with configuration: " + JSON.stringify(cfg.getAll()));
 
 

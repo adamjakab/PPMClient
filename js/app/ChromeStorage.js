@@ -49,7 +49,7 @@ define([
     /**
      * @type {number} - how often we will check for changes (ms) - do not overload sync storage (around 15min)
      */
-    var storageChangeCheckInterval = 3 * 1000;//15 * 60 * 1000
+    var storageChangeCheckInterval = 5 * 60 * 1000;
 
     /**
      * Log facility
@@ -98,7 +98,7 @@ define([
                 data = cfg.get("local");
             } else if(location == "sync") {
                 var CPDSTR = JSON.stringify(cfg.get("sync"));
-                log("CRYPTING CURRENT PROFILE("+currentProfileName+"):"+CPDSTR, "info");
+                log("CRYPTING CURRENT PROFILE("+currentProfileName+"):"+CPDSTR);
                 rawSyncStorageData[currentProfileName] = cryptor.encryptAES(CPDSTR, currentMasterKey);
                 //log("rawSyncStorageData:"+JSON.stringify(rawSyncStorageData), "info");
                 data = rawSyncStorageData;
