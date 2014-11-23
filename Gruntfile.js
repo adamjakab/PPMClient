@@ -19,7 +19,7 @@ module.exports = function(grunt) {
                             'requirejs/require.js',
                             'underscore/underscore.js'
                         ],
-                        dest: 'app/js/vendor'}
+                        dest: 'app/vendor/js'}
                 ]
             }
         },

@@ -6,6 +6,9 @@ bower_components
 # NodeJS project dependencies
 node_modules
 
+# copied over dep files
+app/vendor
+
 # The build directory where final minimized version of
 # the extension will be created
 build
