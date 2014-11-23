@@ -5,9 +5,21 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         copy: {
-            main: {
+            project_js: {
                 files: [
-                    {expand: true, cwd: 'html', src: ['**/*.html'], dest: 'build/html'}
+                    {
+                        expand: true,
+                        flatten: true,
+                        cwd: 'bower_components',
+                        src: [
+                            'angular/angular.js',
+                            'angular-ui-bootstrap/dist/ui-bootstrap-tpls-0.12.0.js',
+                            'bluebird/js/browser/bluebird.js',
+                            'prototypejs/dist/prototype.js',
+                            'requirejs/require.js',
+                            'underscore/underscore.js'
+                        ],
+                        dest: 'app/js/vendor'}
                 ]
             }
         },
@@ -40,7 +52,13 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
 
-    // Default task(s).
-    grunt.registerTask('default', ['copy', 'uglify']);
+    grunt.registerTask("setup-project", "Setup Project files and folders", function() {
+        grunt.task.run('copy:project_js');
 
+    });
+
+
+
+    // Default task(s).
+    grunt.registerTask('default', ['setup-project']);
 };
