@@ -1,8 +1,9 @@
 /**
  * ParanoiaPasswordManager main application
  */
+
 define([
-    '../config',
+    'config',
     'app/PPMLogger',
     'app/PPMUtils',
     'app/PPMCryptor',
@@ -37,8 +38,6 @@ define([
             setupPromise.then(function () {
                 log("You are now logged in!", "info");
                 log("starting with configuration: " + JSON.stringify(cfg.getAll()));
-
-
 
             }).error(function (e) {
                 //logger.log("Rejected", e, logZone);

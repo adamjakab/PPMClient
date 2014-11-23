@@ -2,7 +2,7 @@
  * Chrome Storage (local + sync)
  */
 define([
-    '../config',
+    'config',
     'app/PPMLogger',
     'app/PPMCryptor',
     'bluebird',

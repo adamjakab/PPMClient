@@ -2,14 +2,14 @@
  * Main background application
  */
 requirejs.config({
-    baseUrl: '../js',
     paths: {
-        underscore: '../bower/underscore/underscore',
-        bluebird: '../bower/bluebird/js/browser/bluebird'
+        underscore: '../vendor/js/underscore',
+        bluebird: '../vendor/js/bluebird'
     },
     shim: {
 
-    }
+    },
+    deps: []
 });
 
 require(['app/ParanoiaPasswordManager'], function(PPM) {

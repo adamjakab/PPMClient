@@ -1,8 +1,7 @@
-//Logger Interface and Log keeper for in-app log management
 /**
- * @type {ConfigOptions} cfg
+ * Logger Interface and Log keeper for in-app log management
  */
-define(['../config'], function (cfg) {
+define(['config'], function (cfg) {
     /**
      * @type {Array}
      */

@@ -4,18 +4,6 @@
  * Path-based Options holder (path is dot separated like: node.sub)
  */
 define(['underscore'], function (_) {
-
-    /**
-     * Try to identify js variable type
-     * source: http://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
-     * @param {*} param
-     * @returns {string}
-     * @private
-     */
-    var _getType = function(param) {
-        return ({}).toString.call(param).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
-    };
-
     /**
      * splits a dot-separated path (x.y.z)
      * to an array of elements
@@ -38,7 +26,6 @@ define(['underscore'], function (_) {
 
 
     /**
-     *
      * @param {object} [options]
      * @constructor
      */

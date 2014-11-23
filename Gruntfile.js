@@ -5,7 +5,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         copy: {
-            project_js: {
+            project: {
                 files: [
                     {
                         expand: true,
@@ -19,7 +19,19 @@ module.exports = function(grunt) {
                             'requirejs/require.js',
                             'underscore/underscore.js'
                         ],
-                        dest: 'app/vendor/js'}
+                        dest: 'app/vendor/js'
+                    },
+                    {
+                        expand: true,
+                        flatten: true,
+                        cwd: 'bower_components',
+                        src: [
+                            'angular/angular-csp.css',
+                            'bootstrap/dist/css/bootstrap.css',
+                            'bootstrap/dist/css/bootstrap-theme.css'
+                        ],
+                        dest: 'app/vendor/css'
+                    }
                 ]
             }
         },
@@ -53,7 +65,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask("setup-project", "Setup Project files and folders", function() {
-        grunt.task.run('copy:project_js');
+        grunt.task.run('copy:project');
 
     });
 

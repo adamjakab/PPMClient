@@ -2,7 +2,7 @@
  * Google Analitics usage tracker
  */
 define([
-    '../config',
+    'config',
     'app/PPMLogger'
 ], function (cfg, logger) {
     /**

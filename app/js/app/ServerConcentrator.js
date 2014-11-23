@@ -2,7 +2,7 @@
  * PPM Server Concentrator
  */
 define([
-    '../config',
+    'config',
     'app/PPMLogger'
 ], function (cfg, logger) {
     /**
