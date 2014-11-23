@@ -1,18 +1,20 @@
-//Generic utility methods
 /**
- * @type {ConfigOptions} cfg
- * @type {object} logger
- *
+ * Generic utility methods
  */
 define([
     'config',
     'app/PPMLogger'
 ], function (cfg, logger) {
-    var logZone = 'UTILS';
+    /**
+     * Log facility
+     * @param msg
+     * @param type
+     */
+    var log = function(msg, type) {logger.log(msg, "UTILS", type);};
 
     return {
         initialize: function() {
-            logger.log("INITIALIZED: " + JSON.stringify(cfg.get("sync.utils")), logZone, "info");
+            log("INITIALIZED", "info");
         }
     };
 });

@@ -1,18 +1,20 @@
-//Google Analitics usage tracker
 /**
- * @type {ConfigOptions} cfg
- * @type {object} logger
- *
+ * Google Analitics usage tracker
  */
 define([
     'config',
     'app/PPMLogger'
 ], function (cfg, logger) {
-    var logZone = 'GAT';
+    /**
+     * Log facility
+     * @param msg
+     * @param type
+     */
+    var log = function(msg, type) {logger.log(msg, "GAT", type);};
 
     return {
         initialize: function() {
-            logger.log("INITIALIZED: " + JSON.stringify(cfg.get("sync.gat")), logZone, "info");
+            log("INITIALIZED", "info");
         }
     };
 });

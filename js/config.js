@@ -1,9 +1,8 @@
-//PPM default configurations
 /**
- * @type {ConfigOptions} ConfigOptions
+ * PPM default configurations
  */
 define(['utils/ConfigOptions'], function (ConfigOptions) {
-    var configOptions = new ConfigOptions({
+    return new ConfigOptions({
         local: {
             test: 123
         },
@@ -53,6 +52,4 @@ define(['utils/ConfigOptions'], function (ConfigOptions) {
             }
         }
     });
-
-    return(configOptions);
 });

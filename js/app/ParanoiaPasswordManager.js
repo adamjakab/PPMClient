@@ -1,8 +1,5 @@
-//ParanoiaPasswordManager main application
 /**
- * @type {ConfigOptions} cfg
- * @type {object} logger
- * @type {object} utils
+ * ParanoiaPasswordManager main application
  */
 define([
     'config',
@@ -23,7 +20,6 @@ define([
     return {
         initialize: function() {
             log("Starting...");
-            log("Default configuration: " + JSON.stringify(cfg.getAll()));
             utils.initialize();
             cryptor.initialize();
             GATracker.initialize();

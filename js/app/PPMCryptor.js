@@ -1,20 +1,21 @@
-//Crypt/decrypt methods
 /**
- * @type {ConfigOptions} cfg
- * @type {object} logger
- *
+ * Crypt/Decrypt methods
  */
 define([
     'config',
     'app/PPMLogger',
     'underscore'
 ], function (cfg, logger, _) {
-
+    /**
+     * Log facility
+     * @param msg
+     * @param type
+     */
     var log = function(msg, type) {logger.log(msg, "CRYPTOR", type);};
 
     return {
         initialize: function() {
-            log("INITIALIZED: " + JSON.stringify(cfg.get("sync.cryptor")), "info");
+            log("INITIALIZED", "info");
         },
 
         /**
@@ -56,7 +57,5 @@ define([
             }
             return(answer);
         }
-
-
     };
 });

@@ -1,8 +1,5 @@
-//Chrome Storage (local + sync)
 /**
- * @type {ConfigOptions} cfg
- * @type {object} logger
- *
+ * Chrome Storage (local + sync)
  */
 define([
     'config',
