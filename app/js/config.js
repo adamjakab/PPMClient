@@ -1,7 +1,7 @@
 /**
  * PPM default configurations
  */
-define(['utils/ConfigOptions'], function (ConfigOptions) {
+define(['lib/ConfigOptions'], function (ConfigOptions) {
     return new ConfigOptions({
         local: {
             test: 123

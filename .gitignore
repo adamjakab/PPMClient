@@ -1,5 +1,7 @@
+.directory
+
 # Bower project dependencies
-bower
+bower_components
 
 # NodeJS project dependencies
 node_modules
@@ -8,5 +10,5 @@ node_modules
 # the extension will be created
 build
 
-#my ideas playground
+# playground folder
 ideas

@@ -2,7 +2,7 @@
  * Generic utility methods
  */
 define([
-    'config',
+    '../config',
     'app/PPMLogger'
 ], function (cfg, logger) {
     /**

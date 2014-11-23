@@ -2,7 +2,7 @@
  * ParanoiaPasswordManager main application
  */
 define([
-    'config',
+    '../config',
     'app/PPMLogger',
     'app/PPMUtils',
     'app/PPMCryptor',

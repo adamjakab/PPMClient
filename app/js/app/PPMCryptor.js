@@ -2,7 +2,7 @@
  * Crypt/Decrypt methods
  */
 define([
-    'config',
+    '../config',
     'app/PPMLogger',
     'underscore'
 ], function (cfg, logger, _) {

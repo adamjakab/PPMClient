@@ -2,7 +2,7 @@
 /**
  * @type {ConfigOptions} cfg
  */
-define(['config'], function (cfg) {
+define(['../config'], function (cfg) {
     /**
      * @type {Array}
      */

@@ -1,5 +1,8 @@
+/**
+ * Main background application
+ */
 requirejs.config({
-    baseUrl: 'js',
+    baseUrl: '../js',
     paths: {
         underscore: '../bower/underscore/underscore',
         bluebird: '../bower/bluebird/js/browser/bluebird'
