@@ -315,7 +315,7 @@ define([
          * @param {string} [masterKey]
          * @returns {Promise}
          */
-        setupLocalAndSyncedStorages: function(profile, masterKey) {
+        setupLocalAndSyncedStorage: function(profile, masterKey) {
             return new Promise(function (fulfill, reject) {
                 Promise.all([
                     initLocalStorage(),

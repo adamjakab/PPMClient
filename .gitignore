@@ -1,4 +1,5 @@
 .directory
+.idea
 
 # Bower project dependencies
 bower_components
