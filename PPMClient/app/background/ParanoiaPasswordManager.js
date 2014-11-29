@@ -4,12 +4,12 @@
 
 define([
     'config',
-    'app/PPMLogger',
-    'app/PPMUtils',
-    'app/PPMCryptor',
-    'app/GATracker',
-    'app/ChromeStorage',
-    'app/ServerConcentrator'
+    'PPMLogger',
+    'PPMUtils',
+    'PPMCryptor',
+    'GATracker',
+    'ChromeStorage',
+    'ServerConcentrator'
 ], function (cfg, logger, utils, cryptor, GATracker, ChromeStorage, ServerConcentrator) {
     /**
      * Log facility

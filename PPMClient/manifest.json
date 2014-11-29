@@ -1,16 +1,16 @@
 {
     "manifest_version": 2,
     "name": "ChromePpm",
-    "version": "1.4.0",
+    "version": "2.0.0",
     "description": "__MSG_extension_description__",
     "background": {
-        "page": "background.html"
+        "page": "app/background.html"
     },
     "browser_action": {
         "default_icon": {
             "19": "images/state_icons/offline.png"
         },
-        "default_popup": "popup.html",
+        "default_popup": "app/popup.html",
         "default_title": "ChromePpm"
     },
     "default_locale": "en",
@@ -23,7 +23,7 @@
     "omnibox": {
         "keyword": "PPM"
     },
-    "options_page": "options.html#ppmoptions",
+    "options_page": "app/options.html#ppmoptions",
     "content_security_policy": "default-src 'self' 'unsafe-eval'; connect-src http://* https://*; script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com; img-src 'self' http://www.google-analytics.com/__utm.gif; object-src 'self'; style-src 'self' 'unsafe-inline'",
     "permissions": [
         "tabs",

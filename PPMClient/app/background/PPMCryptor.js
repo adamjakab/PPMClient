@@ -3,7 +3,7 @@
  */
 define([
     'config',
-    'app/PPMLogger',
+    'PPMLogger',
     'underscore'
 ], function (cfg, logger, _) {
     /**

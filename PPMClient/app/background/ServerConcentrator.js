@@ -1,16 +1,16 @@
 /**
- * Google Analitics usage tracker
+ * PPM Server Concentrator
  */
 define([
     'config',
-    'app/PPMLogger'
+    'PPMLogger'
 ], function (cfg, logger) {
     /**
      * Log facility
      * @param msg
      * @param type
      */
-    var log = function(msg, type) {logger.log(msg, "GAT", type);};
+    var log = function(msg, type) {logger.log(msg, "SERVERCONCENTRATOR", type);};
 
     return {
         initialize: function() {

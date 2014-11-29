@@ -1,16 +1,16 @@
 /**
- * PPM Server Concentrator
+ * Generic utility methods
  */
 define([
     'config',
-    'app/PPMLogger'
+    'PPMLogger'
 ], function (cfg, logger) {
     /**
      * Log facility
      * @param msg
      * @param type
      */
-    var log = function(msg, type) {logger.log(msg, "SERVERCONCENTRATOR", type);};
+    var log = function(msg, type) {logger.log(msg, "UTILS", type);};
 
     return {
         initialize: function() {

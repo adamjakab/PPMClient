@@ -2,25 +2,20 @@
  * Main background application
  */
 requirejs.config({
+    baseUrl: './background',
     paths: {
-        underscore: '../vendor/js/underscore',
-        bluebird: '../vendor/js/bluebird'
+        lib: '../lib',
+        underscore: '../../vendor/js/underscore',
+        bluebird: '../../vendor/js/bluebird'
+
     },
     shim: {
 
     },
-    deps: []
+    deps: ['bluebird', 'underscore']
 });
 
-/**
- * AngularJs is loaded as background script so to minimize loading/init times
- * when using it in popup.
- * get it
- * Bootstrap it manually (see: http://docs.angularjs.org/guide/bootstrap)
- */
-
-
-require(['app/ParanoiaPasswordManager'], function(PPM) {
+require(['ParanoiaPasswordManager'], function(PPM) {
     //todo: to be removed
     var _DO_AUTOLOGIN_ = true;
 

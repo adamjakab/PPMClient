@@ -3,8 +3,8 @@
  */
 define([
     'config',
-    'app/PPMLogger',
-    'app/PPMCryptor',
+    'PPMLogger',
+    'PPMCryptor',
     'bluebird',
     'underscore'
 ], function (cfg, logger, cryptor, Promise, _) {
