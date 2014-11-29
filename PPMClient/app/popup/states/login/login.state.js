@@ -10,9 +10,16 @@ function(stateConfig, versionedUrlFor, stateDependencyResolverFor)
     module.config(function($stateProvider)
     {
         $stateProvider.state('login', {
-            url: '/app/popup.html',/* put it back to '/' after */
+            url: '/app/popup.html',
             templateUrl: versionedUrlFor('popup/states/login/login.html'),
             resolve: stateDependencyResolverFor(stateConfig)
         });
+
+        $stateProvider.state('login2', {
+            url: '/app/popup2.html',
+            templateUrl: versionedUrlFor('popup/states/login/login2.html'),
+            resolve: stateDependencyResolverFor(stateConfig)
+        });
+
     });
 });

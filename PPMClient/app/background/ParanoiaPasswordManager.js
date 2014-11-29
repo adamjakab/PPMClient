@@ -9,8 +9,9 @@ define([
     'PPMCryptor',
     'GATracker',
     'ChromeStorage',
-    'ServerConcentrator'
-], function (cfg, logger, utils, cryptor, GATracker, ChromeStorage, ServerConcentrator) {
+    'ServerConcentrator',
+    'bluebird'
+], function (cfg, logger, utils, cryptor, GATracker, ChromeStorage, ServerConcentrator, Promise) {
     /**
      * Log facility
      * @param msg
@@ -34,18 +35,44 @@ define([
          * @param {string} [masterKey]
          */
         login: function(profile, masterKey) {
-            var setupPromise = ChromeStorage.setupLocalAndSyncedStorage(profile, masterKey);
-            setupPromise.then(function () {
-                log("You are now logged in!", "info");
-                log("starting with configuration: " + JSON.stringify(cfg.getAll()));
-
-            }).error(function (e) {
-                //logger.log("Rejected", e, logZone);
-            }).catch(Error, function (e) {
-                //logger.error("Error", e, logZone);
+            return new Promise(function (fulfill, reject) {
+                ChromeStorage.setupLocalAndSyncedStorage(profile, masterKey).then(function () {
+                    log("You are now logged in!", "info");
+                    log("starting with configuration: " + JSON.stringify(cfg.getAll()));
+                    fulfill();
+                }).error(function (e) {
+                    //logger.log("Rejected", e, logZone);
+                    return reject(e);
+                }).catch(Error, function (e) {
+                    //logger.error("Error", e, logZone);
+                    return reject(e);
+                });
             });
-        }
+        },
 
+        /**
+         *
+         * @param {string} name
+         * @returns {*}
+         */
+        getComponent: function(name) {
+            switch(name) {
+                case "LOGGER":
+                    return(logger);
+                case "UTILS":
+                    return(utils);
+                case "CRYPTOR":
+                    return(cryptor);
+                case "GAT":
+                    return(GATracker);
+                case "CHROMESTORAGE":
+                    return(ChromeStorage);
+                case "SERVERCONCENTRATOR":
+                    return(ServerConcentrator);
+                default:
+                    return null;
+            }
+        }
 
 
     };

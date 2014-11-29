@@ -15,7 +15,14 @@ requirejs.config({
     deps: ['bluebird', 'underscore']
 });
 
+/**
+ * Exposing PPM for popup/options usage with:
+ * chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
+ */
+var ParanoiaPasswordManager;
+
 require(['ParanoiaPasswordManager'], function(PPM) {
+    ParanoiaPasswordManager = PPM;
     //todo: to be removed
     var _DO_AUTOLOGIN_ = true;
 

@@ -1,5 +1,6 @@
 define([
     'angular',
     'uibootstrap',
-    'underscore'
+    'underscore',
+    'bluebird'
 ]);
