@@ -12,6 +12,14 @@ requirejs.config({
     deps: []
 });
 
+/**
+ * AngularJs is loaded as background script so to minimize loading/init times
+ * when using it in popup.
+ * get it
+ * Bootstrap it manually (see: http://docs.angularjs.org/guide/bootstrap)
+ */
+
+
 require(['app/ParanoiaPasswordManager'], function(PPM) {
     //todo: to be removed
     var _DO_AUTOLOGIN_ = true;

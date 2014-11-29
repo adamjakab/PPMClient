@@ -8,18 +8,21 @@ module.exports = function(grunt) {
             project: {
                 files: [
                     {
+                        src: 'bower_components/angular-ui-bootstrap/dist/ui-bootstrap-tpls-0.12.0.js',
+                        dest: 'app/vendor/js/ui-bootstrap-tpls.js'
+                    },
+                    {
                         expand: true,
                         flatten: true,
                         cwd: 'bower_components',
                         src: [
                             'angular/angular.js',
-                            'angular-ui-bootstrap/dist/ui-bootstrap-tpls-0.12.0.js',
                             'bluebird/js/browser/bluebird.js',
                             'prototypejs/dist/prototype.js',
                             'requirejs/require.js',
                             'underscore/underscore.js'
                         ],
-                        dest: 'app/vendor/js'
+                        dest: 'app/vendor/js/'
                     },
                     {
                         expand: true,
@@ -30,7 +33,16 @@ module.exports = function(grunt) {
                             'bootstrap/dist/css/bootstrap.css',
                             'bootstrap/dist/css/bootstrap-theme.css'
                         ],
-                        dest: 'app/vendor/css'
+                        dest: 'app/vendor/css/'
+                    },
+                    {
+                        expand: true,
+                        flatten: true,
+                        cwd: 'bower_components',
+                        src: [
+                            'bootstrap/dist/fonts/*',
+                        ],
+                        dest: 'app/vendor/fonts/'
                     }
                 ]
             }
