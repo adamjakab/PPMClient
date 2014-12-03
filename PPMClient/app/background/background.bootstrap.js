@@ -23,20 +23,20 @@ var ParanoiaPasswordManager;
 
 require(['ParanoiaPasswordManager'], function(PPM) {
     ParanoiaPasswordManager = PPM;
-    //todo: to be removed
-    var _DO_AUTOLOGIN_ = false;
 
+    /**
+     * Reinizialises the entire application
+     */
     var restartApplication = function() {
-        PPM.initialize();
-        /**
-         * todo: to be removed
-         * TESTING ONLY
-         * @type {boolean}
-         * @private
-         */
-        if(_DO_AUTOLOGIN_) {
-            PPM.login("DEFAULT", "Paranoia");
-        }
+        PPM.initialize().then(function() {
+            /**
+             * todo: to be removed (TESTING ONLY)
+             */
+            var _DO_AUTOLOGIN_ = false;
+            if(_DO_AUTOLOGIN_) {
+                PPM.login("DEFAULT", "Paranoia");
+            }
+        });
     };
 
     //autostart application

@@ -15,16 +15,31 @@ angular.module('app').controller('login.controller',
         $scope.masterKey = "";
         $scope.profiles = CHROMESTORAGE.getAvailableProfiles();//["DEFAULT", "Profile-1", "Profile-2"];
 
+        /*
+         * If user is not logged in redirect to "login" state
+         */
+        if(!$scope.logged_in && !$state.is("login")) {
+            $state.go("login");
+        }
 
+        /*
+         * If user is logged in redirect to "logout" state
+         */
+        if($scope.logged_in && $state.is("login")) {
+            $state.go("logout");
+        }
+
+        /**
+         * Execute Login
+         */
         $scope.login = function() {
-            window.close();//close popup
-
-            //todo: we need a Promise here
+            //window.close();//close popup
             PPM.login($scope.profile, $scope.masterKey).then(function() {
                 $scope.masterKey = "";
                 $scope.logged_in = CHROMESTORAGE.isInitialized();
                 $scope.$apply();
                 log("LOGIN OK");
+                $state.go("menu");
             }).error(function () {
                 log("LOGIN FAILED!");
             }).catch(Error, function () {
@@ -34,8 +49,11 @@ angular.module('app').controller('login.controller',
 
         };
 
+        /**
+         * Execute Logout
+         */
         $scope.logout = function() {
-            console.log("LOGOUT");
+            log("LOGOUT");
         }
 
 });

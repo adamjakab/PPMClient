@@ -20,24 +20,30 @@ define([
     var log = function(msg, type) {logger.log(msg, "PPM", type);};
 
     return {
+        /**
+         * todo: should return Promise(for autologin)
+         */
         initialize: function() {
-            log("Starting...");
-            utils.initialize();
-            cryptor.initialize();
-            GATracker.initialize();
-            ChromeStorage.initialize();
-            ServerConcentrator.initialize();
+            return new Promise(function (fulfill, reject) {
+                log("Starting...");
+                utils.initialize();
+                cryptor.initialize();
+                GATracker.initialize();
+                ChromeStorage.initialize().then(function () {
+                    ServerConcentrator.initialize();
+                    fulfill();
+                });
+            });
         },
 
         /**
-         * todo: it makes no sense - setup is one thing login is another it needs to be separated!!!
          * Main login interface
-         * @param {string} [profile]
-         * @param {string} [masterKey]
+         * @param {string} profile
+         * @param {string} masterKey
          */
         login: function(profile, masterKey) {
             return new Promise(function (fulfill, reject) {
-                ChromeStorage.setupLocalAndSyncedStorage(profile, masterKey).then(function () {
+                ChromeStorage.unlockSyncedStorage(profile, masterKey).then(function () {
                     log("You are now logged in!", "info");
                     log("starting with configuration: " + JSON.stringify(cfg.getAll()));
                     fulfill();

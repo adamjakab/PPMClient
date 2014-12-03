@@ -10,9 +10,14 @@ angular.module('app').controller('menu.controller',
         /**
          * Defaults
          */
-        //$scope.logged_in = CHROMESTORAGE.isInitialized();
+        $scope.logged_in = CHROMESTORAGE.isInitialized();
 
-
+        /*
+         * If user is not logged in redirect to "login" state
+         */
+        if(!$scope.logged_in && !$state.is("login")) {
+            $state.go("login");
+        }
 
 
 });

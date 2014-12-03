@@ -193,49 +193,60 @@ define([
     };
 
     /**
-     * Init sync storage by merging decrypted sync storage data to "sync" section of configuration
-     * @param {string} [profile]
-     * @param {string} [masterKey]
+     * Init sync storage -
      * @returns {Promise}
      */
-    var initSyncStorage = function(profile, masterKey) {
-        profile = profile ? profile : defaultProfileName;
+    var initSyncStorage = function() {
         log("inizializing sync storage...");
-
         return new Promise(function (fulfill, reject) {
             readFromStorage("sync", null).then(function (data) {
                 rawSyncStorageData = data;
-                //log("Loaded SyncStorageData:" + JSON.stringify(rawSyncStorageData));
-                if(!hasProfile(profile) && profile != defaultProfileName) {
-                    return reject(new Error("Inexistent profile("+profile+")! Available: " + JSON.stringify(getAvailableProfiles())));
+                fulfill();
+            }).error(function (e) {
+                log("Rejected: " + e, "error");
+                return reject(e);
+            }).catch(Error, function (e) {
+                log("Error: " + e, "error");
+                return reject(e);
+            });
+        });
+    };
+
+    /**
+     * Unlock sync storage by merging decrypted sync storage data to "sync" section of configuration
+     * @param {string} profile
+     * @param {string} masterKey
+     * @returns {Promise}
+     * todo: FINISH ME!
+     */
+    var unlockSyncStorage = function(profile, masterKey) {
+        profile = profile ? profile : defaultProfileName;
+        log("unlocking sync storage profile...");
+
+        return new Promise(function (fulfill, reject) {
+            if(!hasProfile(profile) && profile != defaultProfileName) {
+                return reject(new Error("Inexistent profile("+profile+")! Available: " + JSON.stringify(getAvailableProfiles())));
+            }
+            createAndStoreDefaultProfile().then(function() {
+                if(!masterKey) {
+                    return reject(new Error("No MasterKey supplied to decrypt profile["+profile+"]!"));
                 }
-                createAndStoreDefaultProfile().then(function() {
-                    if(!masterKey) {
-                        return reject(new Error("No MasterKey supplied to decrypt profile["+profile+"]!"));
-                    }
-                    log("Trying to decrypt data for profile["+profile+"]...");
-                    var CPDENC = rawSyncStorageData[profile];
-                    var profileDataObject = cryptor.decryptAES(CPDENC, masterKey, true);
-                    if(!profileDataObject) {
-                        return reject(new Error("This MasterKey does not open the door!", "info"));
-                    }
-                    log("PROFILE DATA DECRYPTED", "info");
-                    cfg.merge(profileDataObject, "sync");
-                    if (!_.isEqual(profileDataObject, cfg.get("sync"))) {
-                        syncStorageChanged = true;
-                    }
-                    currentProfileName = profile;
-                    currentMasterKey = masterKey;
-                    //login successful - increasing login count
-                    set("sync.chromestorage.login_count", parseInt(get("sync.chromestorage.login_count")) + 1);
-                    fulfill();
-                }).error(function (e) {
-                    log("Rejected: " + e, "error");
-                    return reject(e);
-                }).catch(Error, function (e) {
-                    log("Error: " + e, "error");
-                    return reject(e);
-                });
+                log("Trying to decrypt data for profile["+profile+"]...");
+                var CPDENC = rawSyncStorageData[profile];
+                var profileDataObject = cryptor.decryptAES(CPDENC, masterKey, true);
+                if(!profileDataObject) {
+                    return reject(new Error("This MasterKey does not open the door!", "info"));
+                }
+                log("PROFILE DATA DECRYPTED", "info");
+                cfg.merge(profileDataObject, "sync");
+                if (!_.isEqual(profileDataObject, cfg.get("sync"))) {
+                    syncStorageChanged = true;
+                }
+                currentProfileName = profile;
+                currentMasterKey = masterKey;
+                //login successful - increasing login count
+                set("sync.chromestorage.login_count", parseInt(get("sync.chromestorage.login_count")) + 1);
+                fulfill();
             }).error(function (e) {
                 log("Rejected: " + e, "error");
                 return reject(e);
@@ -248,7 +259,7 @@ define([
 
 
     /**
-     * Checks if there arte storage changes and triggers storage
+     * Checks if there are storage changes and triggers storage
      */
     var checkStorageChanges = function() {
         if(isInitialized()) {
@@ -305,22 +316,36 @@ define([
 
 
     return {
-        initialize: function() {
-            log("INITIALIZED", "info");
-        },
-
         /**
-         * Main interface to unlock sync storage profile and init local storage
-         * @param {string} [profile]
-         * @param {string} [masterKey]
+         * Init Local and Sync storages
          * @returns {Promise}
          */
-        setupLocalAndSyncedStorage: function(profile, masterKey) {
+        initialize: function() {
             return new Promise(function (fulfill, reject) {
                 Promise.all([
                     initLocalStorage(),
-                    initSyncStorage(profile, masterKey)
+                    initSyncStorage()
                 ]).then(function() {
+                    log("INITIALIZED", "info");
+                    log("Available profiles: " + JSON.stringify(getAvailableProfiles()));
+                    fulfill();
+                }).error(function(e) {
+                    log(e, "error");
+                }).catch(function(e) {
+                    log(e, "error");
+                });
+            });
+        },
+
+        /**
+         * Main interface to unlock sync storage profile
+         * @param {string} profile
+         * @param {string} masterKey
+         * @returns {Promise}
+         */
+        unlockSyncedStorage: function(profile, masterKey) {
+            return new Promise(function (fulfill, reject) {
+                unlockSyncStorage(profile, masterKey).then(function() {
                     log("Loaded configuration: " + JSON.stringify(cfg.getAll()));
                     checkStorageChanges();
                     fulfill();
@@ -333,6 +358,8 @@ define([
                 });
             });
         },
+
+
 
         getAvailableProfiles: getAvailableProfiles,
         isInitialized: isInitialized,

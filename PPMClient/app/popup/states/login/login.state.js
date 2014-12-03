@@ -16,23 +16,11 @@ function(stateConfig, versionedUrlFor, stateDependencyResolverFor)
                 url: '/login',
                 templateUrl: versionedUrlFor('popup/states/login/login.html'),
                 resolve: stateDependencyResolverFor(stateConfig)
-            }
-        );
-
-        /*
-         * Configure other routes only if user is logged in
-         */
-        var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
-        var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
-        if(CHROMESTORAGE.isInitialized()) {
-            $stateProvider
-                .state('logout', {
-                    url: '/logout',
-                    templateUrl: versionedUrlFor('popup/states/login/logout.html'),
-                    resolve: stateDependencyResolverFor(stateConfig)
-                }
-            );
-        }
-
+            })
+            .state('logout', {
+                url: '/logout',
+                templateUrl: versionedUrlFor('popup/states/login/logout.html'),
+                resolve: stateDependencyResolverFor(stateConfig)
+            });
     });
 });
