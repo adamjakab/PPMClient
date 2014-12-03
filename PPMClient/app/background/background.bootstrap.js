@@ -24,7 +24,7 @@ var ParanoiaPasswordManager;
 require(['ParanoiaPasswordManager'], function(PPM) {
     ParanoiaPasswordManager = PPM;
     //todo: to be removed
-    var _DO_AUTOLOGIN_ = true;
+    var _DO_AUTOLOGIN_ = false;
 
     var restartApplication = function() {
         PPM.initialize();
@@ -36,8 +36,6 @@ require(['ParanoiaPasswordManager'], function(PPM) {
          */
         if(_DO_AUTOLOGIN_) {
             PPM.login("DEFAULT", "Paranoia");
-        } else {
-            PPM.login();
         }
     };
 

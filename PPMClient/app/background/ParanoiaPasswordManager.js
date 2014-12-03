@@ -30,6 +30,7 @@ define([
         },
 
         /**
+         * todo: it makes no sense - setup is one thing login is another it needs to be separated!!!
          * Main login interface
          * @param {string} [profile]
          * @param {string} [masterKey]
@@ -41,11 +42,13 @@ define([
                     log("starting with configuration: " + JSON.stringify(cfg.getAll()));
                     fulfill();
                 }).error(function (e) {
-                    //logger.log("Rejected", e, logZone);
-                    return reject(e);
+                    if(profile && masterKey) {
+                        return reject(e);
+                    }
                 }).catch(Error, function (e) {
-                    //logger.error("Error", e, logZone);
-                    return reject(e);
+                    if(profile && masterKey) {
+                        return reject(e);
+                    }
                 });
             });
         },
