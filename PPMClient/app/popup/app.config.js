@@ -1,6 +1,6 @@
 define({
     modules:[
-        'ui.compat',
+        'ui.router',
         'ifyLinkActiveInState',
         'ify.date'
     ]

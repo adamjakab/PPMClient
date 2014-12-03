@@ -23,6 +23,7 @@ module.exports = function(grunt) {
                         cwd: 'src/bower',
                         src: [
                             'angular/angular.js',
+                            'angular-ui-router/release/angular-ui-router.js',
                             'bluebird/js/browser/bluebird.js',
                             'prototypejs/dist/prototype.js',
                             'requirejs/require.js',

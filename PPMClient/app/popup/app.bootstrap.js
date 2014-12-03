@@ -6,12 +6,13 @@ requirejs.config({
     paths: {
         vendor: '../../vendor/js',
         angular: '../../vendor/js/angular',
-        uibootstrap: '../../vendor/js/ui-bootstrap-tpls',
+        angular_ui_router: '../../vendor/js/angular-ui-router',
+        ui_bootstrap: '../../vendor/js/ui-bootstrap-tpls',
         underscore: '../../vendor/js/underscore',
         bluebird: '../../vendor/js/bluebird'
     },
     shim: {
-        uibootstrap: {
+        ui_bootstrap: {
             deps: ['angular']
         }
     },
