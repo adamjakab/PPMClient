@@ -1,9 +1,14 @@
 /**
- * ConfigOptions
+ * OptionsManager
  *
- * Path-based Options holder (path is dot separated like: node.sub)
+ * Path-based Options holder
  */
-define(['underscore'], function (_) {
+define(['underscore'],
+    /**
+     * @param _
+     * @return {OptionsManager}
+     */
+    function (_) {
     /**
      * splits a dot-separated path (x.y.z)
      * to an array of elements
@@ -29,7 +34,7 @@ define(['underscore'], function (_) {
      * @param {object} [options]
      * @constructor
      */
-    return function(options) {
+    function OptionsManager(options) {
         /**
          * All options will be stored here
          * @type {Object}
@@ -107,5 +112,6 @@ define(['underscore'], function (_) {
         };
 
         this.merge(options);
-    };
+    }
+    return(OptionsManager);
 });
