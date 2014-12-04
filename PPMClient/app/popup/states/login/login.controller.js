@@ -45,15 +45,24 @@ angular.module('app').controller('login.controller',
             }).catch(Error, function () {
                 log("LOGIN FAILED!");
             });
-
-
         };
 
         /**
          * Execute Logout
          */
         $scope.logout = function() {
-            log("LOGOUT");
+            //window.close();//close popup
+            PPM.logout().then(function() {
+                $scope.masterKey = "";
+                $scope.logged_in = CHROMESTORAGE.isInitialized();
+                $scope.$apply();
+                log("LOGOUT OK");
+                $state.go("login");
+            }).error(function () {
+                log("LOGOUT FAILED!");
+            }).catch(Error, function () {
+                log("LOGOUT FAILED!");
+            });
         }
 
 });

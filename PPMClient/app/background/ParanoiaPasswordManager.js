@@ -21,17 +21,24 @@ define([
 
     return {
         /**
-         * todo: should return Promise(for autologin)
+         * Inizialize all components
          */
         initialize: function() {
             return new Promise(function (fulfill, reject) {
                 log("Starting...");
-                utils.initialize();
-                cryptor.initialize();
-                GATracker.initialize();
-                ChromeStorage.initialize().then(function () {
-                    ServerConcentrator.initialize();
+                Promise.all([
+                    utils.initialize(),
+                    cryptor.initialize(),
+                    GATracker.initialize(),
+                    ChromeStorage.initialize(),
+                    ServerConcentrator.initialize()
+                ]).then(function () {
+                    log("All components have been inizialised");
                     fulfill();
+                }).error(function (e) {
+                    log(e, "error");
+                }).catch(Error, function (e) {
+                    log(e, "error");
                 });
             });
         },
@@ -60,6 +67,28 @@ define([
         },
 
         /**
+         * Logout from current profile
+         */
+        logout: function() {
+            return new Promise(function (fulfill, reject) {
+                Promise.all([
+                    utils.shutdown(),
+                    cryptor.shutdown(),
+                    GATracker.shutdown(),
+                    ChromeStorage.shutdown(),
+                    ServerConcentrator.shutdown()
+                ]).then(function () {
+                    log("All components have been shut down");
+                    fulfill();
+                }).error(function (e) {
+                    return reject(e);
+                }).catch(Error, function (e) {
+                    return reject(e);
+                });
+            });
+        },
+
+        /**
          *
          * @param {string} name
          * @returns {*}
@@ -82,7 +111,6 @@ define([
                     return null;
             }
         }
-
 
     };
 });

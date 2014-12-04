@@ -217,7 +217,6 @@ define([
      * @param {string} profile
      * @param {string} masterKey
      * @returns {Promise}
-     * todo: FINISH ME!
      */
     var unlockSyncStorage = function(profile, masterKey) {
         profile = profile ? profile : defaultProfileName;
@@ -334,6 +333,20 @@ define([
                 }).catch(function(e) {
                     log(e, "error");
                 });
+            });
+        },
+
+        /**
+         * Shut down component
+         * @returns {Promise}
+         * todo: FINISH ME!
+         */
+        shutdown: function() {
+            return new Promise(function (fulfill, reject) {
+                log("SHUTDOWN COMPLETED", "info");
+                currentProfileName = null;
+                currentMasterKey = null;
+                fulfill();
             });
         },
 
