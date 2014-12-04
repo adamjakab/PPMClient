@@ -11,6 +11,11 @@ angular.module('app').controller('menu.controller',
          * Defaults
          */
         $scope.logged_in = CHROMESTORAGE.isInitialized();
+        $scope.passcards = [
+            {name: "Passcard #1"},
+            {name: "Passcard #2"},
+            {name: "Passcard #3"}
+        ];
 
         /*
          * If user is not logged in redirect to "login" state
@@ -19,5 +24,17 @@ angular.module('app').controller('menu.controller',
             $state.go("login");
         }
 
+        /**
+         * @param {object} PC
+         */
+        $scope.fillInPasscard = function(PC) {
+            log("FILL IN PASSCARD: " + PC.name);
+        }
 
+        /**
+         * @param {object} PC
+         */
+        $scope.copyUsername = function(PC) {
+            log("COPY USERNAME: " + PC.name);
+        }
 });

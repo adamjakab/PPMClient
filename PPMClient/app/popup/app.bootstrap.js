@@ -7,7 +7,7 @@ requirejs.config({
         vendor: '../../vendor/js',
         angular: '../../vendor/js/angular',
         angular_ui_router: '../../vendor/js/angular-ui-router',
-        ui_bootstrap: '../../vendor/js/ui-bootstrap-tpls',
+        ui_bootstrap: '../../vendor/js/ui-bootstrap',
         underscore: '../../vendor/js/underscore',
         bluebird: '../../vendor/js/bluebird'
     },

@@ -4,10 +4,13 @@ body{
     background-color: #fefefe;
 }
 
+/*HEADER*/
+.header{}
+.header h1{font-size: 20px;}
 
 /*LOGIN PANEL*/
 .profileLogin{margin-bottom: 15px;}
-
+.profileLogout{margin-bottom: 15px;}
 
 
 
@@ -19,8 +22,10 @@ body{
 /*MENU PANEL*/
 .profileMenu{}
 
-.profileMenu ul.nav li a{padding:4px 15px;cursor:pointer;}
+.profileMenu ul.nav li a{padding:0 10px;cursor:pointer;}
 .profileMenu ul.nav li span.glyphicon{margin-right:10px;}
+.profileMenu ul.nav li a.pull-right{padding:0 1px;cursor:pointer;}
+.profileMenu ul.nav li a.pull-right span.glyphicon{margin-right:1px;}
 .profileMenu ul.nav li hr{margin-top:5px; margin-bottom:5px;}
 
 

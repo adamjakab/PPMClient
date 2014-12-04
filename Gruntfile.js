@@ -14,8 +14,8 @@ module.exports = function(grunt) {
             project: {
                 files: [
                     {
-                        src: 'src/bower/angular-ui-bootstrap/dist/ui-bootstrap-tpls-0.12.0.js',
-                        dest: 'PPMClient/vendor/js/ui-bootstrap-tpls.js'
+                        src: 'src/bower/angular-ui-bootstrap/dist/ui-bootstrap-0.12.0.js',
+                        dest: 'PPMClient/vendor/js/ui-bootstrap.js'
                     },
                     {
                         expand: true,

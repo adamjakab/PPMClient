@@ -10,7 +10,7 @@
         "default_icon": {
             "19": "images/state_icons/offline.png"
         },
-        "default_popup": "app/popup.html",
+        "default_popup": "app/popup.html#/menu",
         "default_title": "ChromePpm"
     },
     "default_locale": "en",
