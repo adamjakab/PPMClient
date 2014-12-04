@@ -49,6 +49,11 @@ define([
     var storageChangeCheckInterval = 5 * 60 * 1000;
 
     /**
+     * @type {null|int}
+     */
+    var storageChangeCheckTimeoutId = null;
+
+    /**
      * Log facility
      * @param msg
      * @param type
@@ -261,29 +266,31 @@ define([
      * Checks if there are storage changes and triggers storage
      */
     var checkStorageChanges = function() {
-        if(isInitialized()) {
-            if(localStorageChanged) {
-                log("Local Storage changed - triggering storage...");
-                writeToStorage("local").then(function() {
-                    log("Local Storage changes persisted");
-                }).error(function (e) {
-                    log("Rejected: " + e, "error");
-                }).catch(Error, function (e) {
-                    log("Error: " + e, "error");
-                });
+        return new Promise(function (fulfill, reject) {
+            if (isInitialized()) {
+                if (localStorageChanged) {
+                    log("Local Storage changed - triggering storage...");
+                    writeToStorage("local").then(function () {
+                        log("Local Storage changes persisted");
+                    }).error(function (e) {
+                        log("Rejected: " + e, "error");
+                    }).catch(Error, function (e) {
+                        log("Error: " + e, "error");
+                    });
+                }
+                if (syncStorageChanged) {
+                    log("Sync Storage changed - triggering storage...");
+                    writeToStorage("sync").then(function () {
+                        log("Sync Storage changes persisted");
+                    }).error(function (e) {
+                        log("Rejected: " + e, "error");
+                    }).catch(Error, function (e) {
+                        log("Error: " + e, "error");
+                    });
+                }
+                storageChangeCheckTimeoutId = _.delay(checkStorageChanges, storageChangeCheckInterval);
             }
-            if(syncStorageChanged) {
-                log("Sync Storage changed - triggering storage...");
-                writeToStorage("sync").then(function() {
-                    log("Sync Storage changes persisted");
-                }).error(function (e) {
-                    log("Rejected: " + e, "error");
-                }).catch(Error, function (e) {
-                    log("Error: " + e, "error");
-                });
-            }
-            _.delay(checkStorageChanges, storageChangeCheckInterval);
-        }
+        });
     };
 
 
@@ -337,16 +344,29 @@ define([
         },
 
         /**
-         * Shut down component
+         * Shut down component -
          * @returns {Promise}
          * todo: FINISH ME!
          */
         shutdown: function() {
             return new Promise(function (fulfill, reject) {
-                log("SHUTDOWN COMPLETED", "info");
-                currentProfileName = null;
-                currentMasterKey = null;
-                fulfill();
+                storageChangeCheckTimeoutId = null;
+                Promise.all([
+                    writeToStorage("local"),
+                    writeToStorage("sync")
+                ]).then(function() {
+                    currentProfileName = null;
+                    currentMasterKey = null;
+                    cfg.resetToDefault();
+                    log("SHUTDOWN COMPLETED", "info");
+                    fulfill();
+                }).error(function(e) {
+                    log(e, "error");
+                    return reject(e);
+                }).catch(function(e) {
+                    log(e, "error");
+                    return reject(e);
+                });
             });
         },
 

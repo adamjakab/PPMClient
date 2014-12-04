@@ -57,7 +57,9 @@ angular.module('app').controller('login.controller',
                 $scope.logged_in = CHROMESTORAGE.isInitialized();
                 $scope.$apply();
                 log("LOGOUT OK");
-                $state.go("login");
+                PPM.initialize().then(function() {
+                    $state.go("login");
+                });
             }).error(function () {
                 log("LOGOUT FAILED!");
             }).catch(Error, function () {

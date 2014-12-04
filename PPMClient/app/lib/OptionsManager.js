@@ -36,6 +36,15 @@ define(['underscore'],
      */
     function OptionsManager(options) {
         /**
+         * This will store the options passed when initializing
+         * It can be used to reset the OptionsManager to the default values
+         * @type {Object}
+         * @private
+         * @readonly
+         */
+        var _DEFAULT = {};
+
+        /**
          * All options will be stored here
          * @type {Object}
          * @private
@@ -111,7 +120,13 @@ define(['underscore'],
             return(!_.isEqual(original, _OPT));
         };
 
+        this.resetToDefault = function() {
+            _OPT = JSON.parse(JSON.stringify(_DEFAULT));
+        };
+
+        //auto setup with "options" parameter and retain an unmutable copy(_DEFAULT)
         this.merge(options);
+        _DEFAULT = JSON.parse(JSON.stringify(_OPT));
     }
     return(OptionsManager);
 });
