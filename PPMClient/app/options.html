@@ -6,15 +6,14 @@
     <link rel="stylesheet" type="text/css" href="../vendor/css/bootstrap-theme.css" />
     <link rel="stylesheet" type="text/css" href="../vendor/css/angular-csp.css" />
     <link rel="stylesheet" type="text/css" href="../css/options.css" />
-
-    <!-- JS DEPENDENCIES -->
-    <script data-main="js/app.js" src="../vendor/js/angular.js"></script>
-    <script data-main="js/app.js" src="../vendor/js/ui-bootstrap-tpls.js"></script>
-
-    <!-- REQUIREJS + OPTIONS APPLICATION -->
-    <script data-main="js/options/options.js" src="../vendor/js/require.js"></script>
-    <!--<script type="text/javascript" src="js/options/options.js"></script>-->
 </head>
 <body>
+<div id="wrap" ng-controller="app.controller">
+    <!-- Main Content Container -->
+    <div id="main" class="container-fluid" ui-view></div>
+    <!-- End of Main Content Container -->
+</div>
+<!-- REQUIREJS + OPTIONS APPLICATION -->
+<script data-main="options/app.bootstrap.js" src="../vendor/js/require.js"></script>
 </body>
 </html>

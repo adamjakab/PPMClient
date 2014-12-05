@@ -23,7 +23,7 @@
     "omnibox": {
         "keyword": "PPM"
     },
-    "options_page": "app/options.html#ppmoptions",
+    "options_page": "app/options.html#/info",
     "content_security_policy": "default-src 'self' 'unsafe-eval'; connect-src http://* https://*; script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com; img-src 'self' http://www.google-analytics.com/__utm.gif; object-src 'self'; style-src 'self' 'unsafe-inline'",
     "permissions": [
         "tabs",

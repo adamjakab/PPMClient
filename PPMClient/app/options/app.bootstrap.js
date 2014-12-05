@@ -2,7 +2,7 @@
  * Popup application
  */
 requirejs.config({
-    baseUrl: './popup',
+    baseUrl: './options',
     paths: {
         vendor: '../../vendor/js',
         angular: '../../vendor/js/angular',
