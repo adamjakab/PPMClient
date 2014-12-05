@@ -3,7 +3,7 @@
  */
 define(
     [
-        'vendor/makeModuleLazyLoadable',
+        'lib/makeModuleLazyLoadable',
         'app.settings',
         'app.config'
     ],

@@ -5,6 +5,7 @@ requirejs.config({
     baseUrl: './options',
     paths: {
         vendor: '../../vendor/js',
+        lib: '../lib',
         angular: '../../vendor/js/angular',
         angular_ui_router: '../../vendor/js/angular-ui-router',
         ui_bootstrap: '../../vendor/js/ui-bootstrap',
@@ -21,7 +22,7 @@ requirejs.config({
 
 require(['dependencies/vendor.dependencies'], function() {
     try {
-        console.log("AngularJs: " + angular.version.full + "("+angular.version.codeName+")");
+        //console.log("AngularJs: " + angular.version.full + "("+angular.version.codeName+")");
         require(
             [
                 'app.module',

@@ -1,4 +1,4 @@
 define([
-    'states/login/login.state',
-    'states/menu/menu.state'
+    'states/login/state',
+    'states/menu/state'
 ]);

@@ -36,9 +36,7 @@ module.exports = function(grunt) {
                         flatten: true,
                         cwd: 'src/vendor',
                         src: [
-                            'mustard/*',
-                            'aesctr.js',
-                            'md5.js'
+                            '**/*.js'
                         ],
                         dest: 'PPMClient/vendor/js/'
                     },

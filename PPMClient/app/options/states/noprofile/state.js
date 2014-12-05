@@ -1,5 +1,5 @@
 define([
-    'vendor/stateDependencyResolver'
+    'lib/stateDependencyResolver'
 ],
 function(stateDependencyResolver)
 {
