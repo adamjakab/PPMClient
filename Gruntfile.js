@@ -15,7 +15,7 @@ module.exports = function(grunt) {
                 files: [
                     {
                         src: 'src/bower/angular-ui-bootstrap/dist/ui-bootstrap-0.12.0.js',
-                        dest: 'PPMClient/vendor/js/ui-bootstrap.js'
+                        dest: 'PPMClient/app/vendor/js/ui-bootstrap.js'
                     },
                     {
                         expand: true,
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
                             'requirejs/require.js',
                             'underscore/underscore.js'
                         ],
-                        dest: 'PPMClient/vendor/js/'
+                        dest: 'PPMClient/app/vendor/js/'
                     },
                     {
                         expand: true,
@@ -38,7 +38,7 @@ module.exports = function(grunt) {
                         src: [
                             '**/*.js'
                         ],
-                        dest: 'PPMClient/vendor/js/'
+                        dest: 'PPMClient/app/vendor/js/'
                     },
                     {
                         expand: true,
@@ -51,7 +51,7 @@ module.exports = function(grunt) {
                             'bootstrap-css-only/css/bootstrap-theme.css',
                             'bootstrap-css-only/css/bootstrap-theme.css.map'
                         ],
-                        dest: 'PPMClient/vendor/css/'
+                        dest: 'PPMClient/app/vendor/css/'
                     },
                     {
                         expand: true,
@@ -60,7 +60,7 @@ module.exports = function(grunt) {
                         src: [
                             'bootstrap-css-only/fonts/*'
                         ],
-                        dest: 'PPMClient/vendor/fonts/'
+                        dest: 'PPMClient/app/vendor/fonts/'
                     }
                 ]
             }

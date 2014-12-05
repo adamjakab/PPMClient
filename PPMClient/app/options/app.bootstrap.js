@@ -4,13 +4,13 @@
 requirejs.config({
     baseUrl: './options',
     paths: {
-        vendor: '../../vendor/js',
+        vendor: '../vendor/js',
         lib: '../lib',
-        angular: '../../vendor/js/angular',
-        angular_ui_router: '../../vendor/js/angular-ui-router',
-        ui_bootstrap: '../../vendor/js/ui-bootstrap',
-        underscore: '../../vendor/js/underscore',
-        bluebird: '../../vendor/js/bluebird'
+        angular: '../vendor/js/angular',
+        angular_ui_router: '../vendor/js/angular-ui-router',
+        ui_bootstrap: '../vendor/js/ui-bootstrap',
+        underscore: '../vendor/js/underscore',
+        bluebird: '../vendor/js/bluebird'
     },
     shim: {
         ui_bootstrap: {

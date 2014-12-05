@@ -15,10 +15,10 @@
     },
     "default_locale": "en",
     "icons": {
-        "128": "images/paranoia_128.png",
-        "32": "images/paranoia_32.png",
-        "48": "images/paranoia_48.png",
-        "64": "images/paranoia_64.png"
+        "128": "app/images/paranoia_128.png",
+        "32": "app/images/paranoia_32.png",
+        "48": "app/images/paranoia_48.png",
+        "64": "app/images/paranoia_64.png"
     },
     "omnibox": {
         "keyword": "PPM"

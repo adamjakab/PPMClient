@@ -5,8 +5,8 @@ requirejs.config({
     baseUrl: './background',
     paths: {
         lib: '../lib',
-        underscore: '../../vendor/js/underscore',
-        bluebird: '../../vendor/js/bluebird'
+        underscore: '../vendor/js/underscore',
+        bluebird: '../vendor/js/bluebird'
 
     },
     shim: {

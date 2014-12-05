@@ -8,7 +8,7 @@ src/bower
 node_modules
 
 # copied over dependency files(grunt)
-PPMClient/vendor
+PPMClient/app/vendor
 
 # The build directory where final minimized version of
 # the extension will be created
