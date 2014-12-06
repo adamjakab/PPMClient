@@ -8,7 +8,7 @@
     },
     "browser_action": {
         "default_icon": {
-            "19": "images/state_icons/offline.png"
+            "19": "app/images/state_icons/offline.png"
         },
         "default_popup": "app/popup.html#/menu",
         "default_title": "ChromePpm"
