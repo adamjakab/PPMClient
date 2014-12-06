@@ -27,5 +27,5 @@ requirejs.config({
             deps: ['angular']
         }
     },
-    deps: ['./bootstrap']
+    deps: ['bootstrap']
 });

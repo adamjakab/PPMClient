@@ -88,18 +88,54 @@ module.exports = function(grunt) {
                     }
                 ]
             }
+        },
+
+        requirejs: {
+            options: {
+                removeCombined: false,
+                optimize: 'none'
+            },
+            background: {
+                options: {
+                    baseUrl: "PPMClient/app/background/",
+                    paths: {},
+                    mainConfigFile: 'PPMClient/app/background/background.bootstrap.js',
+                    name: "background.bootstrap",
+                    out: "build/background.min.js",
+                    optimize: 'none'
+                }
+            },
+            popup: {
+                options: {
+                    baseUrl: "PPMClient/app/popup/",
+                    paths: {
+                        requireLib: '../vendor/js/require'
+                    },
+                    include: 'requireLib',
+                    mainConfigFile: 'PPMClient/app/popup/requirejs.config.js',
+                    name: "bootstrap",
+                    out: "build/popup.min.js",
+                    optimize: 'none'
+                }
+            }
         }
     });
 
     // Load the plugin that provides the "uglify" task.
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-requirejs');
 
 
 
 
     grunt.registerTask("setup-project", "Setup Project files and folders", function() {
         grunt.task.run('copy:project');
+    });
+
+    grunt.registerTask("build-project", "Build Project files", function() {
+        grunt.task.run('requirejs:background');
+        grunt.task.run('requirejs:popup');
     });
 
 

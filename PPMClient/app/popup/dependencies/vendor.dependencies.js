@@ -2,5 +2,7 @@ define([
     'angular',
     'ui_bootstrap',
     'underscore',
-    'bluebird'
+    'bluebird',
+    'require',
+    'domReady'
 ]);
