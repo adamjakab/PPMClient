@@ -18,7 +18,9 @@
     "type": "git",
     "url": "git://github.com/adamjakab/PPMClient.git"
   },
-  "dependencies": {},
+  "dependencies": {
+    "grunt-contrib-requirejs": "~0.4.4"
+  },
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-jshint": "~0.10.0",

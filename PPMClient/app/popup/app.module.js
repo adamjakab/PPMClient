@@ -3,14 +3,14 @@
  */
 define(
     [
-        'lib/makeModuleLazyLoadable',
+        'angular',
         'app.settings',
-        'app.config'
+        'app.config',
+        'lib/makeModuleLazyLoadable'
     ],
-    function (makeModuleLazyLoadable, settings, config) {
+    function (angular, settings, config, makeModuleLazyLoadable) {
         var app = angular.module('app', config.modules);
         app.value('settings', settings);
         makeModuleLazyLoadable('app');
-
     }
 );

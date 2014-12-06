@@ -1,7 +1,8 @@
 define([
-    'lib/stateDependencyResolver'
+        'angular',
+        'lib/stateDependencyResolver'
 ],
-function(stateDependencyResolver)
+function(angular, stateDependencyResolver)
 {
     var module = angular.module('app');
 

@@ -27,6 +27,7 @@ module.exports = function(grunt) {
                             'bluebird/js/browser/bluebird.js',
                             'prototypejs/dist/prototype.js',
                             'requirejs/require.js',
+                            'requirejs-domready/domReady.js',
                             'underscore/underscore.js'
                         ],
                         dest: 'PPMClient/app/vendor/js/'
