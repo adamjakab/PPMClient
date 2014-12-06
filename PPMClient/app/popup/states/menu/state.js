@@ -1,20 +1,16 @@
 define([
         'angular',
-        'lib/stateDependencyResolver'
+        'states/menu/dependencies'
 ],
-function(angular, stateDependencyResolver)
-{
+function(angular) {
     var module = angular.module('app');
 
     module.config(function($stateProvider) {
-
         $stateProvider
             .state('menu', {
                 url: '/menu',
-                templateUrl: 'popup/states/menu/menu.html',
-                resolve: stateDependencyResolver('menu')
+                templateUrl: 'popup/states/menu/menu.html'
             }
         );
-
     });
 });

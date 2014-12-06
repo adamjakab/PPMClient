@@ -1,9 +1,8 @@
 define([
         'angular',
-        'lib/stateDependencyResolver'
+        'states/login/dependencies'
 ],
-function(angular, stateDependencyResolver)
-{
+function(angular) {
     var module = angular.module('app');
 
     module.config(function($stateProvider, $urlRouterProvider) {
@@ -13,13 +12,11 @@ function(angular, stateDependencyResolver)
         $stateProvider
             .state('login', {
                 url: '/login',
-                templateUrl: 'popup/states/login/login.html',
-                resolve: stateDependencyResolver('login')
+                templateUrl: 'popup/states/login/login.html'
             })
             .state('logout', {
                 url: '/logout',
-                templateUrl: 'popup/states/login/logout.html',
-                resolve: stateDependencyResolver('login')
+                templateUrl: 'popup/states/login/logout.html'
             });
     });
 });
