@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
     // Default task(s).
     grunt.registerTask('default', [
@@ -64,27 +64,14 @@ module.exports = function(grunt) {
                         dest: 'PPMClient/app/vendor/fonts/'
                     }
                 ]
-            }
-        },
-
-        uglify: {
-            options: {
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
             },
-            dynamic_mappings: {
+            build: {
                 files: [
                     {
-                        expand: true,     // Enable dynamic expansion.
-                        cwd: 'js/',      // Src matches are relative to this path.
-                        src: [
-                            'background/**/*.js',
-                            'classes/**/*.js',
-                            'interface/**/*.js',
-                            'utils/**/*.js'
-                        ], // Actual pattern(s) to match.
-                        dest: 'build/js/',   // Destination path prefix.
-                        ext: '.min.js',   // Dest filepaths will have this extension.
-                        extDot: 'first'   // Extensions in filenames begin after the first dot
+                        expand: true,
+                        cwd: './',
+                        src: 'PPMClient/**',
+                        dest: 'build'
                     }
                 ]
             }
@@ -95,29 +82,66 @@ module.exports = function(grunt) {
                 removeCombined: false,
                 optimize: 'none'
             },
-            background: {
+            /*
+            prepaire: {
                 options: {
-                    baseUrl: "PPMClient/app/background/",
-                    paths: {},
-                    mainConfigFile: 'PPMClient/app/background/background.bootstrap.js',
-                    name: "background.bootstrap",
-                    out: "build/background.min.js",
-                    optimize: 'none'
+                    baseUrl: 'PPMClient',
+                    dir: "build/PPMClient",
+                    optimize : 'uglify2',
+                    inlineText: true,
+                    preserveLicenseComments: false
                 }
             },
-            popup: {
+            build_background: {
                 options: {
-                    baseUrl: "PPMClient/app/popup/",
+                    baseUrl: 'build/PPMClient/app/background/',
+                    name: 'background.bootstrap',
+                    mainConfigFile: 'build/PPMClient/app/background/background.bootstrap.js',
                     paths: {
                         requireLib: '../vendor/js/require'
                     },
-                    include: 'requireLib',
+                    include: [
+                        'requireLib'
+                    ],
+                    out: 'build/PPMClient/app/background.js',
+                    optimize: 'uglify',
+                    preserveLicenseComments: false,
+                    inlineText: true
+                }
+            },*/
+            build_popup: {
+                options: {
+                    baseUrl: 'PPMClient/app/popup/',
+                    name: 'bootstrap',
                     mainConfigFile: 'PPMClient/app/popup/requirejs.config.js',
-                    name: "bootstrap",
-                    out: "build/popup.min.js",
+                    paths: {
+                        requireLib: '../vendor/js/require'
+                    },
+                    include: [
+                        'requireLib'
+                    ],
+                    out: 'build/popup.js',
                     optimize: 'none'
+                    /*preserveLicenseComments: false,
+                    inlineText: true*/
                 }
             }
+
+            /*
+             popup: {
+             options: {
+             baseUrl: "PPMClient/app/popup/",
+             paths: {
+             requireLib: '../vendor/js/require'
+             },
+             include: 'requireLib',
+             mainConfigFile: 'PPMClient/app/popup/requirejs.config.js',
+             name: "bootstrap",
+             out: "build/popup.min.js",
+             optimize: 'none'
+             }
+             }
+             */
         }
     });
 
@@ -127,26 +151,21 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
 
-
-
-    grunt.registerTask("setup-project", "Setup Project files and folders", function() {
+    grunt.registerTask("setup-project", "Setup Project files and folders", function () {
         grunt.task.run('copy:project');
     });
 
-    grunt.registerTask("build-project", "Build Project files", function() {
-        grunt.task.run('requirejs:background');
-        grunt.task.run('requirejs:popup');
+    grunt.registerTask("build-project", "Build Project files", function () {
+        grunt.task.run('requirejs:prepaire');
+        grunt.task.run('requirejs:build_background');
+        grunt.task.run('requirejs:build_popup');
     });
-
-
-
-
 
 
     /**
      * angular-ui-bootstrap
      */
-    grunt.registerTask("prepare-angular-ui-bootstrap", function() {
+    grunt.registerTask("prepare-angular-ui-bootstrap", function () {
         var done = this.async();
         grunt.util.spawn({
             grunt: false,
@@ -161,7 +180,7 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerTask("build-angular-ui-bootstrap", function() {
+    grunt.registerTask("build-angular-ui-bootstrap", function () {
         var done = this.async();
         grunt.util.spawn({
             grunt: true,
@@ -175,7 +194,7 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerTask("setup-angular-ui-bootstrap", "setup Angular-ui-bootstrap", function() {
+    grunt.registerTask("setup-angular-ui-bootstrap", "setup Angular-ui-bootstrap", function () {
         grunt.task.run('prepare-angular-ui-bootstrap');
         grunt.task.run('build-angular-ui-bootstrap');
     });

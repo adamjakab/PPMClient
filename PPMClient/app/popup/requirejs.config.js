@@ -1,13 +1,12 @@
 /**
  * Requirejs config
  */
+
 requirejs.config({
     baseUrl: 'popup',
     paths: {
-        /*folders*/
         vendor: '../vendor/js',
         lib: '../lib',
-        /*modules*/
         angular: '../vendor/js/angular',
         angular_ui_router: '../vendor/js/angular-ui-router',
         ui_bootstrap: '../vendor/js/ui-bootstrap',
@@ -21,9 +20,11 @@ requirejs.config({
             exports: 'angular'
         },
         ui_bootstrap: {
+            exports: 'angular',
             deps: ['angular']
         },
         angular_ui_router: {
+            exports: 'angular',
             deps: ['angular']
         }
     },

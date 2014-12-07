@@ -1,7 +1,6 @@
 /**
  * Popup Application bootstrap
  */
-
 define([
     'require',
     'app.module',
