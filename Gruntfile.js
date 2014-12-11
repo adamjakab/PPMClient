@@ -79,7 +79,7 @@ module.exports = function (grunt) {
                         'requireLib'
                     ],
                     out: 'build/tmp/app/popup.min.js',
-                    /*optimize: 'uglify',*/
+                    /*optimize: 'uglify2',*/
                     preserveLicenseComments: false,
                     inlineText: true
                 }
