@@ -79,7 +79,10 @@ module.exports = function (grunt) {
                         'requireLib'
                     ],
                     out: 'build/tmp/app/popup.min.js',
-                    /*optimize: 'uglify2',*/
+                    optimize: 'uglify',
+                    uglify: {
+                        mangle: false /*!this is for angular!*/
+                    },
                     preserveLicenseComments: false,
                     inlineText: true
                 }
@@ -125,7 +128,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-replace');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-ngmin');
+    grunt.loadNpmTasks('grunt-contrib-uglify');/*do we need this?*/
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
 
