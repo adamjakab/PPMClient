@@ -5,4 +5,6 @@ define([
     'bluebird',
     'require',
     'domReady'
-]);
+], function() {
+
+});

@@ -1,5 +1,5 @@
 requirejs.config({
-    baseUrl: './background',
+    baseUrl: 'background',
     paths: {
         lib: '../lib',
         underscore: '../../vendor/bower/underscore/underscore',

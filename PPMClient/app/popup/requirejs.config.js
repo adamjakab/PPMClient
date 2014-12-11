@@ -1,19 +1,14 @@
-/**
- * Requirejs config
- */
-
 requirejs.config({
     baseUrl: 'popup',
     paths: {
-        vendor: '../vendor/js',
         lib: '../lib',
-        angular: '../vendor/js/angular',
-        angular_ui_router: '../vendor/js/angular-ui-router',
-        ui_bootstrap: '../vendor/js/ui-bootstrap',
-        underscore: '../vendor/js/underscore',
-        bluebird: '../vendor/js/bluebird',
-        require: '../vendor/js/require',
-        domReady: '../vendor/js/domReady'
+        angular: '../../vendor/bower/angular/angular',
+        angular_ui_router: '../../vendor/bower/angular-ui-router/release/angular-ui-router',
+        ui_bootstrap: '../../vendor/bower/angular-ui-bootstrap/dist/ui-bootstrap-0.12.0',
+        require: '../../vendor/bower/requirejs/require',
+        domReady: '../../vendor/bower/requirejs-domready/domReady',
+        underscore: '../../vendor/bower/underscore/underscore',
+        bluebird: '../../vendor/bower/bluebird/js/browser/bluebird'
     },
     shim: {
         'angular': {
