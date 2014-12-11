@@ -2,7 +2,7 @@ module.exports = function (grunt) {
 
     // Default task(s).
     grunt.registerTask('default', [
-        'setup-angular-ui-bootstrap',
+        'angular-ui-bootstrap-build',
         'setup-project'
     ]);
 
@@ -10,74 +10,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
-        copy: {
-            project: {
-                files: [
-                    {
-                        src: 'src/bower/angular-ui-bootstrap/dist/ui-bootstrap-0.12.0.js',
-                        dest: 'PPMClient/app/vendor/js/ui-bootstrap.js'
-                    },
-                    {
-                        expand: true,
-                        flatten: true,
-                        cwd: 'src/bower',
-                        src: [
-                            'angular/angular.js',
-                            'angular-ui-router/release/angular-ui-router.js',
-                            'bluebird/js/browser/bluebird.js',
-                            'prototypejs/dist/prototype.js',
-                            'requirejs/require.js',
-                            'requirejs-domready/domReady.js',
-                            'underscore/underscore.js'
-                        ],
-                        dest: 'PPMClient/app/vendor/js/'
-                    },
-                    {
-                        expand: true,
-                        flatten: true,
-                        cwd: 'src/vendor',
-                        src: [
-                            '**/*.js'
-                        ],
-                        dest: 'PPMClient/app/vendor/js/'
-                    },
-                    {
-                        expand: true,
-                        flatten: true,
-                        cwd: 'src/bower',
-                        src: [
-                            'angular/angular-csp.css',
-                            'bootstrap-css-only/css/bootstrap.css',
-                            'bootstrap-css-only/css/bootstrap.css.map',
-                            'bootstrap-css-only/css/bootstrap-theme.css',
-                            'bootstrap-css-only/css/bootstrap-theme.css.map'
-                        ],
-                        dest: 'PPMClient/app/vendor/css/'
-                    },
-                    {
-                        expand: true,
-                        flatten: true,
-                        cwd: 'src/bower',
-                        src: [
-                            'bootstrap-css-only/fonts/*'
-                        ],
-                        dest: 'PPMClient/app/vendor/fonts/'
-                    }
-                ]
-            },
-            build: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: './',
-                        src: 'PPMClient/**',
-                        dest: 'build'
-                    }
-                ]
-            }
-        },
-
-        requirejs: {
+                requirejs: {
             options: {
                 removeCombined: false,
                 optimize: 'none'
@@ -126,33 +59,17 @@ module.exports = function (grunt) {
                     inlineText: true*/
                 }
             }
-
-            /*
-             popup: {
-             options: {
-             baseUrl: "PPMClient/app/popup/",
-             paths: {
-             requireLib: '../vendor/js/require'
-             },
-             include: 'requireLib',
-             mainConfigFile: 'PPMClient/app/popup/requirejs.config.js',
-             name: "bootstrap",
-             out: "build/popup.min.js",
-             optimize: 'none'
-             }
-             }
-             */
         }
     });
 
-    // Load the plugin that provides the "uglify" task.
+    /* ------------------------------------------- PLUGINS ---------------------------------------------------------- */
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-
+    /* ----------------------------------------- MAIN TASKS --------------------------------------------------------- */
     grunt.registerTask("setup-project", "Setup Project files and folders", function () {
-        grunt.task.run('copy:project');
+        //what to do
     });
 
     grunt.registerTask("build-project", "Build Project files", function () {
@@ -161,18 +78,18 @@ module.exports = function (grunt) {
         grunt.task.run('requirejs:build_popup');
     });
 
-
+    /* ----------------------------------------- SUB TASKS ---------------------------------------------------------- */
     /**
      * angular-ui-bootstrap
      */
-    grunt.registerTask("prepare-angular-ui-bootstrap", function () {
+    grunt.registerTask("angular-ui-bootstrap-install-dependencies", function () {
         var done = this.async();
         grunt.util.spawn({
             grunt: false,
             cmd: 'npm',
             args: ['install'],
             opts: {
-                cwd: 'src/bower/angular-ui-bootstrap'
+                cwd: 'PPMClient/vendor/bower/angular-ui-bootstrap'
             }
         }, function (err, result, code) {
             console.log(result.stdout);
@@ -180,13 +97,13 @@ module.exports = function (grunt) {
         });
     });
 
-    grunt.registerTask("build-angular-ui-bootstrap", function () {
+    grunt.registerTask("angular-ui-bootstrap-build-dist", function () {
         var done = this.async();
         grunt.util.spawn({
             grunt: true,
             args: ['after-test'],
             opts: {
-                cwd: 'src/bower/angular-ui-bootstrap'
+                cwd: 'PPMClient/vendor/bower/angular-ui-bootstrap'
             }
         }, function (err, result, code) {
             console.log(result.stdout);
@@ -194,8 +111,8 @@ module.exports = function (grunt) {
         });
     });
 
-    grunt.registerTask("setup-angular-ui-bootstrap", "setup Angular-ui-bootstrap", function () {
-        grunt.task.run('prepare-angular-ui-bootstrap');
-        grunt.task.run('build-angular-ui-bootstrap');
+    grunt.registerTask("angular-ui-bootstrap-build", "build Angular-ui-bootstrap", function () {
+        grunt.task.run('angular-ui-bootstrap-install-dependencies');
+        grunt.task.run('angular-ui-bootstrap-build-dist');
     });
 };

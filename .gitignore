@@ -2,13 +2,10 @@
 .idea
 
 # Bower project dependencies
-src/bower
+PPMClient/vendor/bower
 
 # NodeJS project dependencies
 node_modules
-
-# copied over dependency files(grunt)
-PPMClient/app/vendor
 
 # The build directory where final minimized version of
 # the extension will be created
