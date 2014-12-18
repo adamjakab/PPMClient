@@ -29,6 +29,7 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        manifest: grunt.file.readJSON('PPMClient/manifest.json'),
         clean: {
             build_before: ['build'],
             build_after: ['build/tmp/xxx']
@@ -93,7 +94,7 @@ module.exports = function (grunt) {
                 options: {
                     patterns: [
                         {
-                            match: /<script.*data-main.*<\/script>/g,
+                            match: /<script.*src="\.\.\/vendor\/bower\/requirejs\/require\.js".*<\/script>/g,
                             replacement: '<script src="background.min.js"></script>'
                         }
                     ]
@@ -109,7 +110,7 @@ module.exports = function (grunt) {
                 options: {
                     patterns: [
                         {
-                            match: /<script.*data-main.*<\/script>/g,
+                            match: /<script.*src="\.\.\/vendor\/bower\/requirejs\/require\.js".*<\/script>/g,
                             replacement: '<script src="popup.min.js"></script>'
                         }
                     ]
@@ -121,6 +122,14 @@ module.exports = function (grunt) {
                     }
                 ]
             }
+        },
+        /*This is only for me - you shouldn't have my key ;)*/
+        crx: {
+            final: {
+                "src": ["build/tmp/"],
+                "dest": "build/crx/<%= pkg.name %>-<%= manifest.version %>.crx",
+                "privateKey": "~/.ssh/ParanoiaPasswordManager2.pem"
+            }
         }
     });
 
@@ -131,7 +140,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-ngmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');/*do we need this?*/
     grunt.loadNpmTasks('grunt-contrib-requirejs');
-
+    grunt.loadNpmTasks('grunt-crx');
 
 
     /* ----------------------------------------- SUB TASKS ---------------------------------------------------------- */

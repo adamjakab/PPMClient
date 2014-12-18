@@ -3,10 +3,19 @@ PPM EXTENSION
 
 Project is yet unusable!
 
-After "npm install" (not yet registered) you should have a fully working
-PPMClient directory which can be loaded in Google Chrome with the "Load unpacked extension..."
-button.
+To set up the development environment, do:
 
-If you are not using npm, run "npm install" and "bower" in the project root.
+`git clone git@github.com:adamjakab/PPMClient.git`
+
+`npm install`
+
+`bower install`
+
+`grunt`
+
+Now should have a fully working PPMClient directory (the one with the manifest.json file inside)
+which can be loaded in Google Chrome with the "Load unpacked extension..." button.
+
+
  
  

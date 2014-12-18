@@ -1,12 +1,12 @@
 {
   "name": "PPMClient",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "Google Chrome Paranoia Password Manager Extension",
   "author": "Adam Jakab",
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish": "bower install && grunt"
+    "prepublish": "bower install"
   },
   "keywords": [
     "password",
@@ -28,6 +28,7 @@
     "requirejs": "~2.1.15",
     "grunt-contrib-clean": "~0.6.0",
     "grunt-replace": "~0.8.0",
-    "grunt-ngmin": "0.0.3"
+    "grunt-ngmin": "0.0.3",
+    "grunt-crx": "~0.3.4"
   }
 }
