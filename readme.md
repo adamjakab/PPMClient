@@ -1,5 +1,5 @@
-PPM EXTENSION
-=============
+Paranoia Password Manager 2 (client)
+====================================
 
 Project is yet unusable!
 
