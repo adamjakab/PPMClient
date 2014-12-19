@@ -101,6 +101,11 @@ define(['config'], function (cfg) {
 
         getLogObjects: function() {
             return logs;
+        },
+
+        resetLogObjects: function() {
+            logs = [];
+            log_index = 0;
         }
     };
 });
