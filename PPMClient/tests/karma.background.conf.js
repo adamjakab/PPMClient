@@ -17,6 +17,7 @@ module.exports = function(config) {
       {pattern: 'app/background/**/*.js', included: false},
       {pattern: 'app/lib/**/*.js', included: false},
       {pattern: 'tests/background/**/*.js', included: false},
+      {pattern: 'tests/helpers/**/*.js', included: false},
       {pattern: 'vendor/bower/underscore/underscore.js', included: false, watched: false},
       {pattern: 'vendor/bower/bluebird/js/browser/bluebird.js', included: false, watched: false}
     ],

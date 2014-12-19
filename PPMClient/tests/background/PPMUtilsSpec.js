@@ -1,25 +1,18 @@
 /**
  * PPMUtils Tests
  */
-define(['config', 'PPMUtils'], function (cfg, PPMUtils) {
-    describe("PPMUtils Tests", function() {
+define(['config', 'bluebird', 'TestUtils', 'PPMUtils'],
+    function (cfg, Promise, TestUtils, PPMUtils) {
 
-        //disable console logging on PPMLogger
-        //cfg.set("sync.logger.do_console_logging", false);
+        describe("PPMUtils Tests", function () {
 
-        it("initialize should return Promise", function() {
-            var ret = PPMUtils.initialize();
-            expect(ret.then).toBeDefined();
-            expect(ret.error).toBeDefined();
-            expect(ret.catch).toBeDefined();
+            it("initialize should return Promise", function () {
+                TestUtils.isPromise(PPMUtils.initialize());
+            });
+
+            it("shutdown should return Promise", function () {
+                TestUtils.isPromise(PPMUtils.shutdown());
+            });
+
         });
-
-        it("shutdown should return Promise", function() {
-            var ret = PPMUtils.shutdown();
-            expect(ret.then).toBeDefined();
-            expect(ret.error).toBeDefined();
-            expect(ret.catch).toBeDefined();
-        });
-
     });
-});

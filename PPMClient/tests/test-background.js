@@ -14,7 +14,7 @@ for (var file in window.__karma__.files) {
 requirejs.config({
     baseUrl: '/base/app/background',
     paths: {
-        tests: '../../tests/background',
+        TestUtils: '../../tests/helpers/TestUtils',
         lib: '../lib',
         underscore: '../../vendor/bower/underscore/underscore',
         bluebird: '../../vendor/bower/bluebird/js/browser/bluebird'
