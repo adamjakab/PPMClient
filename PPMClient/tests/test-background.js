@@ -11,7 +11,6 @@ for (var file in window.__karma__.files) {
 }
 //console.log("SPECS: " + JSON.stringify(specs));
 
-//bootstrap karma with spec files
 requirejs.config({
     baseUrl: '/base/app/background',
     paths: {
@@ -21,6 +20,16 @@ requirejs.config({
         bluebird: '../../vendor/bower/bluebird/js/browser/bluebird'
     },
     shim: {},
-    deps: specs,
-    callback: window.__karma__.start
+    deps: []
+});
+
+
+//bootstrap karma with spec files
+require(['config'], function(cfg) {
+    //disable console logging on PPMLogger
+    cfg.set("sync.logger.do_console_logging", false);
+    require(specs, function() {
+        console.log("starting KARMA");
+        window.__karma__.start();
+    });
 });
