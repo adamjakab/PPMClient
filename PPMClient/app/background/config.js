@@ -20,7 +20,11 @@ define(['lib/OptionsManager'],
 
                 },
                 cryptor: {
-                    bits: 256
+                    /* these are not yet implemented so changing the values below will not do anything*/
+                    aes: {
+                        mode: "CTR", /* modes: CBC, CFB, CTR, OFB, ECB */
+                        padding: "Pkcs7" /* paddings: Pkcs7, Iso97971, AnsiX923, Iso10126, ZeroPadding, NoPadding*/
+                    }
                 },
                 gat: {
                     enabled: false

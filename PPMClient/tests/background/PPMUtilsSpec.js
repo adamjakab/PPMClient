@@ -1,8 +1,8 @@
 /**
  * PPMUtils Tests
  */
-define(['config', 'bluebird', 'TestUtils', 'PPMUtils'],
-    function (cfg, Promise, TestUtils, PPMUtils) {
+define(['config', 'TestUtils', 'PPMUtils'],
+    function (cfg, TestUtils, PPMUtils) {
 
         describe("PPMUtils Tests", function () {
 
@@ -15,4 +15,5 @@ define(['config', 'bluebird', 'TestUtils', 'PPMUtils'],
             });
 
         });
-    });
+    }
+);

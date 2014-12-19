@@ -14,12 +14,17 @@ for (var file in window.__karma__.files) {
 requirejs.config({
     baseUrl: '/base/app/background',
     paths: {
+        /* PATHS */
         TestUtils: '../../tests/helpers/TestUtils',
         lib: '../lib',
+        CryptoJs: '../../vendor/bower/crypto-js-evanvosberg/build/rollups',
+        CryptoJsComponents: '../../vendor/bower/crypto-js-evanvosberg/build/components',
+        /* MODULES */
         underscore: '../../vendor/bower/underscore/underscore',
         bluebird: '../../vendor/bower/bluebird/js/browser/bluebird'
     },
-    shim: {},
+    shim: {
+    },
     deps: []
 });
 

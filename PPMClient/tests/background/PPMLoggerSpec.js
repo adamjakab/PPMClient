@@ -42,11 +42,12 @@ define(['config', 'PPMLogger'], function (cfg, PPMLogger) {
             }
         });
 
+
         it("should log to console", function() {
-            console.log = jasmine.createSpy("log");
-            console.info = jasmine.createSpy("info");
-            console.warn = jasmine.createSpy("warn");
-            console.error = jasmine.createSpy("error");
+            spyOn(console, "log");
+            spyOn(console, "info");
+            spyOn(console, "warn");
+            spyOn(console, "error");
             //
             cfg.set("sync.logger.do_console_logging", true);//enable console logging
             var message = "testMessage";

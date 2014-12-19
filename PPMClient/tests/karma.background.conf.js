@@ -19,7 +19,10 @@ module.exports = function(config) {
       {pattern: 'tests/background/**/*.js', included: false},
       {pattern: 'tests/helpers/**/*.js', included: false},
       {pattern: 'vendor/bower/underscore/underscore.js', included: false, watched: false},
-      {pattern: 'vendor/bower/bluebird/js/browser/bluebird.js', included: false, watched: false}
+      {pattern: 'vendor/bower/bluebird/js/browser/bluebird.js', included: false, watched: false},
+      {pattern: 'vendor/bower/js-md5/js/md5.js', included: false, watched: false},
+      {pattern: 'vendor/bower/crypto-js-evanvosberg/build/rollups/*.js', included: false, watched: false},
+      {pattern: 'vendor/bower/crypto-js-evanvosberg/build/components/*.js', included: false, watched: false}
     ],
 
 
@@ -38,7 +41,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress', 'coverage'],
+    reporters: ['progress'],
 
     // web server port
     port: 9876,

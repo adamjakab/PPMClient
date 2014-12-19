@@ -3,8 +3,9 @@
  */
 define([
     'config',
+    'bluebird',
     'PPMLogger'
-], function (cfg, logger) {
+], function (cfg, Promise, logger) {
     /**
      * Log facility
      * @param msg

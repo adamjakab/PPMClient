@@ -11,7 +11,7 @@ requirejs.config({
         bluebird: '../../vendor/bower/bluebird/js/browser/bluebird'
     },
     shim: {
-        'angular': {
+        angular: {
             exports: 'angular'
         },
         ui_bootstrap: {

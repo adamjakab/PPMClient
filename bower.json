@@ -29,6 +29,7 @@
     "underscore": "~1.7.0",
     "prototypejs": "~1.7.1",
     "angular-ui-router": "~0.2.13",
-    "requirejs-domready": "~2.0.1"
+    "requirejs-domready": "~2.0.1",
+    "crypto-js-evanvosberg": "~3.1.2"
   }
 }
