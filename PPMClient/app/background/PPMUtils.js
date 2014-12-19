@@ -62,19 +62,24 @@ define([
             var lengthPerType = Math.floor(length/charTypes.length);
             var typeLength = [];
             typeLength["alpha"] = lengthPerType;//ALPHA
-            typeLength["numeric"] = lengthPerType;//NUMERIC
-            typeLength["special"] = length-(2*lengthPerType);//SPECIAL
-
+            typeLength["numeric"] = (useSpecial ? lengthPerType : length-(lengthPerType));//NUMERIC
+            typeLength["special"] = (useSpecial ? length-(2*lengthPerType) : 0);//SPECIAL
+            //
             var answer = '';
             var t, chars;
             while(answer.length < length) {
                 t = charTypes[Math.floor(Math.random() * charTypes.length)];
-                typeLength[t]--;
-                if(!typeLength[t]) {
-                    charTypes.splice(charTypes.indexOf(t),1);
+                if(t) {
+                    typeLength[t]--;
+                    if(!typeLength[t]) {
+                        charTypes.splice(charTypes.indexOf(t),1);
+                    }
+                    chars = ugly_chars[t];
+                    answer += chars[Math.floor(chars.length*Math.random())];
+                } else {
+                    throw new Error("no type!");
                 }
-                chars = ugly_chars[t];
-                answer += chars[Math.floor(chars.length*Math.random())];
+
             }
             return(answer);
         },

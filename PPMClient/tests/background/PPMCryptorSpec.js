@@ -1,8 +1,8 @@
 /**
  * PPMCryptor Tests
  */
-define(['config', 'TestUtils', 'PPMCryptor'],
-    function (cfg, TestUtils, PPMCryptor) {
+define(['config', 'TestUtils', 'PPMCryptor', 'PPMUtils'],
+    function (cfg, TestUtils, PPMCryptor, PPMUtils) {
 
         describe("PPMCryptor Main", function () {
             it("should return Promise on initialize", function () {
@@ -54,17 +54,16 @@ define(['config', 'TestUtils', 'PPMCryptor'],
             });
 
             it("should always decrypt to the original string", function () {
-                var cipher = PPMCryptor.encryptAES(testString, testKey);
-                var deciphered = PPMCryptor.decryptAES(cipher, testKey);
-                expect(deciphered).toBe(testString);
+                for (var i=0; i<100; i++) {
+                    var testString = PPMUtils.getGibberish(1, 1024, true);
+                    var testKey = PPMUtils.getGibberish(1, 256, true);
+                    var cipher = PPMCryptor.encryptAES(testString, testKey);
+                    var deciphered = PPMCryptor.decryptAES(cipher, testKey);
+                    expect(deciphered).toBe(testString);
+                }
             });
 
 
-
-
-
         });
-
-
     }
 );

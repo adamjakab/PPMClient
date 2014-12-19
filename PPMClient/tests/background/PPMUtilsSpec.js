@@ -27,19 +27,20 @@ define(['config', 'TestUtils', 'PPMUtils'],
             it("should return gibberish string with exact length", function () {
                 var min = 0; var max = 64;
                 for (var i=0; i<100; i++) {
+                    var useSpecial = (i%2);
                     var random = PPMUtils.getRandomNumberInRange(min,max);
-                    var gibberish = PPMUtils.getGibberish(random, random, true);
+                    var gibberish = PPMUtils.getGibberish(random, random, useSpecial);
                     expect(gibberish.length).toBe(random);
                 }
             });
 
             it("should return gibberish string with length between min and max", function () {
-                var min = 0; var max = 10;
-                for (var i=0; i<10; i++) {
-                    var gibberish = PPMUtils.getGibberish(min, max, true);
+                var min = 0; var max = 32;
+                for (var i=0; i<100; i++) {
+                    var useSpecial = (i%2);
+                    var gibberish = PPMUtils.getGibberish(min, max, useSpecial);
                     expect(gibberish.length).toBeGreaterThan(min-1);
                     expect(gibberish.length).toBeLessThan(max+1);
-                    dump(gibberish);
                 }
             });
 
