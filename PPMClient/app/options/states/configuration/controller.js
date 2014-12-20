@@ -19,10 +19,11 @@ define([
                 $state.go("noprofile");
             }
 
+            /**
+             * form can work on any propery of the sync options
+             * except for server settings which has specific controller
+             */
             $scope.CFG = CHROMESTORAGE.get("sync");
-
-
-
         }
     );
 });
