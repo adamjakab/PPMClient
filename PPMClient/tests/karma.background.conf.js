@@ -64,6 +64,9 @@ module.exports = function(config) {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['PhantomJS'],/*'PhantomJS','Chrome'*/
 
+    //browser timeout in ms
+    browserNoActivityTimeout: 5 * 60 * 1000,
+
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

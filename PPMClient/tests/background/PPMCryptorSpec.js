@@ -43,6 +43,7 @@ define(['config', 'TestUtils', 'PPMCryptor', 'PPMUtils'],
             });
         });
 
+
         describe("PPMCryptor Cipher", function () {
             var testString = "I had one but the wheels fell off!";
             var testKey = "85781829968fe5d680a0da14224816e6";
@@ -54,9 +55,9 @@ define(['config', 'TestUtils', 'PPMCryptor', 'PPMUtils'],
             });
 
             it("should always decrypt to the original string", function () {
-                for (var i=0; i<100; i++) {
-                    var testString = PPMUtils.getGibberish(1, 1024, true);
-                    var testKey = PPMUtils.getGibberish(1, 256, true);
+                for (var i=0; i<10; i++) {
+                    var testString = PPMUtils.getGibberish(1, 1024);
+                    var testKey = PPMUtils.getGibberish(1, 256);
                     var cipher = PPMCryptor.encryptAES(testString, testKey);
                     var deciphered = PPMCryptor.decryptAES(cipher, testKey);
                     expect(deciphered).toBe(testString);
