@@ -1,8 +1,70 @@
 <section ng-controller="configuration.controller">
     <div class="page-header">
+        <!--<button ng-click="saveConfiguration();" type="button" class="btn btn-primary pull-right">Save</button>-->
+        <!--<button ng-click="resetConfiguration();" type="button" class="btn btn-default pull-right">Reset</button>-->
         <h1>Configuration</h1>
     </div>
     <div class="row">
-        ...
+        <div class="col-md-12">
+
+                <table class="table table-striped table-bordered table-hover">
+
+                    <tr class="info">
+                        <td colspan="2"><h4>Password Generator</h4></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="specialchars" class="control-label">
+                                Special characters to use:
+                            </label>
+                        </td>
+                        <td>
+                            <input type="text" ng-model="CFG.pwgen.specialchars"
+                                   id="specialchars" class="form-control" />
+                        </td>
+                    </tr>
+
+                    <tr class="info">
+                        <td colspan="2"><h4>Passcards</h4></td>
+                    </tr>
+                    <tr>
+                        <td>Default username in new passcards:</td>
+                        <td>{{ CFG.passcard.default_username }}</td>
+                    </tr>
+                    <tr>
+                        <td>Generate password for new passcards:</td>
+                        <td>{{ CFG.passcard.autofill_password }}</td>
+                    </tr>
+
+                    <tr class="info">
+                        <td colspan="2"><h4>Logging Settings</h4></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="console_logging" class="control-label">
+                                Log to console:
+                            </label>
+                        </td>
+                        <td>
+                            <input type="checkbox" ng-model="CFG.logger.do_console_logging"
+                                   id="console_logging" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Logs to keep:</td>
+                        <td>{{ CFG.logger.log_objects_to_keep }}</td>
+                    </tr>
+
+                    <tr class="info">
+                        <td colspan="2"><h4>Analitics Tracking</h4></td>
+                    </tr>
+                    <tr>
+                        <td>Enable Google Analytics usage tracking:</td>
+                        <td>{{ CFG.gat.enabled }}</td>
+                    </tr>
+
+                </table>
+
+        </div>
     </div>
 </section>

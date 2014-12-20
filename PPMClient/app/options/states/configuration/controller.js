@@ -12,18 +12,15 @@ define([
                 PPM.getComponent("LOGGER").log(msg, "OPTIONS(configuration)", type);
             };
 
-            /**
-             * Defaults
-             */
-            $scope.logged_in = CHROMESTORAGE.isInitialized();
-            $scope.profiles = CHROMESTORAGE.getAvailableProfiles();//["DEFAULT", "Profile-1", "Profile-2"];
-
             /*
              * If user is not logged in redirect to "noprofile" state
              */
-            if (!$scope.logged_in && !$state.is("noprofile")) {
+            if (!CHROMESTORAGE.isInitialized() && !$state.is("noprofile")) {
                 $state.go("noprofile");
             }
+
+            $scope.CFG = CHROMESTORAGE.get("sync");
+
 
 
         }

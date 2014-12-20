@@ -34,19 +34,19 @@ define([
     var currentMasterKey = null;
 
     /**
-     * @type {boolean} - flag to be able to tell if there are any local storage changes to persist
+     * @type {string} - hash of local storage to be able to tell if there are any changes to persist
      */
-    var localStorageChanged = false;
+    var localStorageHash = null;
 
     /**
-     * @type {boolean} - flag to be able to tell if there are any sync storage changes to persist
+     * @type {string} - hash of sync storage to be able to tell if there are any changes to persist
      */
-    var syncStorageChanged = false;
+    var syncStorageHash = null;
 
     /**
      * @type {number} - how often we will check for changes (ms) - do not overload sync storage (around 15min)
      */
-    var storageChangeCheckInterval = 5 * 60 * 1000;
+    var storageChangeCheckInterval = 15 * 60 * 1000;
 
     /**
      * @type {null|int}
@@ -109,11 +109,7 @@ define([
                     return reject(chrome.runtime.lastError);
                 }
                 log("STORAGE("+location+") STORED.");
-                if(location == "local") {
-                    localStorageChanged = false;
-                } else if (location == "sync") {
-                    syncStorageChanged = false;
-                }
+                calculateStorageHashes();
                 fulfill();
             });
         });
@@ -182,9 +178,6 @@ define([
             readFromStorage("local", null).then(function(data) {
                 log("Loaded LocalStorageData:" + JSON.stringify(data));
                 cfg.merge(data, "local");
-                if (!_.isEqual(data, cfg.get("local"))) {
-                    localStorageChanged = true;
-                }
                 fulfill();
             }).error(function (e) {
                 log("Rejected: " + e, "error");
@@ -252,11 +245,11 @@ define([
             }
             log("PROFILE DATA DECRYPTED", "info");
             cfg.merge(profileDataObject, "sync");
-            if (!_.isEqual(profileDataObject, cfg.get("sync"))) {
-                syncStorageChanged = true;
-            }
+            //
             currentProfileName = profile;
             currentMasterKey = masterKey;
+            //
+            calculateStorageHashes();
             //login successful - increasing login count
             set("sync.chromestorage.login_count", parseInt(get("sync.chromestorage.login_count")) + 1);
             fulfill();
@@ -264,35 +257,42 @@ define([
     };
 
     /**
+     * Updated local/sync storage hashes so we can tell if there were changes
+     */
+    var calculateStorageHashes = function() {
+        localStorageHash = cryptor.md5hash(JSON.stringify(cfg.get("local")));
+        //log("Local storage hash: " + localStorageHash);
+        syncStorageHash = cryptor.md5hash(JSON.stringify(cfg.get("sync")));
+        //log("Sync storage hash: " + syncStorageHash);
+    };
+
+    /**
      * Checks if there are storage changes and triggers storage
-     * todo: why are we returning unused Promise
      */
     var checkStorageChanges = function() {
-        return new Promise(function (fulfill, reject) {
-            if (isInitialized()) {
-                if (localStorageChanged) {
-                    log("Local Storage changed - triggering storage...");
-                    writeToStorage("local").then(function () {
-                        log("Local Storage changes persisted");
-                    }).error(function (e) {
-                        log("Rejected: " + e, "error");
-                    }).catch(Error, function (e) {
-                        log("Error: " + e, "error");
-                    });
-                }
-                if (syncStorageChanged) {
-                    log("Sync Storage changed - triggering storage...");
-                    writeToStorage("sync").then(function () {
-                        log("Sync Storage changes persisted");
-                    }).error(function (e) {
-                        log("Rejected: " + e, "error");
-                    }).catch(Error, function (e) {
-                        log("Error: " + e, "error");
-                    });
-                }
-                storageChangeCheckTimeoutId = _.delay(checkStorageChanges, storageChangeCheckInterval);
+        if (isInitialized()) {
+            if (localStorageHash != cryptor.md5hash(JSON.stringify(cfg.get("local")))) {
+                log("Local Storage changed - triggering storage...");
+                writeToStorage("local").then(function () {
+                    log("Local Storage changes persisted");
+                }).error(function (e) {
+                    log("Rejected: " + e, "error");
+                }).catch(Error, function (e) {
+                    log("Error: " + e, "error");
+                });
             }
-        });
+            if (syncStorageHash != cryptor.md5hash(JSON.stringify(cfg.get("sync")))) {
+                log("Sync Storage changed - triggering storage...");
+                writeToStorage("sync").then(function () {
+                    log("Sync Storage changes persisted");
+                }).error(function (e) {
+                    log("Rejected: " + e, "error");
+                }).catch(Error, function (e) {
+                    log("Error: " + e, "error");
+                });
+            }
+            storageChangeCheckTimeoutId = _.delay(checkStorageChanges, storageChangeCheckInterval);
+        }
     };
 
 
@@ -314,11 +314,6 @@ define([
     var set = function(key, value) {
         var oldVal = cfg.set(key, value);
         var location = _.first(key.split("."));
-        if (location == "local") {
-            localStorageChanged = true;
-        } else if (location == "sync") {
-            syncStorageChanged = true;
-        }
         return(oldVal);
     };
 
