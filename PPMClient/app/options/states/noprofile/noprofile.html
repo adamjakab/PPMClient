@@ -1,6 +1,13 @@
 <section ng-controller="noprofile.controller">
     <div class="row noprofile">
-        <h1>You need to log in!</h1>
-        <p>Available profiles: {{ profiles }}</p>
+        <div class="col-md-8 col-md-offset-2">
+            <div class="well well-lg">
+                <div class="alert alert-danger" role="alert">
+                    <h3>You have not decrypted any profiles yet!</h3>
+                </div>
+                <p>If you have just installed {{ app_name }}, decrypt the "DEFAULT" profile with password: <code>Paranoia</code>.</p>
+                <p>Available profiles: {{ profiles }}</p>
+            </div>
+        </div>
     </div>
 </section>

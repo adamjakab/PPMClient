@@ -8,11 +8,21 @@
     <link rel="stylesheet" type="text/css" href="css/options.css" />
 </head>
 <body>
-    <div id="wrap" ng-controller="app.controller">
-        <!-- Main Content Container -->
-        <div id="main" class="container-fluid" ui-view></div>
-        <!-- End of Main Content Container -->
+    <div ng-controller="app.controller">
+        <nav class="navbar navbar-default navbar-fixed-top"
+             role="navigation"
+             ng-include="'options/_partials/menu.html'">
+        </nav>
+
+        <div class="container-fluid">
+                <!-- Main View Container -->
+                <div id="main" ui-view></div>
+                <!-- End of View Container -->
+        </div>
+
+        <footer class="footer" ng-include="'options/_partials/footer.html'"></footer>
     </div>
+
     <!-- OPTIONS APPLICATION -->
     <script type="text/javascript" data-main="options/requirejs.config.js" src="../vendor/requirejs/require.js"></script>
 </body>

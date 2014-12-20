@@ -25,7 +25,6 @@ define([
                 $state.go("noprofile");
             }
 
-
         }
     );
 });
