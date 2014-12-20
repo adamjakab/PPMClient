@@ -246,11 +246,7 @@ define([
             }
             log("Trying to decrypt data for profile["+profile+"]...");
             var CPDENC = rawSyncStorageData[profile];
-            try {
-                var profileDataObject = cryptor.decryptAES(CPDENC, masterKey, true);
-            } catch(e) {
-                profileDataObject = null;
-            }
+            var profileDataObject = cryptor.decryptAES(CPDENC, masterKey, true);
             if(!profileDataObject) {
                 return reject(new Error("This MasterKey does not open the door!", "info"));
             }
@@ -266,7 +262,6 @@ define([
             fulfill();
         });
     };
-
 
     /**
      * Checks if there are storage changes and triggers storage

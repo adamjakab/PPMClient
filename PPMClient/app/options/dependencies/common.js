@@ -1,3 +1,5 @@
 define([
     'app.controller'
-]);
+], function() {
+
+});

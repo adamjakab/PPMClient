@@ -111,20 +111,20 @@ define([
          * @param {string} cipherText - text to decrypt
          * @param {string} key - key to decrypt with
          * @param {boolean} [parse] - return json parsed object
-         * @return {string|object} answer
+         * @return {string|object|boolean} answer - the decrypted string or parsed object or false
          */
         decryptAES: function(cipherText, key, parse) {
-            var answer = CryptoJS.AES.decrypt(cipherText, key, AesMode);
-            answer = answer.toString(CryptoJS.enc.Utf8);
-            if (parse === true) {
-                try {
+            try {
+                var answer = CryptoJS.AES.decrypt(cipherText, key, AesMode);
+                answer = answer.toString(CryptoJS.enc.Utf8);
+                if (parse === true) {
                     answer = JSON.parse(answer);
                     if (!_.isObject(answer)) {
                         answer = false;
                     }
-                } catch (e) {
-                    answer = false;
                 }
+            } catch (e) {
+                answer = false;
             }
             return(answer);
         }

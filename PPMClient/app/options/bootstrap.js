@@ -1,5 +1,5 @@
 /**
- * Popup Application bootstrap
+ * Options Application bootstrap
  */
 require([
     'app.module',
