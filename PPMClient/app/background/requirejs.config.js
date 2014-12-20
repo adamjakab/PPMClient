@@ -3,13 +3,11 @@ requirejs.config({
     paths: {
         /* PATHS */
         lib: '../lib',
-        CryptoJs: '../../vendor/bower/crypto-js-evanvosberg/build/rollups',
-        CryptoJsComponents: '../../vendor/bower/crypto-js-evanvosberg/build/components',
+        CryptoJs: '../../vendor/crypto-js-evanvosberg/build/rollups',
+        CryptoJsComponents: '../../vendor/crypto-js-evanvosberg/build/components',
         /* MODULES */
-        underscore: '../../vendor/bower/underscore/underscore',
-        bluebird: '../../vendor/bower/bluebird/js/browser/bluebird',
-
-
+        underscore: '../../vendor/underscore/underscore',
+        bluebird: '../../vendor/bluebird/js/browser/bluebird'
     },
     shim: {},
     deps: ['bootstrap']

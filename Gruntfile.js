@@ -57,7 +57,7 @@ module.exports = function (grunt) {
                     name: 'bootstrap',
                     mainConfigFile: 'build/tmp/app/background/requirejs.config.js',
                     paths: {
-                        requireLib: '../..//vendor/bower/requirejs/require'
+                        requireLib: '../..//vendor/requirejs/require'
                     },
                     include: [
                         'requireLib'
@@ -74,7 +74,7 @@ module.exports = function (grunt) {
                     name: 'bootstrap',
                     mainConfigFile: 'build/tmp/app/popup/requirejs.config.js',
                     paths: {
-                        requireLib: '../..//vendor/bower/requirejs/require'
+                        requireLib: '../..//vendor/requirejs/require'
                     },
                     include: [
                         'requireLib'
@@ -94,7 +94,7 @@ module.exports = function (grunt) {
                 options: {
                     patterns: [
                         {
-                            match: /<script.*src="\.\.\/vendor\/bower\/requirejs\/require\.js".*<\/script>/g,
+                            match: /<script.*src="\.\.\/vendor\/requirejs\/require\.js".*<\/script>/g,
                             replacement: '<script src="background.min.js"></script>'
                         }
                     ]
@@ -110,7 +110,7 @@ module.exports = function (grunt) {
                 options: {
                     patterns: [
                         {
-                            match: /<script.*src="\.\.\/vendor\/bower\/requirejs\/require\.js".*<\/script>/g,
+                            match: /<script.*src="\.\.\/vendor\/requirejs\/require\.js".*<\/script>/g,
                             replacement: '<script src="popup.min.js"></script>'
                         }
                     ]
@@ -154,7 +154,7 @@ module.exports = function (grunt) {
             cmd: 'npm',
             args: ['install'],
             opts: {
-                cwd: 'PPMClient/vendor/bower/angular-ui-bootstrap'
+                cwd: 'PPMClient/vendor/angular-ui-bootstrap'
             }
         }, function (err, result, code) {
             console.log(result.stdout);
@@ -168,7 +168,7 @@ module.exports = function (grunt) {
             grunt: true,
             args: ['after-test'],
             opts: {
-                cwd: 'PPMClient/vendor/bower/angular-ui-bootstrap'
+                cwd: 'PPMClient/vendor/angular-ui-bootstrap'
             }
         }, function (err, result, code) {
             console.log(result.stdout);

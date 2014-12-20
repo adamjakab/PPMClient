@@ -18,11 +18,11 @@ module.exports = function(config) {
       {pattern: 'app/lib/**/*.js', included: false},
       {pattern: 'tests/background/**/*.js', included: false},
       {pattern: 'tests/helpers/**/*.js', included: false},
-      {pattern: 'vendor/bower/underscore/underscore.js', included: false, watched: false},
-      {pattern: 'vendor/bower/bluebird/js/browser/bluebird.js', included: false, watched: false},
-      {pattern: 'vendor/bower/js-md5/js/md5.js', included: false, watched: false},
-      {pattern: 'vendor/bower/crypto-js-evanvosberg/build/rollups/*.js', included: false, watched: false},
-      {pattern: 'vendor/bower/crypto-js-evanvosberg/build/components/*.js', included: false, watched: false}
+      {pattern: 'vendor/underscore/underscore.js', included: false, watched: false},
+      {pattern: 'vendor/bluebird/js/browser/bluebird.js', included: false, watched: false},
+      {pattern: 'vendor/js-md5/js/md5.js', included: false, watched: false},
+      {pattern: 'vendor/crypto-js-evanvosberg/build/rollups/*.js', included: false, watched: false},
+      {pattern: 'vendor/crypto-js-evanvosberg/build/components/*.js', included: false, watched: false}
     ],
 
 

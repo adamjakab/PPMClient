@@ -1,4 +1,4 @@
 {
-    "directory": "PPMClient/vendor/bower",
+    "directory": "PPMClient/vendor",
     "analytics": false
 }

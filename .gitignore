@@ -2,7 +2,7 @@
 .idea
 
 # Bower project dependencies
-PPMClient/vendor/bower
+PPMClient/vendor
 
 # NodeJS project dependencies
 node_modules

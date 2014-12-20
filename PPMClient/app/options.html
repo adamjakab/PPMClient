@@ -2,18 +2,18 @@
 <html lang="en" ng-csp="">
 <head>
     <title>Paranoia Password Manager Configuration</title>
-    <link rel="stylesheet" type="text/css" href="vendor/css/bootstrap.css" />
-    <link rel="stylesheet" type="text/css" href="vendor/css/bootstrap-theme.css" />
-    <link rel="stylesheet" type="text/css" href="vendor/css/angular-csp.css" />
+    <link rel="stylesheet" type="text/css" href="../vendor/bootstrap-css-only/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="../vendor/bootstrap-css-only/css/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../vendor/angular/angular-csp.css" />
     <link rel="stylesheet" type="text/css" href="css/options.css" />
 </head>
 <body>
-<div id="wrap" ng-controller="app.controller">
-    <!-- Main Content Container -->
-    <div id="main" class="container-fluid" ui-view></div>
-    <!-- End of Main Content Container -->
-</div>
-<!-- REQUIREJS + OPTIONS APPLICATION -->
-<script type="text/javascript" data-main="options/app.bootstrap.js" src="vendor/js/require.js"></script>
+    <div id="wrap" ng-controller="app.controller">
+        <!-- Main Content Container -->
+        <div id="main" class="container-fluid" ui-view></div>
+        <!-- End of Main Content Container -->
+    </div>
+    <!-- OPTIONS APPLICATION -->
+    <script type="text/javascript" data-main="options/app.bootstrap.js" src="../vendor/requirejs/require.js"></script>
 </body>
 </html>
