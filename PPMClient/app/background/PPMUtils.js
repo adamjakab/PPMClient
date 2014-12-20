@@ -50,6 +50,62 @@ define([
         },
 
         /**
+         * Opens options page in tab
+         * @param {string} state
+         * @return {Promise}
+         */
+        openOptionsPage: function(state) {
+            return new Promise(function (fulfill, reject) {
+                log("opening options page(state="+state+")...");
+                var matchPageUrl = "chrome-extension://"+chrome.runtime.id+"/app/options.html";
+                var optionsPageUrl = matchPageUrl + (state ? '#/' + state : '');
+                chrome.tabs.query({url:matchPageUrl}, function(tabs) {
+                    if (tabs.length) {
+                        var tab = tabs[0];
+                        chrome.windows.getCurrent({populate:false}, function(win) {
+                            if(tab.windowId == win.id) {
+                                chrome.tabs.update(tab.id, {url: optionsPageUrl, active: true}, function(){
+                                    fulfill();
+                                });
+                            } else {
+                                chrome.tabs.move(tab.id, {windowId: win.id, index:-1}, function(tab) {
+                                    chrome.tabs.update(tab.id, {url: optionsPageUrl, active: true}, function(){
+                                        fulfill();
+                                    });
+                                });
+                            }
+                        });
+                    } else {
+                        chrome.tabs.create({url: optionsPageUrl}, function(){
+                            fulfill();
+                        });
+                    }
+                });
+            });
+        },
+
+        /**
+         * Closes options page in tab
+         * @return {Promise}
+         */
+        closeOptionsPage: function() {
+            return new Promise(function (fulfill, reject) {
+                var matchPageUrl = "chrome-extension://" + chrome.runtime.id + "/app/options.html";
+                chrome.tabs.query({url: matchPageUrl}, function (tabs) {
+                    if (tabs.length) {
+                        var tab = tabs[0];
+                        chrome.tabs.remove(tab.id, function() {
+                            log("closed options page");
+                            fulfill();
+                        });
+                    } else {
+                        fulfill();
+                    }
+                });
+            });
+        },
+
+        /**
          * Pads a string on both sides with lft and rgt number of random(hex) chars
          * @param {string} str
          * @param {int} lft

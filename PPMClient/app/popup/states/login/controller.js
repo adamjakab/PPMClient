@@ -62,8 +62,10 @@ define([
                     $scope.logged_in = CHROMESTORAGE.isInitialized();
                     $scope.$apply();
                     log("LOGOUT OK");
-                    PPM.initialize().then(function () {
-                        $state.go("login");
+                    UTILS.closeOptionsPage().then(function() {
+                        PPM.initialize().then(function () {
+                            $state.go("login");
+                        });
                     });
                 }).error(function () {
                     log("LOGOUT FAILED!");

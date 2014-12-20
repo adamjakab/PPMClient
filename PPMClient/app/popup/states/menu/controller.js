@@ -29,17 +29,30 @@ define([
                 $state.go("login");
             }
 
+
+            $scope.openInfoTab = function() {
+                UTILS.openOptionsPage("info").then(function() {
+                    window.close();//close popup
+                });
+            };
+
+            $scope.openConfigurationTab = function() {
+                UTILS.openOptionsPage("configuration").then(function() {
+                    window.close();//close popup
+                });
+            };
+
             /**
              * @param {object} PC
              */
-            $scope.fillInPasscard = function (PC) {
+            $scope.fillInPasscard = function(PC) {
                 log("FILL IN PASSCARD: " + PC.name);
             };
 
             /**
              * @param {object} PC
              */
-            $scope.copyUsername = function (PC) {
+            $scope.copyUsername = function(PC) {
                 log("COPY USERNAME: " + PC.name);
             }
         }

@@ -20,7 +20,7 @@ require(['ParanoiaPasswordManager'], function(PPM) {
             /**
              * todo: to be removed (TESTING ONLY)
              */
-            var _DO_AUTOLOGIN_ = false;
+            var _DO_AUTOLOGIN_ = true;
             if(_DO_AUTOLOGIN_) {
                 PPM.login("DEFAULT", "Paranoia");
             }
