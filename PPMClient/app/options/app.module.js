@@ -1,16 +1,15 @@
 /**
- * Popup Application
+ * Options Application
  */
 define(
     [
-        'lib/makeModuleLazyLoadable',
+        'angular',
         'app.settings',
         'app.config'
     ],
-    function (makeModuleLazyLoadable, settings, config) {
+    function (angular, settings, config) {
         var app = angular.module('app', config.modules);
         app.value('settings', settings);
-        makeModuleLazyLoadable('app');
-
+        return (app);
     }
 );
