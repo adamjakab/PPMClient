@@ -1,15 +1,16 @@
 define([
-    'lib/stateDependencyResolver'
+        'angular',
+        'states/noprofile/dependencies'
 ],
-function(stateDependencyResolver)
-{
+function(angular) {
     var module = angular.module('app');
 
-    module.config(function($stateProvider, $urlRouterProvider) {
-        $stateProvider.state('noprofile', {
-            url: '/noprofile',
-            templateUrl: 'options/states/noprofile/noprofile.html',
-            resolve: stateDependencyResolver('noprofile')
-        });
+    module.config(function($stateProvider) {
+        $stateProvider
+            .state('noprofile', {
+                url: '/noprofile',
+                templateUrl: 'options/states/noprofile/noprofile.html'
+            }
+        );
     });
 });
