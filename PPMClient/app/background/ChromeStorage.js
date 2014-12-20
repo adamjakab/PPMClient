@@ -100,9 +100,8 @@ define([
                 data = cfg.get("local");
             } else if(location == "sync") {
                 var CPDSTR = JSON.stringify(cfg.get("sync"));
-                log("CRYPTING CURRENT PROFILE("+currentProfileName+"):"+CPDSTR);
+                //log("CRYPTING CURRENT PROFILE("+currentProfileName+"):"+CPDSTR);
                 rawSyncStorageData[currentProfileName] = cryptor.encryptAES(CPDSTR, currentMasterKey);
-                //log("rawSyncStorageData:"+JSON.stringify(rawSyncStorageData), "info");
                 data = rawSyncStorageData;
             }
             chromeStorage.set(data, function() {
@@ -202,11 +201,23 @@ define([
      * @returns {Promise}
      */
     var initSyncStorage = function() {
-        log("inizializing sync storage...");
+        log("initializing sync storage...");
         return new Promise(function (fulfill, reject) {
             readFromStorage("sync", null).then(function (data) {
                 rawSyncStorageData = data;
-                fulfill();
+                if(_.isEmpty(getAvailableProfiles())) {
+                    createAndStoreDefaultProfile().then(function() {
+                        fulfill();
+                    }).error(function (e) {
+                        log("Rejected: " + e, "error");
+                        return reject(e);
+                    }).catch(Error, function (e) {
+                        log("Error: " + e, "error");
+                        return reject(e);
+                    });
+                } else {
+                    fulfill();
+                }
             }).error(function (e) {
                 log("Rejected: " + e, "error");
                 return reject(e);
@@ -226,44 +237,40 @@ define([
     var unlockSyncStorage = function(profile, masterKey) {
         profile = profile ? profile : defaultProfileName;
         log("unlocking sync storage profile...");
-
         return new Promise(function (fulfill, reject) {
-            if(!hasProfile(profile) && profile != defaultProfileName) {
+            if(!hasProfile(profile)) {
                 return reject(new Error("Inexistent profile("+profile+")! Available: " + JSON.stringify(getAvailableProfiles())));
             }
-            createAndStoreDefaultProfile().then(function() {
-                if(!masterKey) {
-                    return reject(new Error("No MasterKey supplied to decrypt profile["+profile+"]!"));
-                }
-                log("Trying to decrypt data for profile["+profile+"]...");
-                var CPDENC = rawSyncStorageData[profile];
+            if(!masterKey) {
+                return reject(new Error("No MasterKey supplied to decrypt profile["+profile+"]!"));
+            }
+            log("Trying to decrypt data for profile["+profile+"]...");
+            var CPDENC = rawSyncStorageData[profile];
+            try {
                 var profileDataObject = cryptor.decryptAES(CPDENC, masterKey, true);
-                if(!profileDataObject) {
-                    return reject(new Error("This MasterKey does not open the door!", "info"));
-                }
-                log("PROFILE DATA DECRYPTED", "info");
-                cfg.merge(profileDataObject, "sync");
-                if (!_.isEqual(profileDataObject, cfg.get("sync"))) {
-                    syncStorageChanged = true;
-                }
-                currentProfileName = profile;
-                currentMasterKey = masterKey;
-                //login successful - increasing login count
-                set("sync.chromestorage.login_count", parseInt(get("sync.chromestorage.login_count")) + 1);
-                fulfill();
-            }).error(function (e) {
-                log("Rejected: " + e, "error");
-                return reject(e);
-            }).catch(Error, function (e) {
-                log("Error: " + e, "error");
-                return reject(e);
-            });
+            } catch(e) {
+                profileDataObject = null;
+            }
+            if(!profileDataObject) {
+                return reject(new Error("This MasterKey does not open the door!", "info"));
+            }
+            log("PROFILE DATA DECRYPTED", "info");
+            cfg.merge(profileDataObject, "sync");
+            if (!_.isEqual(profileDataObject, cfg.get("sync"))) {
+                syncStorageChanged = true;
+            }
+            currentProfileName = profile;
+            currentMasterKey = masterKey;
+            //login successful - increasing login count
+            set("sync.chromestorage.login_count", parseInt(get("sync.chromestorage.login_count")) + 1);
+            fulfill();
         });
     };
 
 
     /**
      * Checks if there are storage changes and triggers storage
+     * todo: why are we returning unused Promise
      */
     var checkStorageChanges = function() {
         return new Promise(function (fulfill, reject) {

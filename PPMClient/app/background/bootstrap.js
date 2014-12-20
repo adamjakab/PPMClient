@@ -34,6 +34,9 @@ require(['ParanoiaPasswordManager'], function(PPM) {
     //OMNIBOX COMMANDS
     chrome.omnibox.onInputEntered.addListener(function(cmd) {
         switch(cmd){
+            case "help":
+                alert("You can use one of the following commands: resetStorage");
+                break;
             case "resetStorage":
                 if(confirm("Are you sure you want to reset all local and sync storage to default values?\nAll your configuration will be lost and default settings will be applied!")) {
                     chrome.storage.local.clear();

@@ -115,7 +115,7 @@ define([
          */
         decryptAES: function(cipherText, key, parse) {
             var answer = CryptoJS.AES.decrypt(cipherText, key, AesMode);
-            /*
+            answer = answer.toString(CryptoJS.enc.Utf8);
             if (parse === true) {
                 try {
                     answer = JSON.parse(answer);
@@ -125,8 +125,8 @@ define([
                 } catch (e) {
                     answer = false;
                 }
-            }*/
-            return(answer.toString(CryptoJS.enc.Utf8));
+            }
+            return(answer);
         }
     };
 });
