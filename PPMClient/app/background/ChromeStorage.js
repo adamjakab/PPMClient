@@ -310,6 +310,20 @@ define([
         return answer;
     };
 
+    /**
+     * @param {string} location
+     * @return {ConfigurationManager}
+     */
+    var getConfigByLocation = function(location) {
+        var answer = null;
+        if(location == "local") {
+            answer = localConfig;
+        } else if(location == "sync") {
+            answer = syncConfig;
+        }
+        return answer;
+    };
+
     return {
         /**
          * Init Local and Sync storages
@@ -383,6 +397,7 @@ define([
         },
 
         getAvailableProfiles: getAvailableProfiles,
-        isInitialized: isInitialized
+        isInitialized: isInitialized,
+        getConfigByLocation: getConfigByLocation
     };
 });

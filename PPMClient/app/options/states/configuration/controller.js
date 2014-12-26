@@ -1,7 +1,6 @@
 define([
-    'syncConfig',
     'angular'
-], function (syncConfig) {
+], function () {
     angular.module('app').controller('configuration.controller',
         function ($scope, settings, $state) {
             $scope.settings = settings;
@@ -21,10 +20,10 @@ define([
             }
 
             /**
-             * form can work on any propery of the sync options
+             * form can work on any property of the sync options
              * except for server settings which has specific controller
              */
-            $scope.CFG = syncConfig.getAll();
+            $scope.CFG = CHROMESTORAGE.getConfigByLocation("sync").getAll();
         }
     );
 });
