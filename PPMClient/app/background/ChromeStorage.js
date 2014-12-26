@@ -2,12 +2,13 @@
  * Chrome Storage (local + sync)
  */
 define([
-    'config',
+    'localConfig',
+    'syncConfig',
     'PPMLogger',
     'PPMCryptor',
     'bluebird',
     'underscore'
-], function (cfg, logger, cryptor, Promise, _) {
+], function (localConfig, syncConfig, logger, cryptor, Promise, _) {
     /**
      * @type {object} rawSyncStorageData
      */
@@ -68,10 +69,10 @@ define([
      */
     var readFromStorage = function(location, key) {
         return new Promise(function (fulfill, reject) {
-            if(_.indexOf(['local','sync'], location) == -1) {
+            var chromeStorage = getStorageByLocation(location);
+            if(_.isNull(chromeStorage)) {
                 return reject(new Error("The specified location("+location+") does not exists in chrome.storage!"));
             }
-            var chromeStorage = (location=="local" ? chrome.storage.local : chrome.storage.sync);
             chromeStorage.get(key, function(data) {
                 if (chrome.runtime.lastError) {
                     return reject(chrome.runtime.lastError);
@@ -91,15 +92,15 @@ define([
      */
     var writeToStorage = function(location) {
         return new Promise(function (fulfill, reject) {
-            if (_.indexOf(['local', 'sync'], location) == -1) {
-                return reject(new Error("The specified location(" + location + ") does not exists in chrome.storage!"));
+            var chromeStorage = getStorageByLocation(location);
+            if(_.isNull(chromeStorage)) {
+                return reject(new Error("The specified location("+location+") does not exists in chrome.storage!"));
             }
-            var chromeStorage = (location=="local" ? chrome.storage.local : chrome.storage.sync);
             var data;
             if(location == "local") {
-                data = cfg.get("local");
+                data = localConfig.getAll();
             } else if(location == "sync") {
-                var CPDSTR = JSON.stringify(cfg.get("sync"));
+                var CPDSTR = JSON.stringify(syncConfig.getAll());
                 //log("CRYPTING CURRENT PROFILE("+currentProfileName+"):"+CPDSTR);
                 rawSyncStorageData[currentProfileName] = cryptor.encryptAES(CPDSTR, currentMasterKey);
                 data = rawSyncStorageData;
@@ -176,8 +177,8 @@ define([
         log("inizializing local storage...");
         return new Promise(function (fulfill, reject) {
             readFromStorage("local", null).then(function(data) {
-                log("Loaded LocalStorageData:" + JSON.stringify(data));
-                cfg.merge(data, "local");
+                localConfig.merge(data);
+                log("Merged LocalStorage Data:" + JSON.stringify(localConfig.getAll()));
                 fulfill();
             }).error(function (e) {
                 log("Rejected: " + e, "error");
@@ -244,14 +245,14 @@ define([
                 return reject(new Error("This MasterKey does not open the door!", "info"));
             }
             log("PROFILE DATA DECRYPTED", "info");
-            cfg.merge(profileDataObject, "sync");
+            syncConfig.merge(profileDataObject);
             //
             currentProfileName = profile;
             currentMasterKey = masterKey;
             //
             calculateStorageHashes();
             //login successful - increasing login count
-            set("sync.chromestorage.login_count", parseInt(get("sync.chromestorage.login_count")) + 1);
+            syncConfig.set("chromestorage.login_count", syncConfig.get("chromestorage.login_count") + 1);
             fulfill();
         });
     };
@@ -260,9 +261,9 @@ define([
      * Updated local/sync storage hashes so we can tell if there were changes
      */
     var calculateStorageHashes = function() {
-        localStorageHash = cryptor.md5hash(JSON.stringify(cfg.get("local")));
+        localStorageHash = cryptor.md5hash(JSON.stringify(localConfig.getAll()));
         //log("Local storage hash: " + localStorageHash);
-        syncStorageHash = cryptor.md5hash(JSON.stringify(cfg.get("sync")));
+        syncStorageHash = cryptor.md5hash(JSON.stringify(syncConfig.getAll()));
         //log("Sync storage hash: " + syncStorageHash);
     };
 
@@ -271,7 +272,7 @@ define([
      */
     var checkStorageChanges = function() {
         if (isInitialized()) {
-            if (localStorageHash != cryptor.md5hash(JSON.stringify(cfg.get("local")))) {
+            if (localStorageHash != cryptor.md5hash(JSON.stringify(localConfig.getAll()))) {
                 log("Local Storage changed - triggering storage...");
                 writeToStorage("local").then(function () {
                     log("Local Storage changes persisted");
@@ -281,7 +282,7 @@ define([
                     log("Error: " + e, "error");
                 });
             }
-            if (syncStorageHash != cryptor.md5hash(JSON.stringify(cfg.get("sync")))) {
+            if (syncStorageHash != cryptor.md5hash(JSON.stringify(syncConfig.getAll()))) {
                 log("Sync Storage changed - triggering storage...");
                 writeToStorage("sync").then(function () {
                     log("Sync Storage changes persisted");
@@ -295,28 +296,19 @@ define([
         }
     };
 
-
     /**
-     * Getter
-     * @param key
-     * @returns {*}
+     * @param {string} location
+     * @return {*}
      */
-    var get = function(key) {
-        return(cfg.get(key));
+    var getStorageByLocation = function(location) {
+        var answer = null;
+        if(location == "local") {
+            answer = chrome.storage.local;
+        } else if(location == "sync") {
+            answer = chrome.storage.sync;
+        }
+        return answer;
     };
-
-    /**
-     * Setter
-     * @param key
-     * @param value
-     * @returns {*} - old value
-     */
-    var set = function(key, value) {
-        var oldVal = cfg.set(key, value);
-        var location = _.first(key.split("."));
-        return(oldVal);
-    };
-
 
     return {
         /**
@@ -354,7 +346,8 @@ define([
                 ]).then(function() {
                     currentProfileName = null;
                     currentMasterKey = null;
-                    cfg.resetToDefault();
+                    localConfig.restoreDefaults();
+                    syncConfig.restoreDefaults();
                     log("SHUTDOWN COMPLETED", "info");
                     fulfill();
                 }).error(function(e) {
@@ -376,7 +369,7 @@ define([
         unlockSyncedStorage: function(profile, masterKey) {
             return new Promise(function (fulfill, reject) {
                 unlockSyncStorage(profile, masterKey).then(function() {
-                    log("Loaded configuration: " + JSON.stringify(cfg.getAll()));
+                    log("Loaded configuration: " + JSON.stringify(syncConfig.getAll()));
                     checkStorageChanges();
                     fulfill();
                 }).error(function(e) {
@@ -389,11 +382,7 @@ define([
             });
         },
 
-
-
         getAvailableProfiles: getAvailableProfiles,
-        isInitialized: isInitialized,
-        get:get,
-        set: set
+        isInitialized: isInitialized
     };
 });

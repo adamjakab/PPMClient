@@ -1,8 +1,8 @@
 /**
  * GATracker Tests
  */
-define(['config', 'TestUtils', 'GATracker'],
-    function (cfg, TestUtils, GATracker) {
+define(['TestUtils', 'GATracker'],
+    function (TestUtils, GATracker) {
 
         describe("GATracker Tests", function () {
 

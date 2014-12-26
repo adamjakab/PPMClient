@@ -2,11 +2,11 @@
  * Crypt/Decrypt methods
  */
 define([
-    'config', 'PPMLogger', 'underscore', 'bluebird',
+    'PPMLogger', 'underscore', 'bluebird',
     'CryptoJs/md5', 'CryptoJs/hmac-md5',
     'CryptoJs/sha3',
     'CryptoJs/aes', 'CryptoJsComponents/mode-ctr'
-], function (cfg, logger, _, Promise) {
+], function (logger, _, Promise) {
     /**
      * Log facility
      * @param msg

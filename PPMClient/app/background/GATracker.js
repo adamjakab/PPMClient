@@ -2,10 +2,9 @@
  * Google Analitics usage tracker
  */
 define([
-    'config',
     'bluebird',
     'PPMLogger'
-], function (cfg, Promise, logger) {
+], function (Promise, logger) {
     /**
      * Log facility
      * @param msg

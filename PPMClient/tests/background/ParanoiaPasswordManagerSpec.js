@@ -1,8 +1,8 @@
 /**
  * ParanoiaPasswordManager Tests
  */
-define(['config', 'TestUtils', 'ParanoiaPasswordManager'],
-    function (cfg, TestUtils, ParanoiaPasswordManager) {
+define(['TestUtils', 'ParanoiaPasswordManager'],
+    function (TestUtils, ParanoiaPasswordManager) {
 
         describe("ParanoiaPasswordManager", function () {
             /*

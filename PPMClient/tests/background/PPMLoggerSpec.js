@@ -1,7 +1,7 @@
 /**
  * PPMLogger Tests
  */
-define(['config', 'PPMLogger'], function (cfg, PPMLogger) {
+define(['syncConfig', 'PPMLogger'], function (syncConfig, PPMLogger) {
     describe("PPMLogger Tests", function() {
 
         it("should clean logs", function() {
@@ -11,7 +11,7 @@ define(['config', 'PPMLogger'], function (cfg, PPMLogger) {
 
         it("should not exceed maximum config size", function() {
             PPMLogger.resetLogObjects();
-            var maxLogsObjects = cfg.get("sync.logger.log_objects_to_keep");
+            var maxLogsObjects = syncConfig.get("logger.log_objects_to_keep");
             for(var i=1; i<=(maxLogsObjects+10); i++) {
                 PPMLogger.log("test-"+i, "Test", "info");
                 expect(PPMLogger.getLogObjects().length).toEqual((i<maxLogsObjects?i:maxLogsObjects));
@@ -49,7 +49,7 @@ define(['config', 'PPMLogger'], function (cfg, PPMLogger) {
             spyOn(console, "warn");
             spyOn(console, "error");
             //
-            cfg.set("sync.logger.do_console_logging", true);//enable console logging
+            syncConfig.set("logger.do_console_logging", true);//enable console logging
             var message = "testMessage";
             var logZone = "TestZone";
             //test console.log
@@ -65,7 +65,7 @@ define(['config', 'PPMLogger'], function (cfg, PPMLogger) {
             PPMLogger.log(message, logZone, 'error');
             expect(console.error).toHaveBeenCalled();
             //
-            cfg.set("sync.logger.do_console_logging", false);//disable console logging
+            syncConfig.set("logger.do_console_logging", false);//disable console logging
         });
 
     });

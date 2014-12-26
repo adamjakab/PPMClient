@@ -1,7 +1,7 @@
 /**
  * Logger Interface and Log keeper for in-app log management
  */
-define(['config'], function (cfg) {
+define(['syncConfig'], function (syncConfig) {
     /**
      * @type {Array}
      */
@@ -44,7 +44,7 @@ define(['config'], function (cfg) {
      */
     var memorizeLogObject = function(LO) {
         logs.push(LO);
-        if(logs.length > cfg.get("sync.logger.log_objects_to_keep")) {
+        if(logs.length > syncConfig.get("logger.log_objects_to_keep")) {
             logs.splice(0, 1);
         }
     };
@@ -85,7 +85,7 @@ define(['config'], function (cfg) {
         log: function(msg, zone, type) {
             var LO = getLogObject(msg, zone, type);
             memorizeLogObject(LO);
-            if (cfg.get("sync.logger.do_console_logging")) {
+            if (syncConfig.get("logger.do_console_logging")) {
                 var logString = stringifyLogObject(LO);
                 if(LO.type == "error") {
                     console.error(logString);

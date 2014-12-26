@@ -2,10 +2,10 @@
  * Generic utility methods
  */
 define([
-    'config',
+    'syncConfig',
     'PPMLogger',
     'bluebird'
-], function (cfg, logger, Promise) {
+], function (syncConfig, logger, Promise) {
     /**
      * Log facility
      * @param msg

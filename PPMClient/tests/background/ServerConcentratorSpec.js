@@ -1,8 +1,8 @@
 /**
  * ServerConcentrator Tests
  */
-define(['config', 'TestUtils', 'ServerConcentrator'],
-    function (cfg, TestUtils, ServerConcentrator) {
+define(['TestUtils', 'ServerConcentrator'],
+    function (TestUtils, ServerConcentrator) {
 
         describe("ServerConcentrator Tests", function () {
 

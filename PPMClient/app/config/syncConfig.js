@@ -1,17 +1,14 @@
 /**
- * PPM default configurations
+ * PPM default configuration for Chrome sync storage
  */
-define(['lib/OptionsManager'],
+define(['ConfigurationManager'],
     /**
-     * @param OptionsManager
-     * @return {OptionsManager}
+     * @param ConfigurationManager
+     * @return {ConfigurationManager}
      */
-    function (OptionsManager) {
-        return new OptionsManager({
-            local: {
-                test: 123
-            },
-            sync: {
+    function (ConfigurationManager) {
+        return new ConfigurationManager(
+            {
                 logger: {
                     do_console_logging: true,
                     log_objects_to_keep: 250
@@ -60,6 +57,6 @@ define(['lib/OptionsManager'],
                     autofill_password: true
                 }
             }
-        });
+        );
     }
 );

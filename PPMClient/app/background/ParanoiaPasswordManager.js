@@ -3,7 +3,6 @@
  */
 
 define([
-    'config',
     'PPMLogger',
     'PPMUtils',
     'PPMCryptor',
@@ -11,7 +10,7 @@ define([
     'ChromeStorage',
     'ServerConcentrator',
     'bluebird'
-], function (cfg, logger, utils, cryptor, GATracker, ChromeStorage, ServerConcentrator, Promise) {
+], function (logger, utils, cryptor, GATracker, ChromeStorage, ServerConcentrator, Promise) {
     /**
      * Log facility
      * @param msg
@@ -52,7 +51,6 @@ define([
             return new Promise(function (fulfill, reject) {
                 ChromeStorage.unlockSyncedStorage(profile, masterKey).then(function () {
                     log("You are now logged in!", "info");
-                    log("starting with configuration: " + JSON.stringify(cfg.getAll()));
                     fulfill();
                 }).error(function (e) {
                     if(profile && masterKey) {

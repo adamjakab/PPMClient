@@ -16,12 +16,14 @@ requirejs.config({
     paths: {
         /* PATHS */
         TestUtils: '../../tests/helpers/TestUtils',
-        lib: '../lib',
         CryptoJs: '../../vendor/crypto-js-evanvosberg/build/rollups',
         CryptoJsComponents: '../../vendor/crypto-js-evanvosberg/build/components',
         /* MODULES */
         underscore: '../../vendor/underscore/underscore',
-        bluebird: '../../vendor/bluebird/js/browser/bluebird'
+        bluebird: '../../vendor/bluebird/js/browser/bluebird',
+        ConfigurationManager: '../../vendor/configuration-manager/ConfigurationManager',
+        localConfig: '../config/localConfig',
+        syncConfig: '../config/syncConfig'
     },
     shim: {
     },
@@ -30,9 +32,9 @@ requirejs.config({
 
 
 //bootstrap karma with spec files
-require(['config'], function(cfg) {
+require(['syncConfig'], function(syncConfig) {
     //disable console logging on PPMLogger
-    cfg.set("sync.logger.do_console_logging", false);
+    syncConfig.set("logger.do_console_logging", false);
     require(specs, function() {
         window.__karma__.start();
     });

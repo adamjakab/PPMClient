@@ -1,8 +1,8 @@
 /**
  * PPMUtils Tests
  */
-define(['config', 'TestUtils', 'PPMUtils'],
-    function (cfg, TestUtils, PPMUtils) {
+define(['TestUtils', 'PPMUtils'],
+    function (TestUtils, PPMUtils) {
 
         describe("PPMUtils Tests", function () {
 

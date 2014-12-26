@@ -1,8 +1,8 @@
 /**
  * ChromeStorage Tests
  */
-define(['config', 'TestUtils', 'ChromeStorage'],
-    function (cfg, TestUtils, ChromeStorage) {
+define(['TestUtils', 'ChromeStorage'],
+    function (TestUtils, ChromeStorage) {
 
         describe("ChromeStorage Tests", function () {
             /*

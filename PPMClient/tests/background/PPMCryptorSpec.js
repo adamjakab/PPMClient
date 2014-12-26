@@ -1,8 +1,8 @@
 /**
  * PPMCryptor Tests
  */
-define(['config', 'TestUtils', 'PPMCryptor', 'PPMUtils', 'underscore'],
-    function (cfg, TestUtils, PPMCryptor, PPMUtils, _) {
+define(['TestUtils', 'PPMCryptor', 'PPMUtils', 'underscore'],
+    function (TestUtils, PPMCryptor, PPMUtils, _) {
 
         describe("PPMCryptor Main", function () {
             it("should return Promise on initialize", function () {
