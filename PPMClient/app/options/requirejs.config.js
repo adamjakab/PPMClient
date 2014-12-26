@@ -8,7 +8,10 @@ requirejs.config({
         require: '../../vendor/requirejs/require',
         domReady: '../../vendor/requirejs-domready/domReady',
         underscore: '../../vendor/underscore/underscore',
-        bluebird: '../../vendor/bluebird/js/browser/bluebird'
+        bluebird: '../../vendor/bluebird/js/browser/bluebird',
+        ConfigurationManager: '../../vendor/configuration-manager/ConfigurationManager',
+        localConfig: '../config/localConfig',
+        syncConfig: '../config/syncConfig'
     },
     shim: {
         angular: {
