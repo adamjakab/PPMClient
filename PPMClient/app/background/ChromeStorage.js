@@ -35,26 +35,6 @@ define([
     var currentMasterKey = null;
 
     /**
-     * @type {string} - hash of local storage to be able to tell if there are any changes to persist
-     */
-    var localStorageHash = null;
-
-    /**
-     * @type {string} - hash of sync storage to be able to tell if there are any changes to persist
-     */
-    var syncStorageHash = null;
-
-    /**
-     * @type {number} - how often we will check for changes (ms) - do not overload sync storage (around 15min)
-     */
-    var storageChangeCheckInterval = 15 * 60 * 1000;
-
-    /**
-     * @type {null|int}
-     */
-    var storageChangeCheckTimeoutId = null;
-
-    /**
      * Log facility
      * @param msg
      * @param type
@@ -110,7 +90,6 @@ define([
                     return reject(chrome.runtime.lastError);
                 }
                 log("STORAGE("+location+") STORED.");
-                calculateStorageHashes();
                 fulfill();
             });
         });
@@ -178,6 +157,7 @@ define([
         return new Promise(function (fulfill, reject) {
             readFromStorage("local", null).then(function(data) {
                 localConfig.merge(data);
+                localConfig.addChangeListener(localStorageChangeListener);
                 log("Merged LocalStorage Data:" + JSON.stringify(localConfig.getAll()));
                 fulfill();
             }).error(function (e) {
@@ -249,8 +229,6 @@ define([
             //
             currentProfileName = profile;
             currentMasterKey = masterKey;
-            //
-            calculateStorageHashes();
             //login successful - increasing login count
             syncConfig.set("chromestorage.login_count", syncConfig.get("chromestorage.login_count") + 1);
             fulfill();
@@ -258,42 +236,31 @@ define([
     };
 
     /**
-     * Updated local/sync storage hashes so we can tell if there were changes
+     * Called by ConfigurationManager when data changes
      */
-    var calculateStorageHashes = function() {
-        localStorageHash = cryptor.md5hash(JSON.stringify(localConfig.getAll()));
-        //log("Local storage hash: " + localStorageHash);
-        syncStorageHash = cryptor.md5hash(JSON.stringify(syncConfig.getAll()));
-        //log("Sync storage hash: " + syncStorageHash);
+    var syncStorageChangeListener = function() {
+        log("Sync Storage changed - triggering storage...");
+        writeToStorage("sync").then(function () {
+            log("Sync Storage changes persisted");
+        }).error(function (e) {
+            log("Rejected: " + e, "error");
+        }).catch(Error, function (e) {
+            log("Error: " + e, "error");
+        });
     };
 
     /**
-     * Checks if there are storage changes and triggers storage
+     * Called by ConfigurationManager when data changes
      */
-    var checkStorageChanges = function() {
-        if (isInitialized()) {
-            if (localStorageHash != cryptor.md5hash(JSON.stringify(localConfig.getAll()))) {
-                log("Local Storage changed - triggering storage...");
-                writeToStorage("local").then(function () {
-                    log("Local Storage changes persisted");
-                }).error(function (e) {
-                    log("Rejected: " + e, "error");
-                }).catch(Error, function (e) {
-                    log("Error: " + e, "error");
-                });
-            }
-            if (syncStorageHash != cryptor.md5hash(JSON.stringify(syncConfig.getAll()))) {
-                log("Sync Storage changed - triggering storage...");
-                writeToStorage("sync").then(function () {
-                    log("Sync Storage changes persisted");
-                }).error(function (e) {
-                    log("Rejected: " + e, "error");
-                }).catch(Error, function (e) {
-                    log("Error: " + e, "error");
-                });
-            }
-            storageChangeCheckTimeoutId = _.delay(checkStorageChanges, storageChangeCheckInterval);
-        }
+    var localStorageChangeListener = function() {
+        log("Local Storage changed - triggering storage...");
+        writeToStorage("local").then(function () {
+            log("Local Storage changes persisted");
+        }).error(function (e) {
+            log("Rejected: " + e, "error");
+        }).catch(Error, function (e) {
+            log("Error: " + e, "error");
+        });
     };
 
     /**
@@ -347,20 +314,20 @@ define([
         },
 
         /**
-         * Shut down component -
+         * Shut down component
          * @returns {Promise}
-         * todo: FINISH ME!
          */
         shutdown: function() {
             return new Promise(function (fulfill, reject) {
-                storageChangeCheckTimeoutId = null;
                 Promise.all([
                     writeToStorage("local"),
                     writeToStorage("sync")
                 ]).then(function() {
                     currentProfileName = null;
                     currentMasterKey = null;
+                    localConfig.removeChangeListener(localStorageChangeListener);
                     localConfig.restoreDefaults();
+                    syncConfig.removeChangeListener(syncStorageChangeListener);
                     syncConfig.restoreDefaults();
                     log("SHUTDOWN COMPLETED", "info");
                     fulfill();
@@ -384,7 +351,7 @@ define([
             return new Promise(function (fulfill, reject) {
                 unlockSyncStorage(profile, masterKey).then(function() {
                     log("Loaded configuration: " + JSON.stringify(syncConfig.getAll()));
-                    checkStorageChanges();
+                    syncConfig.addChangeListener(syncStorageChangeListener);
                     fulfill();
                 }).error(function(e) {
                     log(e, "error");

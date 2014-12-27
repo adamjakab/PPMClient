@@ -1,7 +1,6 @@
 <section ng-controller="configuration.controller">
     <div class="page-header">
-        <!--<button ng-click="saveConfiguration();" type="button" class="btn btn-primary pull-right">Save</button>-->
-        <!--<button ng-click="resetConfiguration();" type="button" class="btn btn-default pull-right">Reset</button>-->
+        <button ng-click="dumpConfig();" type="button" class="btn btn-default pull-right">Dump Config to Logs</button>
         <h1>Configuration</h1>
     </div>
     <div class="row">
@@ -15,7 +14,7 @@
                     <tr>
                         <td>
                             <label for="specialchars" class="control-label">
-                                Special characters to use:
+                                Special characters to use
                             </label>
                         </td>
                         <td>
@@ -28,12 +27,28 @@
                         <td colspan="2"><h4>Passcards</h4></td>
                     </tr>
                     <tr>
-                        <td>Default username in new passcards:</td>
-                        <td>{{ CFG.passcard.default_username }}</td>
+                        <td>
+                            <label for="default_username" class="control-label">
+                                Default username for new passcards
+                            </label>
+                        </td>
+                        <td>
+                            <input type="text" ng-model="CFG.passcard.default_username"
+                                   id="default_username" class="form-control" />
+                        </td>
                     </tr>
                     <tr>
-                        <td>Generate password for new passcards:</td>
-                        <td>{{ CFG.passcard.autofill_password }}</td>
+                        <td>
+                            <label for="autofill_password" class="control-label">
+                                Generate password for new passcards
+                            </label>
+                        </td>
+                        <td>
+                            <div class="btn-group" id="autofill_password">
+                                <label class="btn btn-default" ng-class="{'btn-success':CFG.passcard.autofill_password}" ng-model="CFG.passcard.autofill_password" btn-radio="true">Yes</label>
+                                <label class="btn btn-default" ng-class="{'btn-danger':!CFG.passcard.autofill_password}" ng-model="CFG.passcard.autofill_password" btn-radio="false">No</label>
+                            </div>
+                        </td>
                     </tr>
 
                     <tr class="info">
@@ -46,21 +61,39 @@
                             </label>
                         </td>
                         <td>
-                            <input type="checkbox" ng-model="CFG.logger.do_console_logging"
-                                   id="console_logging" />
+                            <div class="btn-group" id="console_logging">
+                                <label class="btn btn-default" ng-class="{'btn-success':CFG.logger.do_console_logging}" ng-model="CFG.logger.do_console_logging" btn-radio="true">Yes</label>
+                                <label class="btn btn-default" ng-class="{'btn-danger':!CFG.logger.do_console_logging}" ng-model="CFG.logger.do_console_logging" btn-radio="false">No</label>
+                            </div>
                         </td>
                     </tr>
                     <tr>
-                        <td>Logs to keep:</td>
-                        <td>{{ CFG.logger.log_objects_to_keep }}</td>
+                        <td>
+                            <label for="log_objects_to_keep" class="control-label">
+                                Logs to keep
+                            </label>
+                        </td>
+                        <td>
+                            <input type="number" ng-model="CFG.logger.log_objects_to_keep"
+                                   id="log_objects_to_keep" class="form-control" />
+                        </td>
                     </tr>
 
                     <tr class="info">
                         <td colspan="2"><h4>Analitics Tracking</h4></td>
                     </tr>
                     <tr>
-                        <td>Enable Google Analytics usage tracking:</td>
-                        <td>{{ CFG.gat.enabled }}</td>
+                        <td>
+                            <label for="gat_enabled" class="control-label">
+                                Enable Google Analytics usage tracking
+                            </label>
+                        </td>
+                        <td>
+                            <div class="btn-group" id="gat_enabled">
+                                <label class="btn btn-default" ng-class="{'btn-success':CFG.gat.enabled}" ng-model="CFG.gat.enabled" btn-radio="true">Yes</label>
+                                <label class="btn btn-default" ng-class="{'btn-danger':!CFG.gat.enabled}" ng-model="CFG.gat.enabled" btn-radio="false">No</label>
+                            </div>
+                        </td>
                     </tr>
 
                 </table>

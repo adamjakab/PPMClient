@@ -23,7 +23,17 @@ define([
              * form can work on any property of the sync options
              * except for server settings which has specific controller
              */
-            $scope.CFG = CHROMESTORAGE.getConfigByLocation("sync").getAll();
+            var SyncConfig = CHROMESTORAGE.getConfigByLocation("sync");
+            $scope.CFG = SyncConfig.getAll();
+
+
+            /**
+             * Temporary - todo: remove me!
+             */
+            $scope.dumpConfig = function() {
+                var cfgStr = JSON.stringify(SyncConfig.getAll());
+                log(cfgStr);
+            }
         }
     );
 });
