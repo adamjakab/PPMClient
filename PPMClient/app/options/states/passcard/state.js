@@ -3,7 +3,7 @@ define([
         'states/passcard/dependencies'
 ],
 function(angular) {
-    var module = angular.module('app');
+    var module = angular.module('optionsApp');
 
     module.config(function($stateProvider) {
         $stateProvider

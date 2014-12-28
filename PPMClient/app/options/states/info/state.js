@@ -3,7 +3,7 @@ define([
         'states/info/dependencies'
 ],
 function(angular) {
-    var module = angular.module('app');
+    var module = angular.module('optionsApp');
 
     module.config(function($stateProvider, $urlRouterProvider) {
         //any unmatched url will go to info state

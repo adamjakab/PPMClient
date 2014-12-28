@@ -8,7 +8,7 @@ define(
         'app.config'
     ],
     function (angular, settings, config) {
-        var app = angular.module('app', config.modules);
+        var app = angular.module('optionsApp', config.modules);
         app.value('settings', settings);
         return (app);
     }
