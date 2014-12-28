@@ -12,10 +12,15 @@ define([
                 PPM.getComponent("LOGGER").log(msg, "OPTIONS(configuration)", type);
             };
 
-            /*
+            /**
+             * Defaults
+             */
+            $scope.logged_in = PPM.isLoggedIn();
+
+            /**
              * If user is not logged in redirect to "noprofile" state
              */
-            if (!CHROMESTORAGE.isInitialized() && !$state.is("noprofile")) {
+            if (!$scope.logged_in && !$state.is("noprofile")) {
                 $state.go("noprofile");
             }
 

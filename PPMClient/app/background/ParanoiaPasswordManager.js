@@ -108,6 +108,10 @@ define([
                 default:
                     return null;
             }
+        },
+
+        isLoggedIn: function() {
+            return(ChromeStorage.hasDecryptedSyncData());
         }
 
     };

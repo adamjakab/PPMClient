@@ -15,19 +15,19 @@ define([
             /**
              * Defaults
              */
-            $scope.logged_in = CHROMESTORAGE.isInitialized();
+            $scope.logged_in = PPM.isLoggedIn();
             $scope.profile = "DEFAULT";
             $scope.masterKey = "";
-            $scope.profiles = CHROMESTORAGE.getAvailableProfiles();//["DEFAULT", "Profile-1", "Profile-2"];
+            $scope.profiles = CHROMESTORAGE.getAvailableProfiles();
 
-            /*
+            /**
              * If user is not logged in redirect to "login" state
              */
             if (!$scope.logged_in && !$state.is("login")) {
                 $state.go("login");
             }
 
-            /*
+            /**
              * If user is logged in redirect to "logout" state
              */
             if ($scope.logged_in && $state.is("login")) {
@@ -41,7 +41,7 @@ define([
                 //window.close();//close popup
                 PPM.login($scope.profile, $scope.masterKey).then(function () {
                     $scope.masterKey = "";
-                    $scope.logged_in = CHROMESTORAGE.isInitialized();
+                    $scope.logged_in = CHROMESTORAGE.hasDecryptedSyncData();
                     $scope.$apply();
                     log("LOGIN OK");
                     $state.go("menu");
@@ -59,7 +59,7 @@ define([
                 //window.close();//close popup
                 PPM.logout().then(function () {
                     $scope.masterKey = "";
-                    $scope.logged_in = CHROMESTORAGE.isInitialized();
+                    $scope.logged_in = CHROMESTORAGE.hasDecryptedSyncData();
                     $scope.$apply();
                     log("LOGOUT OK");
                     UTILS.closeOptionsPage().then(function() {

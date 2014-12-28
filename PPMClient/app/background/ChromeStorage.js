@@ -144,7 +144,7 @@ define([
      * Returns true if storage has been initialized (has decrypted data)
      * @returns {boolean}
      */
-    var isInitialized = function() {
+    var hasDecryptedSyncData = function() {
         return(!_.isNull(currentProfileName) && !_.isNull(currentMasterKey));
     };
 
@@ -325,9 +325,9 @@ define([
                 ]).then(function() {
                     currentProfileName = null;
                     currentMasterKey = null;
-                    localConfig.removeChangeListener(localStorageChangeListener);
+                    localConfig.removeAllChangeListeners();
                     localConfig.restoreDefaults();
-                    syncConfig.removeChangeListener(syncStorageChangeListener);
+                    syncConfig.removeAllChangeListeners();
                     syncConfig.restoreDefaults();
                     log("SHUTDOWN COMPLETED", "info");
                     fulfill();
@@ -364,7 +364,7 @@ define([
         },
 
         getAvailableProfiles: getAvailableProfiles,
-        isInitialized: isInitialized,
+        hasDecryptedSyncData: hasDecryptedSyncData,
         getConfigByLocation: getConfigByLocation
     };
 });

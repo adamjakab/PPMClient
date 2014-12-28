@@ -15,8 +15,7 @@ define([
             /**
              * Defaults
              */
-            $scope.logged_in = CHROMESTORAGE.isInitialized();
-            $scope.profiles = CHROMESTORAGE.getAvailableProfiles();//["DEFAULT", "Profile-1", "Profile-2"];
+            $scope.logged_in = PPM.isLoggedIn();
 
             /*
              * If user is not logged in redirect to "noprofile" state

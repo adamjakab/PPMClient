@@ -15,19 +15,21 @@ define([
             /**
              * Defaults
              */
-            $scope.logged_in = CHROMESTORAGE.isInitialized();
+            $scope.logged_in = PPM.isLoggedIn();
             $scope.passcards = [
                 {name: "Passcard #1"},
                 {name: "Passcard #2"},
                 {name: "Passcard #3"}
             ];
 
-            /*
+            /**
              * If user is not logged in redirect to "login" state
              */
             if (!$scope.logged_in && !$state.is("login")) {
                 $state.go("login");
             }
+
+
 
 
             $scope.openInfoTab = function() {
