@@ -12,6 +12,7 @@ function(angular) {
         $stateProvider
             .state('info', {
                 url: '/info',
+                controller: 'info.controller',
                 templateUrl: 'options/states/info/info.html'
             }
         );

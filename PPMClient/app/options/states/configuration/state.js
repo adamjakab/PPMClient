@@ -9,6 +9,7 @@ function(angular) {
         $stateProvider
             .state('configuration', {
                 url: '/configuration',
+                controller: 'configuration.controller',
                 templateUrl: 'options/states/configuration/configuration.html'
             }
         );

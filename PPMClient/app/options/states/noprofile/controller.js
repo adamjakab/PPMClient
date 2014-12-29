@@ -5,20 +5,15 @@ define([
         function ($scope, settings, $state) {
             $scope.settings = settings;
             var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
-            var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
-            var UTILS = PPM.getComponent("UTILS");
-            /** log shorthand */
-            var log = function (msg, type) {
-                PPM.getComponent("LOGGER").log(msg, "OPTIONS(info)", type);
-            };
 
             /**
-             * Defaults
+             * Check access
+             * If user is logged in redirect to "info" state
              */
             $scope.logged_in = PPM.isLoggedIn();
-
-
-
+            if ($scope.logged_in) {
+                $state.go("info");
+            }
         }
     );
 });

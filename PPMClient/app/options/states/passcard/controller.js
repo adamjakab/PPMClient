@@ -13,16 +13,14 @@ define([
             };
 
             /**
-             * Defaults
-             */
-            $scope.logged_in = PPM.isLoggedIn();
-
-            /*
+             * Check access
              * If user is not logged in redirect to "noprofile" state
              */
-            if (!$scope.logged_in && !$state.is("noprofile")) {
+            $scope.logged_in = PPM.isLoggedIn();
+            if (!$scope.logged_in) {
                 $state.go("noprofile");
             }
+
 
 
         }

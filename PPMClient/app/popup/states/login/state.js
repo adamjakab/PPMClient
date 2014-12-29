@@ -12,10 +12,12 @@ function(angular) {
         $stateProvider
             .state('login', {
                 url: '/login',
+                controller: 'login.controller',
                 templateUrl: 'popup/states/login/login.html'
             })
             .state('logout', {
                 url: '/logout',
+                controller: 'login.controller',
                 templateUrl: 'popup/states/login/logout.html'
             });
     });

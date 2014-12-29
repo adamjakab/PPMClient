@@ -9,6 +9,7 @@ function(angular) {
         $stateProvider
             .state('noprofile', {
                 url: '/noprofile',
+                controller: 'noprofile.controller',
                 templateUrl: 'options/states/noprofile/noprofile.html'
             }
         );

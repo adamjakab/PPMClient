@@ -21,11 +21,8 @@ body {
 }
 
 body > div > .container-fluid {
-    padding: 30px 15px 0;
+    padding: 55px 15px 0;
 }
-
-/* Generic styles */
-button.btn.pull-right{margin-left:10px;}
 
 /* Footer styles */
 .footer > .container {
@@ -35,3 +32,10 @@ button.btn.pull-right{margin-left:10px;}
 .footer > .container .text-muted {
     margin-top: 4px;
 }
+
+/* Structure styles */
+#main section .page-header{margin-top:0;}
+
+/* Generic styles */
+button.btn.pull-right{margin-left:10px;}
+

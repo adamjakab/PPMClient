@@ -12,15 +12,6 @@ define([
                 LOGGER.log(msg, "OPTIONS(log)", type);
             };
 
-            /**
-             * Check access
-             * If user is not logged in redirect to "noprofile" state
-             */
-            $scope.logged_in = PPM.isLoggedIn();
-            if (!$scope.logged_in && !$state.is("noprofile")) {
-                $state.go("noprofile");
-            }
-
             //the log items
             $scope.logItems = logFactory.getLogObjects();
 

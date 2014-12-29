@@ -9,6 +9,7 @@ function(angular) {
         $stateProvider
             .state('passcard', {
                 url: '/passcard',
+                controller: 'passcard.controller',
                 templateUrl: 'options/states/passcard/passcard.html'
             }
         );

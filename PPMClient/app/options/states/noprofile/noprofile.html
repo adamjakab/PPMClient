@@ -1,12 +1,13 @@
-<section ng-controller="noprofile.controller">
+<section>
     <div class="row noprofile">
         <div class="col-md-8 col-md-offset-2">
+            <div class="alert alert-danger" role="alert">
+                <p class="text-center"><strong>You must decrypt one of your profiles before accessing this section!</strong></p>
+            </div>
             <div class="well well-lg">
-                <div class="alert alert-danger" role="alert">
-                    <h3>You have not decrypted any profiles yet!</h3>
-                </div>
-                <p>If you have just installed {{ app_name }}, decrypt the "DEFAULT" profile with password: <code>Paranoia</code>.</p>
-                <p>Available profiles: {{ profiles }}</p>
+                <p>If you have just installed {{ app_name }}, click the icon on the toolbar, select the
+                    "DEFAULT" profile, type <code>Paranoia</code> in the Master Key field and click on the Login button.</p>
+                <p>For any other problems please refer to the Help section.</p>
             </div>
         </div>
     </div>

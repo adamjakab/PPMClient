@@ -9,6 +9,7 @@ function(angular) {
         $stateProvider
             .state('menu', {
                 url: '/menu',
+                controller: 'menu.controller',
                 templateUrl: 'popup/states/menu/menu.html'
             }
         );

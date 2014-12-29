@@ -1,18 +1,20 @@
 <ng-include src="'popup/states/_partials/header.html'"></ng-include>
-<section ng-controller="login.controller" ng-show="logged_in">
+<section ng-show="logged_in">
     <div class="row profileLogout">
-        <form name="logoutForm">
-            <div class="alert alert-warning" role="alert">
-                <p class="text-center">Are you sure you want to log out?</p>
-            </div>
-            <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                <div class="btn-group" role="group">
-                    <button type="button" ng-click="logout()" class="btn btn-danger">Logout</button>
+        <div class="col-md-12">
+            <form name="logoutForm">
+                <div class="alert alert-warning" role="alert">
+                    <p class="text-center">Are you sure you want to log out?</p>
                 </div>
-                <div class="btn-group" role="group">
-                    <button type="button" ui-sref="menu" class="btn btn-default">Cancel</button>
+                <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                    <div class="btn-group" role="group">
+                        <button type="button" ng-click="logout()" class="btn btn-danger">Logout</button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button type="button" ui-sref="menu" class="btn btn-default">Cancel</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </section>
