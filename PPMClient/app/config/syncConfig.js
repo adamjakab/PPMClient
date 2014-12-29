@@ -32,8 +32,8 @@ define(['ConfigurationManager'],
                     login_ip: ""
                 },
                 serverconcentrator: {
-                    server: {
-                        0: {
+                    servers: {
+                        server_0: {
                             name: "Paranoia Master Server",
                             type: "master",
                             url:  "http://localhost:8888",

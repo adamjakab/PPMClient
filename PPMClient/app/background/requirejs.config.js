@@ -9,7 +9,8 @@ requirejs.config({
         bluebird: '../../vendor/bluebird/js/browser/bluebird',
         ConfigurationManager: '../../vendor/configuration-manager/ConfigurationManager',
         localConfig: '../config/localConfig',
-        syncConfig: '../config/syncConfig'
+        syncConfig: '../config/syncConfig',
+        ParanoiaServer: '../lib/ParanoiaServer'
     },
     shim: {},
     deps: ['bootstrap']
