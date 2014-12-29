@@ -110,11 +110,14 @@ define([
                      */
                     var disconnectAndReject = function(error) {
                         var serverMessage = "";
+                        /*
+                        @todo: JSON.parse can throw error so we need try/catch around here
                         if (!_.isUndefined(SCO.xhr.responseText) && _.isObject(JSON.parse(SCO.xhr.responseText))) {
                             var serverResponse = JSON.parse(SCO.xhr.responseText);
                             serverMessage = serverResponse.msg;
                             log("Server says: " + serverMessage, "error");
                         }
+                        */
                         SCO.errorMessage = "_communicateWithServer ERROR: " + error + " " + serverMessage;
                         log("ERROR IN SERVER RESPONSE SCO: " + JSON.stringify(SCO), "error");
                         _putServerInDisconnectedState();
