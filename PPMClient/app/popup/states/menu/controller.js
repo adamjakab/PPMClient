@@ -30,8 +30,6 @@ define([
             }
 
 
-
-
             $scope.openInfoTab = function() {
                 UTILS.openOptionsPage("info").then(function() {
                     window.close();//close popup

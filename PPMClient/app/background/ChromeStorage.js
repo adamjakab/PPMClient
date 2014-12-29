@@ -6,9 +6,10 @@ define([
     'syncConfig',
     'PPMLogger',
     'PPMCryptor',
+    'PPMUtils',
     'bluebird',
     'underscore'
-], function (localConfig, syncConfig, logger, cryptor, Promise, _) {
+], function (localConfig, syncConfig, logger, cryptor, utils, Promise, _) {
     /**
      * @type {object} rawSyncStorageData
      */
@@ -352,6 +353,7 @@ define([
                 unlockSyncStorage(profile, masterKey).then(function() {
                     log("Loaded configuration: " + JSON.stringify(syncConfig.getAll()));
                     syncConfig.addChangeListener(syncStorageChangeListener);
+                    utils.dispatchCustomEvent({type:"logged_in"});
                     fulfill();
                 }).error(function(e) {
                     log(e, "error");

@@ -4,8 +4,9 @@
 define([
     'syncConfig',
     'PPMLogger',
-    'bluebird'
-], function (syncConfig, logger, Promise) {
+    'bluebird',
+    'underscore'
+], function (syncConfig, logger, Promise, _) {
     /**
      * Log facility
      * @param msg
@@ -56,7 +57,6 @@ define([
          */
         openOptionsPage: function(state) {
             return new Promise(function (fulfill, reject) {
-                log("opening options page(state="+state+")...");
                 var matchPageUrl = "chrome-extension://"+chrome.runtime.id+"/app/options.html";
                 var optionsPageUrl = matchPageUrl + (state ? '#/' + state : '');
                 chrome.tabs.query({url:matchPageUrl}, function(tabs) {
@@ -103,6 +103,21 @@ define([
                     }
                 });
             });
+        },
+
+        /**
+         * Fires CustomEvent
+         * @param {{}} eventData
+         */
+        dispatchCustomEvent: function(eventData) {
+            if(_.isObject(eventData) && eventData.hasOwnProperty("type")) {
+                log("Dispatching CustomEvent: " + JSON.stringify(eventData));
+                var customEvent = new CustomEvent("PPM");
+                customEvent.initCustomEvent("PPM", true, true, eventData);
+                document.dispatchEvent(customEvent);
+            } else {
+                log("CustomEvent cannot be dispatched: " + JSON.stringify(eventData));
+            }
         },
 
         /**

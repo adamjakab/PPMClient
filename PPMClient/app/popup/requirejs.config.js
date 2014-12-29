@@ -1,7 +1,9 @@
 requirejs.config({
     baseUrl: 'popup',
     paths: {
-        lib: '../lib',
+        /** PATHS */
+        services: '../services',
+        /** MODULES */
         angular: '../../vendor/angular/angular',
         angular_ui_router: '../../vendor/angular-ui-router/release/angular-ui-router',
         ui_bootstrap: '../../vendor/angular-ui-bootstrap/dist/ui-bootstrap-0.12.0',
