@@ -47,7 +47,18 @@ define(['syncConfig'], function (syncConfig) {
         if(logs.length > syncConfig.get("logger.log_objects_to_keep")) {
             logs.splice(0, 1);
         }
+        //
+        /**
+         * Dispatch CustomEvent of type: new_log_object
+         * Note: we cannot use PPMUtils(dispatchCustomEvent) here because PPMLogger
+         * is a requirejs dependency of PPMUtils so it would create a circular dependency
+         */
+        var customEvent = new CustomEvent("PPM");
+        customEvent.initCustomEvent("PPM", true, true, {type: 'new_log_object'});
+        document.dispatchEvent(customEvent);
     };
+
+
 
     var getHumanReadableDate = function(timestamp, showYr, showMth, showDay, showHr, showMin, showSec, showMSec) {
         showYr = showYr!=false;

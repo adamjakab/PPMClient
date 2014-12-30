@@ -16,17 +16,29 @@ define([
             $scope.logItems = logFactory.getLogObjects();
 
             /**
-             * Auto update logItems on regular time intervals
+             * PPM CustomEvent Listener - listens to events dispatched in background
              */
-            var updateLogItemsPromise = $interval(function() {
-                    $scope.logItems = logFactory.getLogObjects();
-            }, 1000);
+            var customEventListener = function(e) {
+                if(e && _.isObject(e.detail)) {
+                    var eventData = e.detail;
+                    switch (eventData.type) {
+                        case "new_log_object":
+                            $scope.$apply(function() {
+                                $scope.logItems = logFactory.getLogObjects();
+                            });
+                            break;
+                    }
+                }
+            };
+            //add listener to background document
+            chrome.extension.getBackgroundPage().document.addEventListener("PPM", customEventListener, false);
 
             /**
              * Clean up when leaving the controller
              */
             $scope.$on("$destroy", function() {
-                $interval.cancel(updateLogItemsPromise);
+                chrome.extension.getBackgroundPage().document.removeEventListener("PPM", customEventListener, false);
+
             });
 
         }
