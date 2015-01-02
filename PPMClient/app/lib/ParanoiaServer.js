@@ -9,9 +9,6 @@ define([
         'underscore'
     ],
     function(logger, utils, cryptor, Promise, _) {
-        var self = this;
-        var log = function(msg, type) {logger.log(msg, "PPMServer", type);};
-
         /**
          *
          * @param {ConfigurationManager} srvCfg
@@ -198,16 +195,13 @@ define([
                      */
                     var disconnectAndReject = function(error) {
                         var serverMessage = "";
-                        /*
-                        @todo: JSON.parse can throw error so we need try/catch around here
-                        if (!_.isUndefined(SCO.xhr.responseText) && _.isObject(JSON.parse(SCO.xhr.responseText))) {
-                            var serverResponse = JSON.parse(SCO.xhr.responseText);
-                            serverMessage = serverResponse.msg;
-                            log("Server says: " + serverMessage, "error");
+                        if (!_.isUndefined(SCO.xhr.responseText) && !_.isEmpty(SCO.xhr.responseText)) {
+                            try {
+                                var serverResponse = JSON.parse(SCO.xhr.responseText);
+                                serverMessage = serverResponse.msg;
+                            } catch(e) {/**/}
                         }
-                        */
-                        SCO.errorMessage = "_communicateWithServer ERROR: " + error + " " + serverMessage;
-                        log("ERROR IN SERVER RESPONSE SCO: " + JSON.stringify(SCO), "error");
+                        log("ERROR IN SERVER RESPONSE(" + error.message + ") - The server says: " + serverMessage, "error");
                         _putServerInDisconnectedState();
                         utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
                         _setIdle();
@@ -273,7 +267,7 @@ define([
                     serverConfig.set("rightPadLength", SCO.responseObject.rightPadLength);
                 }
                 return true;
-            }
+            };
 
             /**
              * Decrypts received data
