@@ -279,7 +279,8 @@ define([
             };
 
             /**
-             * Encrypts "postDataRaw" on SCO
+             * Encrypts "postDataRaw" and pads the encrypted ciphertext with variable length rubbish
+             * @todo: we should pad ONLY the ciphertext and not the entire string(both server and client mods needed)
              * @param {Object} SCO - the Server Communication Object
              */
             var _encryptRawPostData = function(SCO) {
