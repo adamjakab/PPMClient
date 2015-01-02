@@ -1,5 +1,6 @@
 define([
-    'states/server/controller'
+    'states/server/controller',
+    'services/serverFactory'
 ], function() {
 
 });

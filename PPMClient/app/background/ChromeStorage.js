@@ -331,6 +331,7 @@ define([
                     syncConfig.removeAllChangeListeners();
                     syncConfig.restoreDefaults();
                     log("SHUTDOWN COMPLETED", "info");
+                    utils.dispatchCustomEvent({type:"logged_out"});
                     fulfill();
                 }).error(function(e) {
                     log(e, "error");

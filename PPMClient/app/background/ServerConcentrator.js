@@ -18,15 +18,15 @@ define([
 
     /**
      * Storage for registered servers
-     * @type {ConfigurationManager}
+     * @type {Object}
      */
-    var serverStorage = null;
+    var serverStorage = {};
 
     /**
-     * Storage for
-     * @type {ConfigurationManager}
+     * Storage for passcards
+     * @type {Object}
      */
-    var secretStorage = null;
+    var secretStorage = {};
 
     /**
      * PPM CustomEvent Listener - main event listener
@@ -57,14 +57,20 @@ define([
         var serverCount = serverNames.length;
         if(serverCount>0) {
             log("Registering servers(#"+serverCount+")...");
+            var connectionPromises = [];
             for(var i = 0; i < serverCount; i++) {
                 var serverIndex = serverNames[i];
                 var serverConfig = new ConfigurationManager(syncConfig.get("serverconcentrator.servers."+serverIndex));
                 serverConfig.set("index", serverIndex);
                 log("Registering server("+serverIndex+")...");
                 var server = new ParanoiaServer(serverConfig);
-                server.connect();
-
+                serverStorage[serverIndex] = server;
+                connectionPromises.push(server.connect());
+                Promise.all(connectionPromises).then(function() {
+                    log("All servers are connected.");
+                }).catch(function(e) {
+                    log("Server cannot be connected! " + e.message, "error");
+                });
             }
         } else {
             log("There are no configured servers", "warning");
@@ -75,8 +81,115 @@ define([
      * Disconnects and unregisters all registered servers
      */
     var unregisterServers = function() {
-
+        var disconnectionPromises = [];
+        _.each(serverStorage, function(server) {
+            disconnectionPromises.push(server.disconnect());
+        });
+        Promise.all(disconnectionPromises).finally(function() {
+            serverStorage = {};
+            log("All servers have been disconnected.");
+        }).catch(function(e) {
+            //well, nobody is perfect
+        });
     };
+
+    /**
+     * @return {Number}
+     */
+    var getNumberOfRegisteredServers = function() {
+        return(getRegisteredServerNames().length);
+    };
+
+    /**
+     * @return {number}
+     */
+    var getNumberOfConnectedServers = function() {
+        var answer = 0;
+        _.each(serverStorage, function(server) {
+            var state = server.getServerState();
+            answer += (state.connected === true ? 1 : 0);
+        });
+        return answer;
+    };
+
+    var areAllServersConnected = function() {
+        return(getNumberOfRegisteredServers() == getNumberOfConnectedServers());
+    };
+
+    /**
+     * @return {Array}
+     * @todo: this should be called getRegisteredServerIndexes
+     */
+    var getRegisteredServerNames = function() {
+        return(_.keys(serverStorage));
+    };
+
+    /**
+     * @param {string} index
+     * @return {ParanoiaServer|Boolean}
+     */
+    var getServerByIndex = function(index) {
+        if (_.contains(getRegisteredServerNames(), index)) {
+            return serverStorage[index];
+        }
+        return false;
+    };
+
+    var getServerStateByIndex = function(index) {
+        var server = getServerByIndex(index);
+        if(server) {
+            return(server.getServerState());
+        }
+        return false;
+    };
+
+    var getServerConfigurationByIndex = function(index) {
+        if (_.contains(getRegisteredServerNames(), index)) {
+            return syncConfig.get("serverconcentrator.servers." + index);
+        }
+        return false;
+    };
+
+    /**
+     * Connect a specific registered server
+     * @param {string} index
+     * @return {Promise}
+     */
+    var connectServer = function(index) {
+        return new Promise(function (fulfill, reject) {
+            if (!_.contains(getRegisteredServerNames(), index)) {
+                return reject(new Error("No server by this index("+index+") was found!"));
+            }
+            var server = getServerByIndex(index);
+            server.connect().then(function() {
+                fulfill();
+            }).catch(function(e) {
+                log("Unable to connect server! " + e.message, "error");
+                return reject(e);
+            });
+        });
+    };
+
+    /**
+     * Disconnect a specific registered server
+     * @param {string} index
+     * @return {Promise}
+     */
+    var disconnectServer = function(index) {
+        return new Promise(function (fulfill, reject) {
+            if (!_.contains(getRegisteredServerNames(), index)) {
+                return reject(new Error("No server by this index("+index+") was found!"));
+            }
+            var server = getServerByIndex(index);
+            server.disconnect().then(function() {
+                fulfill();
+            }).catch(function(e) {
+                log("Unable to disconnect server! " + e.message, "error");
+                return reject(e);
+            });
+        });
+    };
+
 
     return {
         /**
@@ -91,8 +204,6 @@ define([
             });
         },
 
-
-
         /**
          * Shut down component
          * @returns {Promise}
@@ -102,6 +213,13 @@ define([
                 log("SHUTDOWN COMPLETED", "info");
                 fulfill();
             });
-        }
+        },
+
+        getRegisteredServerNames: getRegisteredServerNames,
+        areAllServersConnected: areAllServersConnected,
+        getServerStateByIndex: getServerStateByIndex,
+        getServerConfigurationByIndex: getServerConfigurationByIndex,
+        connectServer: connectServer,
+        disconnectServer: disconnectServer
     };
 });

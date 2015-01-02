@@ -9,7 +9,7 @@ define([
         'underscore'
     ],
     function(logger, utils, cryptor, Promise, _) {
-
+        var self = this;
         var log = function(msg, type) {logger.log(msg, "PPMServer", type);};
 
         /**
@@ -28,9 +28,11 @@ define([
                 connected: false,
                 busy: false,
                 /* RECONNECTION AND TIMESTAMPS*/
-                reconnect_after_secs: 10,//if server disconnects after this number of seconds server will try to reconnect
-                disconnection_ts: 0,
-                last_ping_ts: 0,
+                reconnect_after_secs: 30, //if server disconnects after this number of seconds server will try to reconnect
+                connection_ts: 0, //time since server is connected
+                disconnection_ts: 0, //time since server is disconnected
+                last_ping_ts: 0, //last time server was contacted
+                ping_interval: 10, //seconds
                 /* SEED AND DATA PADDING */
                 seed_length_min: 24,
                 seed_length_max: 32,
@@ -43,7 +45,7 @@ define([
                 rightPadLength: null,
                 /**/
                 KASIREF: null,//KeepAliveService Interval Reference
-                KASEI: 5000 //KeepAliveService Execution Interval
+                KASEI: 5 * 1000 //KeepAliveService Execution Interval(ms)
             });
 
             /**
@@ -54,42 +56,128 @@ define([
             var log = function(msg, type) {logger.log(msg, "PPMServer["+serverConfig.get("index")+"]", type);};
             log("Server is created: " + JSON.stringify(serverConfig.getAll()));
 
+            /**
+             * @return {{connected: *, busy: *, seed: *, timestamp: *, leftPadLength: *, rightPadLength: *}}
+             */
+            this.getServerState = function() {
+                return {
+                    connected: serverConfig.get("connected", false),
+                    busy: serverConfig.get("busy", false),
+                    seed: serverConfig.get("seed", false),
+                    timestamp: serverConfig.get("timestamp", false),
+                    leftPadLength: serverConfig.get("leftPadLength", false),
+                    rightPadLength: serverConfig.get("rightPadLength", false),
+                    connection_ts: serverConfig.get("connection_ts", false),
+                    disconnection_ts: serverConfig.get("disconnection_ts", false)
+                };
+            };
+
             //-------------------------------------------------------------------------------------------------- CONNECT
             /**
              * Connects the server
              * @return {Promise}
              */
-            this.connect = function() {
+            var connect = function() {
                 return new Promise(function (fulfill, reject) {
                     if(_isConnected()) {
-                        reject(new Error("Server is already connected"));
+                        return reject(new Error("Server is already connected"));
                     }
-                    _communicateWithServer({
-                        service: "login"
-                    }).then(
-                        /**
-                         *
-                         * @param {Object} SCO - the Server Communication Object
-                         */
-                        function(SCO) {
-                            serverConfig.set("connected", true);
-                            //_keepAliveServiceStart();
-                            log("connected");
-                            log("SCO: " + JSON.stringify(SCO));
-                            fulfill();
-                        }
-                    ).error(function(e) {
-                        log(e, "error");
-                        //return reject(e);
+                    _keepAliveServiceStart();
+                    _communicateWithServer({service: "login"}).then(function(SCO) {
+                        serverConfig.set("connected", true);
+                        serverConfig.set("connection_ts", _getTimestamp());
+                        utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
+                        log("connected");
+                        fulfill();
                     }).catch(function(e) {
-                        log(e, "error");
-                        //return reject(e);
+                        return reject(e);
                     });
+                });
+            };
+            this.connect = connect;
 
+            //----------------------------------------------------------------------------------------------- DISCONNECT
+            /**
+             * Disonnects the server
+             * @return {Promise}
+             */
+            var disconnect = function() {
+                return new Promise(function (fulfill, reject) {
+                    if(!_isConnected()) {
+                        return reject(new Error("Server is already disconnected"));
+                    }
+                    _keepAliveServiceStop();
+                    _communicateWithServer({service: "logout"}).then(function(SCO) {
+                        serverConfig.set("connected", false);
+                        _putServerInDisconnectedState();
+                        utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
+                        log("disconnected");
+                        fulfill();
+                    }).catch(function(e) {
+                        return reject(e);
+                    });
+                });
+            };
+            this.disconnect = disconnect;
+
+            //------------------------------------------------------------------------------------------------------PING
+            var _ping = function() {
+                _communicateWithServer({service: "ping"}).then(function(SCO) {
+                    log("pinged("+SCO.responseObject.msg+")");
+                }).catch(function(e) {
+                    log(e, "error");
                 });
             };
 
-            //----------------------------------------------------------------------------------------------- DISCONNECT
+
+            //-----------------------------------------------------------------------------------KEEP-ALIVE SERVICE(KAS)
+            var _keepAliveServiceStart = function() {
+                if(_.isNull(serverConfig.get("KASIREF"))) {
+                    log("Starting Keep Alive Service");
+                    var KASIREF = setInterval(_keepAliveServiceMainThread, serverConfig.get("KASEI"));
+                    serverConfig.set("KASIREF", KASIREF);
+                }
+            };
+
+            var _keepAliveServiceStop = function() {
+                log("Stopping Keep Alive Service");
+                var KASIREF = serverConfig.get("KASIREF");
+                clearInterval(KASIREF);
+                serverConfig.set("KASIREF", null);
+            };
+
+            var _keepAliveServiceMainThread = function() {
+                //log("KAS...");
+
+                //#1 - CHECK IF CONNECTED AND RECONNECT AUTOMATICALLY IF NOT
+                if (serverConfig.get("connected") !== true){
+                    //WE ARE DISCONNECTED - LET'S WAIT UNTIL "reconnect_after_secs" passes and then lets try to reconnect
+                    var connect_in_secs = serverConfig.get("disconnection_ts") + serverConfig.get("reconnect_after_secs") - _getTimestamp();
+                    //log("SERVER WAS DISCONNECTED @ " + disconnection_ts + " reconnecting in: " + connect_in_secs);
+                    if (connect_in_secs <= 0) {
+                        //serverConfig.set("disconnection_ts", _getTimestamp());//??really - why?
+                        log("trying to reconnect(@"+serverConfig.get("disconnection_ts")+")...");
+                        connect().then(function() {
+                            log("KeepAliveService: reconnection successful");
+                        }).catch(function(e) {
+                            log("KeepAliveService: reconnection failed: " + e.message);
+                        });
+                    }
+                    return;//in any case don't go ahead 'coz we are not connected
+                }
+
+                //BAIL OUT IF BUSY
+                if(_isBusy()) {return;}
+
+                //#2 - CHECK FOR OPERATION IN QUEUE - IF ANY - AND EXECUTE
+
+                //#3 - PING
+                var ping_in_secs = parseInt(serverConfig.get("last_ping_ts"))+parseInt(serverConfig.get("ping_interval"))-_getTimestamp();
+                if (ping_in_secs <= 0) {
+                    serverConfig.set("last_ping_ts", _getTimestamp());
+                    _ping();
+                }
+            };
 
 
 
@@ -121,6 +209,8 @@ define([
                         SCO.errorMessage = "_communicateWithServer ERROR: " + error + " " + serverMessage;
                         log("ERROR IN SERVER RESPONSE SCO: " + JSON.stringify(SCO), "error");
                         _putServerInDisconnectedState();
+                        utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
+                        _setIdle();
                         return reject(error);
                     };
 
@@ -152,6 +242,7 @@ define([
                                 return disconnectAndReject(new Error("Unable to extract Seed or Timestamp or PadLengths from server response"));
                             }
                             _setIdle();
+                            utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
                             fulfill(SCO);
                         }
                     };
@@ -167,7 +258,7 @@ define([
              * @param {Object} SCO - the Server Communication Object
              * @returns Boolean - true on success | false on failure
              */
-            function _register_new_seed(SCO) {
+            var _register_new_seed = function(SCO) {
                 if (SCO.service != "logout") {
                     if (_.isNull(SCO.responseObject.seed)
                         || _.isNull(SCO.responseObject.timestamp)
@@ -238,6 +329,7 @@ define([
                 serverConfig.set("leftPadLength", null);
                 serverConfig.set("rightPadLength", null);
                 serverConfig.set("disconnection_ts", _getTimestamp());
+                serverConfig.set("connection_ts", null);
             };
 
             var _getTimestamp = function() {return(Math.round((Date.now()/1000)));};

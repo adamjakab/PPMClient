@@ -30,6 +30,7 @@ define([
                     }
                 }
             };
+
             //add listener to background document
             chrome.extension.getBackgroundPage().document.addEventListener("PPM", customEventListener, false);
 
@@ -38,8 +39,14 @@ define([
              */
             $scope.$on("$destroy", function() {
                 chrome.extension.getBackgroundPage().document.removeEventListener("PPM", customEventListener, false);
-
             });
+
+            /**
+             * Make sure when closing options tab $scope gets destroyed
+             */
+            window.onbeforeunload = function() {
+                $scope.$destroy();
+            }
 
         }
     );

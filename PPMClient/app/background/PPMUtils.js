@@ -27,6 +27,13 @@ define([
         "extendedLower": "àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ"
     };
 
+    var connectionStateIcons = {
+        unauthenticated: "images/state_icons/unauthenticated.png",
+        authenticated: "images/state_icons/authenticated.png",
+        connected: "images/state_icons/connected.png",
+        disconnected: "images/state_icons/disconnected.png"
+    };
+
     return {
         /**
          * Initialize component
@@ -48,6 +55,38 @@ define([
                 log("SHUTDOWN COMPLETED", "info");
                 fulfill();
             });
+        },
+
+        /**
+         * Fires CustomEvent
+         * @param {{}} eventData
+         */
+        dispatchCustomEvent: function(eventData) {
+            if(_.isObject(eventData) && eventData.hasOwnProperty("type")) {
+                log("Dispatching CustomEvent: " + JSON.stringify(eventData));
+                var customEvent = new CustomEvent("PPM");
+                customEvent.initCustomEvent("PPM", true, true, eventData);
+                document.dispatchEvent(customEvent);
+            } else {
+                log("CustomEvent cannot be dispatched: " + JSON.stringify(eventData));
+            }
+        },
+
+        /**
+         * Sets PPM icon and badge text explicitly if set.
+         * @param {string} [badgeText]
+         * @param {string} [connectionState] - one of: unauthenticated, authenticated, connected, disconnected
+         */
+        updateStateIcon: function(badgeText, connectionState) {
+            //SET BADGE TEXT
+            if(!_.isNull(badgeText) && !_.isEmpty(badgeText)) {
+                chrome.browserAction.setBadgeText({text: badgeText});
+            }
+
+            //SET ICON
+            if(!_.isNull(connectionState) && !_.isEmpty(connectionState) && _.contains(_.keys(connectionStateIcons), connectionState)) {
+                chrome.browserAction.setIcon({path:connectionStateIcons[connectionState]});
+            }
         },
 
         /**
@@ -103,21 +142,6 @@ define([
                     }
                 });
             });
-        },
-
-        /**
-         * Fires CustomEvent
-         * @param {{}} eventData
-         */
-        dispatchCustomEvent: function(eventData) {
-            if(_.isObject(eventData) && eventData.hasOwnProperty("type")) {
-                log("Dispatching CustomEvent: " + JSON.stringify(eventData));
-                var customEvent = new CustomEvent("PPM");
-                customEvent.initCustomEvent("PPM", true, true, eventData);
-                document.dispatchEvent(customEvent);
-            } else {
-                log("CustomEvent cannot be dispatched: " + JSON.stringify(eventData));
-            }
         },
 
         /**

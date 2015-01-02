@@ -18,6 +18,31 @@ define([
      */
     var log = function(msg, type) {logger.log(msg, "PPM", type);};
 
+    /**
+     * PPM CustomEvent Listener - listens to events dispatched in background
+     */
+    var customEventListener = function(e) {
+        if(e && _.isObject(e.detail)) {
+            var eventData = e.detail;
+            switch (eventData.type) {
+                case "logged_in":
+                    utils.updateStateIcon(null, "authenticated");
+                    break;
+                case "logged_out":
+                    utils.updateStateIcon(null, "unauthenticated");
+                    break;
+                case "server_state_change":
+                    var state = ChromeStorage.hasDecryptedSyncData() ? "authenticated" : "unauthenticated";
+                    if(state == "authenticated") {
+                        state = ServerConcentrator.areAllServersConnected() ? "connected" : "disconnected";
+                    }
+                    utils.updateStateIcon(null, state);
+                    break;
+            }
+        }
+    };
+    document.addEventListener("PPM", customEventListener, false);
+
     return {
         /**
          * Inizialize all components
