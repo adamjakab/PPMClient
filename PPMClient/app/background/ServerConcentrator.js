@@ -200,10 +200,33 @@ define([
 
     //----------------------------------------------------------------------------------------------------SECRET STORAGE
     /**
-     * @return {boolean}
+     * @return {Boolean}
      */
     var hasSecrets = function() {
         return(getNumberOfSecrets() != 0);
+    };
+
+    /**
+     * @return {Object}
+     */
+    var getSecrets = function() {
+        return(secretStorage);
+    };
+
+    /**
+     * @param {String} id
+     * @return {Boolean}
+     */
+    var hasSecret = function(id) {
+        return(_.contains(_.keys(secretStorage), id));
+    };
+
+    /**
+     * @param {String} id
+     * @return {Passcard|Boolean}
+     */
+    var getSecret = function(id) {
+        return(hasSecret(id) ? secretStorage[id] : false);
     };
 
     /**
@@ -268,11 +291,15 @@ define([
             });
         },
 
+        //SERVERS
         getRegisteredServerNames: getRegisteredServerNames,
         areAllServersConnected: areAllServersConnected,
         getServerStateByIndex: getServerStateByIndex,
         getServerConfigurationByIndex: getServerConfigurationByIndex,
         connectServer: connectServer,
-        disconnectServer: disconnectServer
+        disconnectServer: disconnectServer,
+        //SECRETS
+        getSecrets: getSecrets,
+        getSecret: getSecret
     };
 });

@@ -37,10 +37,37 @@ define([
             config = pcCfg;
             config.merge({
                 payload: null, //initially we will not have payload
-                sync_state: 0 // 0=OK(in sync), 1=SYNCING, 2=ERROR(out of sync)
+                sync_state: 0 // 0=OK(in sync), 1=MODDED(out of sync)
             });
             log("Initialized with: " + JSON.stringify(config.getAll()));
 
+
+            /**
+             * @param {string} prop
+             * @return {*}
+             */
+            this.get = function(prop) {
+                var answer;
+                if (prop == "all") {
+                    answer = config.getAll();
+                } else {
+                    answer = config.get(prop);
+                }
+                return(answer);
+            };
+
+            /**
+             *
+             * @param {string} prop
+             * @param {*} value
+             */
+            this.set = function(prop, value) {
+                if(prop == "all") {
+                    config.merge(value);
+                } else if(_.contains(["name"], prop)) {
+                    config.set(prop, value);
+                }
+            }
 
 
 

@@ -5,9 +5,9 @@ define([
         function ($scope, settings, $state, $interval, serverFactory) {
             $scope.settings = settings;
             var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
-            var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
             var SERVERCONCENTRATOR = PPM.getComponent("SERVERCONCENTRATOR");
-            var UTILS = PPM.getComponent("UTILS");
+            //var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
+            //var UTILS = PPM.getComponent("UTILS");
             /** log shorthand */
             var log = function (msg, type) {
                 PPM.getComponent("LOGGER").log(msg, "OPTIONS(server)", type);

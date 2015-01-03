@@ -8,6 +8,7 @@ module.exports = function (grunt) {
     //setup project ready for development
     grunt.registerTask("setup-project", "Setup Project files and folders", function () {
         grunt.task.run('angular-ui-bootstrap-build');
+        //@todo: we need to copy ui-bootstrap template folder to app folder
     });
 
     //build project in 'build/tmp' ready to be packed

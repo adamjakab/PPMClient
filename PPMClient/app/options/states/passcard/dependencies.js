@@ -1,5 +1,6 @@
 define([
-    'states/passcard/controller'
+    'states/passcard/controller',
+    'services/secretFactory'
 ], function() {
 
 });
