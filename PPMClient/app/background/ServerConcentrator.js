@@ -6,9 +6,11 @@ define([
     'PPMLogger',
     'ChromeStorage',
     'ParanoiaServer',
+    'Passcard',
+    'ConfigurationManager',
     'bluebird',
     'underscore'
-], function (syncConfig, logger, ChromeStorage, ParanoiaServer, Promise, _) {
+], function (syncConfig, logger, ChromeStorage, ParanoiaServer, Passcard, ConfigurationManager, Promise, _) {
     /**
      * Log facility
      * @param msg
@@ -37,12 +39,17 @@ define([
             var eventData = e.detail;
             switch (eventData.type) {
                 case "logged_in":
-                    log("Caught CustomEvent["+eventData.type+"]");
+                    //log("Caught CustomEvent["+eventData.type+"]");
                     registerServers();
                     break;
                 case "logged_out":
-                    log("Caught CustomEvent["+eventData.type+"]");
+                    //log("Caught CustomEvent["+eventData.type+"]");
                     unregisterServers();
+                    break;
+                case "server_state_change":
+                    if (ChromeStorage.hasDecryptedSyncData() && areAllServersConnected() && !hasSecrets()) {
+                        loadSecrets();
+                    }
                     break;
             }
         }
@@ -93,6 +100,7 @@ define([
         });
     };
 
+    //----------------------------------------------------------------------------------------------------SERVER STORAGE
     /**
      * @return {Number}
      */
@@ -190,7 +198,52 @@ define([
         });
     };
 
+    //----------------------------------------------------------------------------------------------------SECRET STORAGE
+    /**
+     * @return {boolean}
+     */
+    var hasSecrets = function() {
+        return(getNumberOfSecrets() != 0);
+    };
 
+    /**
+     * @return {Number}
+     */
+    var getNumberOfSecrets = function() {
+        return(_.keys(secretStorage).length);
+    };
+
+    /**
+     * Loads all Secrets(all types) from server - only head not payload
+     */
+    var loadSecrets = function() {
+        log("LOADING SECRETS...");
+        var loadPromises = [];
+        _.each(serverStorage, function(server) {
+            loadPromises.push(server.loadIndex());
+        });
+        Promise.any(loadPromises).then(
+            /**
+             * @param {Array} INDEX_ARRAY
+             */
+            function(INDEX_ARRAY) {
+                secretStorage = {};
+                _.each(INDEX_ARRAY, function(data) {
+                    var config = new ConfigurationManager(data);
+                    if(config.get("collection") == "passcard") {
+                        secretStorage[config.get("id")] = new Passcard(config);
+                    } else {
+                        log("Unsupported data type: " + config.get("collection"), "warning")
+                    }
+                });
+                log("NUMBER OF SECRETS LOADED: " + getNumberOfSecrets());
+            }
+        ).catch(function(e) {
+            log("loadSecrets failed: " + e.message);
+        });
+    };
+
+    //------------------------------------------------------------------------------------------------------------------
     return {
         /**
          * Initialize component

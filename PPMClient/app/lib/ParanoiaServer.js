@@ -74,7 +74,7 @@ define([
              * Connects the server
              * @return {Promise}
              */
-            var connect = function() {
+            var _connect = function() {
                 return new Promise(function (fulfill, reject) {
                     if(_isConnected()) {
                         return reject(new Error("Server is already connected"));
@@ -91,14 +91,14 @@ define([
                     });
                 });
             };
-            this.connect = connect;
+            this.connect = _connect;
 
             //----------------------------------------------------------------------------------------------- DISCONNECT
             /**
              * Disonnects the server
              * @return {Promise}
              */
-            var disconnect = function() {
+            var _disconnect = function() {
                 return new Promise(function (fulfill, reject) {
                     if(!_isConnected()) {
                         return reject(new Error("Server is already disconnected"));
@@ -115,7 +115,7 @@ define([
                     });
                 });
             };
-            this.disconnect = disconnect;
+            this.disconnect = _disconnect;
 
             //------------------------------------------------------------------------------------------------------PING
             var _ping = function() {
@@ -126,6 +126,32 @@ define([
                 });
             };
 
+            //------------------------------------------------------------------------------------------------LOAD INDEX
+            /**
+             * Loads index data
+             * @return {Promise}
+             */
+            this.loadIndex = function() {
+                return new Promise(function (fulfill, reject) {
+                    _communicateWithServer({
+                        service: "db",
+                        operation: {
+                            name: "get_index",
+                            params: {
+                                collection: null /*load all collection types*/
+                            }
+                        }
+                    }).then(function (SCO) {
+                       // log("loaded index(" + JSON.stringify(SCO.responseObject) + ")");
+                        if(_.isUndefined(SCO.responseObject.data)) {
+                            return reject(new Error("Server did not return data object!"));
+                        }
+                        fulfill(SCO.responseObject.data);
+                    }).catch(function (e) {
+                        return reject(e);
+                    });
+                });
+            };
 
             //-----------------------------------------------------------------------------------KEEP-ALIVE SERVICE(KAS)
             var _keepAliveServiceStart = function() {
@@ -154,7 +180,7 @@ define([
                     if (connect_in_secs <= 0) {
                         //serverConfig.set("disconnection_ts", _getTimestamp());//??really - why?
                         log("trying to reconnect(@"+serverConfig.get("disconnection_ts")+")...");
-                        connect().then(function() {
+                        _connect().then(function() {
                             log("KeepAliveService: reconnection successful");
                         }).catch(function(e) {
                             log("KeepAliveService: reconnection failed: " + e.message);
@@ -203,7 +229,6 @@ define([
                         }
                         log("ERROR IN SERVER RESPONSE(" + error.message + ") - The server says: " + serverMessage, "error");
                         _putServerInDisconnectedState();
-                        utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
                         _setIdle();
                         return reject(error);
                     };
@@ -211,6 +236,7 @@ define([
                     if (_isBusy()) {
                         return reject(new Error("Server is busy!"));
                     }
+
                     _setBusy();
                     _prepareRawPostData(SCO);
                     _encryptRawPostData(SCO);
@@ -236,7 +262,7 @@ define([
                                 return disconnectAndReject(new Error("Unable to extract Seed or Timestamp or PadLengths from server response"));
                             }
                             _setIdle();
-                            utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
+                            utils.dispatchCustomEvent({type: 'server_xchange', index: serverConfig.get("index")});
                             fulfill(SCO);
                         }
                     };
@@ -311,6 +337,10 @@ define([
                     leftPadLength:      utils.getRandomNumberInRange(serverConfig.get("padding_length_min"), serverConfig.get("padding_length_max")),
                     rightPadLength:     utils.getRandomNumberInRange(serverConfig.get("padding_length_min"), serverConfig.get("padding_length_max"))
                 };
+                //db operation parameters
+                if(!_.isUndefined(SCO.operation)) {
+                    SCO.postDataRaw.operation = SCO.operation;
+                }
             };
 
             /**
@@ -325,6 +355,7 @@ define([
                 serverConfig.set("rightPadLength", null);
                 serverConfig.set("disconnection_ts", _getTimestamp());
                 serverConfig.set("connection_ts", null);
+                utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
             };
 
             var _getTimestamp = function() {return(Math.round((Date.now()/1000)));};

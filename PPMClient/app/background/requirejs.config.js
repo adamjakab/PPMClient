@@ -10,7 +10,8 @@ requirejs.config({
         ConfigurationManager: '../../vendor/configuration-manager/ConfigurationManager',
         localConfig: '../config/localConfig',
         syncConfig: '../config/syncConfig',
-        ParanoiaServer: '../lib/ParanoiaServer'
+        ParanoiaServer: '../lib/ParanoiaServer',
+        Passcard: '../lib/Passcard'
     },
     shim: {},
     deps: ['bootstrap']

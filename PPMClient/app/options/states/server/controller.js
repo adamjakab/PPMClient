@@ -48,6 +48,7 @@ define([
                     var eventData = e.detail;
                     switch (eventData.type) {
                         case "server_state_change":
+                        case "server_xchange":
                             $scope.$apply(function() {
                                 $scope.servers = serverFactory.getServers();
                             });

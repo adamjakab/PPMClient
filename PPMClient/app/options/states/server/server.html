@@ -11,6 +11,7 @@
                     <th>Name</th>
                     <th>Type</th>
                     <th>Url</th>
+                    <th class="col-md-3">Values</th>
                     <th>State</th>
                     <th>Actions</th>
                 </tr>
@@ -19,6 +20,11 @@
                     <td>{{ server.name }}</td>
                     <td>{{ server.type }}</td>
                     <td>{{ server.url }}</td>
+                    <td>
+                        seed: {{ server.seed }}<br />
+                        timestamp: {{ server.timestamp }}<br />
+                        padding: {{ server.leftPadLength }}/{{ server.rightPadLength }}<br />
+                    </td>
                     <td>{{ server.connected ? "Connected" : "Disconnected"}}</td>
                     <td>
                         <button ng-click="connectServer(server.index)" ng-hide="server.connected" class="btn btn-xs btn-success">Connect</button>
