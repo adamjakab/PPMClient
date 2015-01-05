@@ -38,4 +38,4 @@ body > div > .container-fluid {
 
 /* Generic styles */
 button.btn.pull-right{margin-left:10px;}
-
+.input-group-addon i.glyphicon { cursor: pointer; }

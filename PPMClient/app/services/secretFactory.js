@@ -1,7 +1,8 @@
 define([
     'angular',
+    'bluebird',
     'underscore'
-], function (angular, _) {
+], function (angular, Promise, _) {
     angular.module('optionsApp').factory('secretFactory', function() {
         var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
         var SERVERCONCENTRATOR = PPM.getComponent("SERVERCONCENTRATOR");
@@ -23,12 +24,24 @@ define([
                 );
                 return secrets;
             },
+
             getSecret: function(id) {
-                /**
-                 * @param {Passcard} secretObject
-                 */
-                var secretObject = SERVERCONCENTRATOR.getSecret(id);
-                return _.clone(secretObject.get("data"));
+                return new Promise(function (fulfill, reject) {
+                    /**
+                     * @param {Passcard} secretObject
+                     */
+                    var secretObject = SERVERCONCENTRATOR.getSecret(id);
+                    if(!secretObject) {
+                        return reject(new Error("Secret not found!"));
+                    }
+                    var secretData = _.clone(secretObject.get("data"));
+                    secretObject.getSecret().then(function(secretSecret) {
+                        secretData = _.extend(secretData, secretSecret);
+                        fulfill(secretData);
+                    }).catch(function (e) {
+                        return reject(e);
+                    });
+                });
             },
             updateSecret: function(data) {
                 /**

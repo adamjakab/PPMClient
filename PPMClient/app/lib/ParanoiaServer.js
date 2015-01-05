@@ -15,12 +15,8 @@ define([
          * @constructor
          */
         function ParanoiaServer(srvCfg) {
-            /**
-             * @type {ConfigurationManager}
-             */
-            var serverConfig = srvCfg;
             /* @todo: Some of this stuff should be configurable */
-            serverConfig.merge({
+            var serverConfig = new ConfigurationManager({
                 /* STATE */
                 connected: false,
                 busy: false,
@@ -44,6 +40,7 @@ define([
                 KASIREF: null,//KeepAliveService Interval Reference
                 KASEI: 5 * 1000 //KeepAliveService Execution Interval(ms)
             });
+            serverConfig.merge(srvCfg.getAll());
 
             /**
              * Log facility
@@ -153,23 +150,66 @@ define([
                 });
             };
 
-            //-----------------------------------------------------------------------------------------------SAVE SECRET
+            //-----------------------------------------------------------------------------------------------LOAD SECRET
             /**
-             * @param {Object} secretData
+             * Loads payload for passcard and decrypts it to whatever it was before encryption
+             * @param {String} id
              * @return {Promise}
              */
-            this.saveSecret = function(secretData) {
+            this.loadSecret = function(id) {
                 return new Promise(function (fulfill, reject) {
+                    if(_.isUndefined(id) || _.isEmpty(id)) {
+                        return reject(new Error("Undefined Id!"));
+                    }
+                    _communicateWithServer({
+                        service: "db",
+                        operation: {
+                            name: "get_secure",
+                            params: {
+                                _id: id
+                            }
+                        }
+                    }).then(function (SCO) {
+                        if(_.isUndefined(SCO.responseObject.data) || _.isEmpty(SCO.responseObject.data)) {
+                            return reject(new Error("Server did not return payload!"));
+                        }
+                        var decryptedPayload = cryptor.decryptAES(SCO.responseObject.data, serverConfig.get("master_key"), true);
+                        if(!_.isObject(decryptedPayload)) {
+                            return reject(new Error("Unable to decrypt payload!"));
+                        }
+                        fulfill(decryptedPayload);
+                    }).catch(function (e) {
+                        return reject(e);
+                    });
+                });
+            };
+
+            //-----------------------------------------------------------------------------------------------SAVE SECRET
+            /**
+             * Saves data object - whatever is in payload inside object needs to be encrypted before saving
+             * @param {Object} data
+             * @return {Promise}
+             */
+            this.saveSecret = function(data) {
+                return new Promise(function (fulfill, reject) {
+                    if(!_.isUndefined(data["payload"])) {
+                        if(_.isObject(data["payload"])) {
+                            var unencryptedPayload = JSON.stringify(data["payload"]);
+                            data["payload"] = cryptor.encryptAES(unencryptedPayload, serverConfig.get("master_key"));
+                        } else {
+                            delete data["payload"];
+                        }
+                    }
                     _communicateWithServer({
                         service: "db",
                         operation: {
                             name: "save",
                             params: {
-                                itemdata: secretData
+                                itemdata: data
                             }
                         }
                     }).then(function (SCO) {
-                        fulfill(secretData.id);
+                        fulfill(data.id);
                     }).catch(function (e) {
                         return reject(e);
                     });

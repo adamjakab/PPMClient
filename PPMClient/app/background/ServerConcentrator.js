@@ -71,6 +71,11 @@ define([
                         loadSecrets();
                     }
                     break;
+                case "passcard_secret_request":
+                    if (!_.isUndefined(eventData["id"])) {
+                        loadPayloadForSecret(eventData["id"]);
+                    }
+                    break;
             }
         }
     };
@@ -347,6 +352,23 @@ define([
             }
         ).catch(function(e) {
             log("loadSecrets failed: " + e.message);
+        });
+    };
+
+
+    var loadPayloadForSecret = function(id) {
+        log("LOADING PAYLOAD FOR: " + id);
+        var secret = getSecret(id);
+        if(secret === false) {
+            return reject(new Error("This secret does not exist!"));
+        }
+        var server = getServerByIndex("server_0");
+        server.loadSecret(id).then(function(secretData) {
+            //log("Got Secret: " + JSON.stringify(secretData));
+            secret.set("data", secretData, true);
+            secret.set("has_secret", true);
+        }).catch(function(e) {
+            log("Could not get payload: " + e.message);
         });
     };
 

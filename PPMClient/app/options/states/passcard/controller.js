@@ -108,17 +108,31 @@ define([
                 PPM.getComponent("LOGGER").log(msg, "OPTIONS(passcard_edit)", type);
             };
             $scope.item = item;
+            $scope.lockUsername = true;
+            $scope.lockPassword = true;
             $scope.showPassword = false;
+
+            $scope.toggleUsernameLock = function() {
+                $scope.lockUsername = !$scope.lockUsername;
+            };
+
+            $scope.togglePasswordLock = function() {
+                $scope.lockPassword = !$scope.lockPassword;
+            };
 
             $scope.togglePasswordVisibility = function() {
                 $scope.showPassword = !$scope.showPassword;
             };
 
             $scope.generatePassword = function() {
-                var SyncConfig = CHROMESTORAGE.getConfigByLocation("sync");
-                var length = SyncConfig.get("pwgen.length");
-                var options = SyncConfig.get("pwgen.options");
-                $scope.item.password = UTILS.getGibberish(length, length, options);
+                if(!$scope.lockPassword) {
+                    var SyncConfig = CHROMESTORAGE.getConfigByLocation("sync");
+                    var length = SyncConfig.get("pwgen.length");
+                    var options = SyncConfig.get("pwgen.options");
+                    $scope.item.password = UTILS.getGibberish(length, length, options);
+                } else {
+                    //
+                }
             };
 
             $scope.save = function () {

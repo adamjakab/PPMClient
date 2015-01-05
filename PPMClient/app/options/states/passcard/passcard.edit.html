@@ -16,22 +16,43 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="username">User name(login)</label>
-                    <input type="text" id="username" ng-model="item.username" required class="form-control" />
+                    <label for="username">Username</label>
+                    <div class="input-group">
+                        <input type="text" ng-disabled="lockUsername" id="username" ng-model="item.username" required class="form-control" />
+                        <span class="input-group-btn" dropdown>
+                            <button type="button" class="btn dropdown-toggle" dropdown-toggle>
+                                <i ng-show="lockUsername" class="glyphicon glyphicon-lock" aria-hidden="true"></i>
+                                Action <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="" ng-click="toggleUsernameLock()">{{ lockUsername ? "Unlock" : "Lock" }} Username</a></li>
+                            </ul>
+                        </span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label>Password</label>
                     <div class="input-group">
-                        <input ng-show="showPassword" type="text" ng-model="item.password" required class="form-control" />
-                        <input ng-hide="showPassword" type="password" ng-model="item.password" required class="form-control" />
                         <div class="input-group-addon">
                             <i ng-show="showPassword" ng-click="togglePasswordVisibility()" class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
                             <i ng-hide="showPassword" ng-click="togglePasswordVisibility()" class="glyphicon glyphicon-eye-close" aria-hidden="true"></i>
                         </div>
-                        <div class="input-group-addon">
-                            <i ng-click="generatePassword()" class="glyphicon glyphicon-asterisk" aria-hidden="true"></i>
-                        </div>
+
+                        <input ng-show="showPassword" type="text" ng-disabled="lockPassword" ng-model="item.password" required class="form-control" />
+                        <input ng-hide="showPassword" type="password" ng-disabled="lockPassword" ng-model="item.password" required class="form-control" />
+
+                        <span class="input-group-btn" dropdown>
+                            <button type="button" class="btn dropdown-toggle" dropdown-toggle>
+                                <i ng-show="lockPassword" class="glyphicon glyphicon-lock" aria-hidden="true"></i>
+                                Action <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="" ng-click="togglePasswordVisibility()">{{ showPassword ? "Hide" : "Show" }} Password</a></li>
+                                <li><a href="" ng-click="togglePasswordLock()">{{ lockPassword ? "Unlock" : "Lock" }} Password</a></li>
+                                <li><a href="" ng-click="generatePassword()">Generate Password</a></li>
+                            </ul>
+                        </span>
                     </div>
                 </div>
             </form>
