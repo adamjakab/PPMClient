@@ -30,6 +30,26 @@ define([
      */
     var secretStorage = {};
 
+    var checkIntervalTime = 30 * 1000;
+    var checkIntervalRef = null;
+
+    /**
+     * Main check function executed on regular intervals to check if any action is needed
+     */
+    var checkForActions = function() {
+        if (ChromeStorage.hasDecryptedSyncData() && areAllServersConnected() && hasSecrets()) {
+            var saveList = getOutOfSyncSecretList();
+            if(!_.isEmpty(saveList)) {
+                log("OOS: " + JSON.stringify(saveList));
+                saveSecrets(saveList).then(function() {
+                    log("checkForActions finished!");
+                });
+            } else {
+                log("--NO ACTIONS!");
+            }
+        }
+    };
+
     /**
      * PPM CustomEvent Listener - main event listener
      * DISPATCH CUSTOM EVENT LIKE THIS: UTILS.dispatchCustomEvent({type:"logged_in", ...});
@@ -214,6 +234,69 @@ define([
     };
 
     /**
+     * Returns list of IDs where passcards result out of sync
+     * @return {Array}
+     */
+    var getOutOfSyncSecretList = function() {
+        var answer = [];
+        _.each(secretStorage,
+            /**
+             * @param {Passcard} pc
+             * @param {String} id
+             */
+            function(pc, id) {
+                if(pc.get("sync_state") == 1) {
+                    answer.push(id);
+                }
+            }
+        );
+        return answer;
+    };
+
+    /**
+     * Saves all passcards listed in saveList (array of IDs)
+     * @param {Array} saveList
+     * @return {Promise}
+     */
+    var saveSecrets = function(saveList) {
+        return new Promise(function (fulfill, reject) {
+            if(_.isEmpty(saveList)) {
+                return reject(new Error("No secrets to save!"));
+            }
+            Promise.map(saveList, saveSecret, {concurrency: 1}).then(function() {
+                log("Finished saving secrets.");
+                fulfill();
+            }).catch(function(e) {
+                log("Secret save failed: " + e.message);
+                fulfill();
+            });
+        });
+    };
+
+    /**
+     * Saves the passcard identified by id
+     * @param {String} id
+     * @return {Promise}
+     */
+    var saveSecret = function(id) {
+        return new Promise(function (fulfill, reject) {
+            var secret = getSecret(id);
+            if(secret === false) {
+                return reject(new Error("This secret does not exist!"));
+            }
+            var server = getServerByIndex("server_0");
+            var data = secret.get("save_data");
+            server.saveSecret(data).then(function(savedSecretId) {
+                log("Secret saved: " + savedSecretId);
+                secret.set("sync_state", 0);
+                fulfill();
+            }).catch(function(e) {
+                return reject(e);
+            });
+        });
+    };
+
+    /**
      * @param {String} id
      * @return {Boolean}
      */
@@ -254,12 +337,13 @@ define([
                 _.each(INDEX_ARRAY, function(data) {
                     var config = new ConfigurationManager(data);
                     if(config.get("collection") == "passcard") {
-                        secretStorage[config.get("id")] = new Passcard(config);
+                        secretStorage[config.get("_id")] = new Passcard(config);
                     } else {
                         log("Unsupported data type: " + config.get("collection"), "warning")
                     }
                 });
                 log("NUMBER OF SECRETS LOADED: " + getNumberOfSecrets());
+                //log("SECRETS: " + JSON.stringify(secretStorage));
             }
         ).catch(function(e) {
             log("loadSecrets failed: " + e.message);
@@ -275,6 +359,9 @@ define([
         initialize: function() {
             return new Promise(function (fulfill, reject) {
                 document.addEventListener("PPM", customEventListener, false);
+                if (_.isNull(checkIntervalRef)) {
+                    checkIntervalRef = setInterval(checkForActions, checkIntervalTime);
+                }
                 log("INITIALIZED", "info");
                 fulfill();
             });
@@ -286,6 +373,9 @@ define([
          */
         shutdown: function() {
             return new Promise(function (fulfill, reject) {
+                document.removeEventListener("PPM", customEventListener, false);
+                clearInterval(checkIntervalRef);
+                checkIntervalRef = null;
                 log("SHUTDOWN COMPLETED", "info");
                 fulfill();
             });

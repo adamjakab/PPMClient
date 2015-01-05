@@ -19,10 +19,10 @@
                         <label ng-show="secret.sync_state == 0" class="label label-success">In Sync</label>
                         <label ng-show="secret.sync_state == 1" class="label label-warning">Out of Sync</label>
                     <td>
-                        <button class="btn btn-xs btn-primary pull-right" ng-click="editItem(secret.id)" title="Edit">
+                        <button class="btn btn-xs btn-primary pull-right" ng-click="editItem(secret._id)" title="Edit">
                             <i class="glyphicon glyphicon-pencil" aria-hidden="true"></i>
                         </button>
-                        <button class="btn btn-xs btn-danger pull-right" ng-click="deleteItem(secret.id)" title="Delete">
+                        <button class="btn btn-xs btn-danger pull-right" ng-click="deleteItem(secret._id)" title="Delete">
                             <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
                         </button>
                     </td>

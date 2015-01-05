@@ -16,33 +16,28 @@ define([
                      * @param {Passcard} secretObject
                      */
                     function(secretObject) {
-                        secrets[secretObject.get("id")] = secretObject.get("all");
+                        var secretData = _.clone(secretObject.get("data"));
+                        secretData.sync_state = secretObject.get("sync_state");
+                        secrets[secretData._id] = secretData;
                     }
                 );
                 return secrets;
             },
             getSecret: function(id) {
-                var secret = {};
                 /**
                  * @param {Passcard} secretObject
                  */
                 var secretObject = SERVERCONCENTRATOR.getSecret(id);
-                var secretData = {};
-                var props = ["id", "name", "identifier", "username", "password"];
-                _.each(props, function(prop) {
-                    secretData[prop] = secretObject.get(prop);
-                });
-                secret = secretData;
-
-                return secret;
+                return _.clone(secretObject.get("data"));
             },
             updateSecret: function(data) {
                 /**
                  * @param {Passcard} secretObject
                  */
-                var secretObject = SERVERCONCENTRATOR.getSecret(data.id);
-                secretObject.set("all", data);
-
+                var secretObject = SERVERCONCENTRATOR.getSecret(data._id);
+                if(secretObject) {
+                    secretObject.set("data", data);
+                }
             }
         };
     });

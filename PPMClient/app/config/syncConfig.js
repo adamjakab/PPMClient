@@ -46,11 +46,16 @@ define(['ConfigurationManager'],
                 },
                 pwgen: {
                     length: 32,
-                    specialchars: '+-_|!$%&([{}])?^*@#.,:;~',
-                    use_alpha_lower: true,
-                    use_alpha_upper: true,
-                    use_numeric: true,
-                    use_special: true
+                    options: {
+                        "alphaUpper": true,
+                        "alphaLower": true,
+                        "numeric": true,
+                        "special": true, /* #@?!|&%^*+-=.:,;/([{<>}]) */
+                        "extendedUpper": false,
+                        "extendedLower": false,
+                        "extra": false,
+                        "extraChars": ""
+                    }
                 },
                 passcard: {
                     default_username: "",

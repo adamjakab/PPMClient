@@ -226,7 +226,8 @@ define([
                 return reject(new Error("This MasterKey does not open the door!", "info"));
             }
             log("PROFILE DATA DECRYPTED", "info");
-            syncConfig.merge(profileDataObject);
+            //calling merge on syncConfig with "deep" option true so we deep-merge the objects
+            syncConfig.merge(profileDataObject, false, true);
             //
             currentProfileName = profile;
             currentMasterKey = masterKey;

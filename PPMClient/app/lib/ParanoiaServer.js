@@ -153,6 +153,29 @@ define([
                 });
             };
 
+            //-----------------------------------------------------------------------------------------------SAVE SECRET
+            /**
+             * @param {Object} secretData
+             * @return {Promise}
+             */
+            this.saveSecret = function(secretData) {
+                return new Promise(function (fulfill, reject) {
+                    _communicateWithServer({
+                        service: "db",
+                        operation: {
+                            name: "save",
+                            params: {
+                                itemdata: secretData
+                            }
+                        }
+                    }).then(function (SCO) {
+                        fulfill(secretData.id);
+                    }).catch(function (e) {
+                        return reject(e);
+                    });
+                });
+            };
+
             //-----------------------------------------------------------------------------------KEEP-ALIVE SERVICE(KAS)
             var _keepAliveServiceStart = function() {
                 if(_.isNull(serverConfig.get("KASIREF"))) {

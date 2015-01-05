@@ -252,8 +252,14 @@ define([
          */
         getRandomNumberInRange: function(min, max) {
             return(min + Math.round(Math.random()*(max-min)));
+        },
+
+        /**
+         * @todo: this should be aligned with server time
+         * @return {number}
+         */
+        getTimestamp: function() {
+            return Math.floor(Date.now()/1000);
         }
-
-
     };
 });

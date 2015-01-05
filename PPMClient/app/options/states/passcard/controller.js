@@ -1,6 +1,6 @@
 define([
-    'angular'
-], function () {
+    'angular', 'underscore'
+], function (angular, _) {
     angular.module('optionsApp').controller('passcard.controller',
         function ($scope, settings, $state, $interval, secretFactory, $modal) {
             $scope.settings = settings;
@@ -32,6 +32,7 @@ define([
                 var modalInstance = $modal.open({
                     templateUrl: 'options/states/passcard/passcard.edit.html',
                     controller: 'passcard.edit.controller',
+                    size: 'lg',
                     backdrop: 'static',
                     backdropClass: 'modalBackdrop',
                     resolve: {
@@ -63,8 +64,10 @@ define([
                     var eventData = e.detail;
                     switch (eventData.type) {
                         case "passcard_change":
-                            $scope.$apply(function() {
-                                $scope.secrets = secretFactory.getSecrets();
+                            _.defer(function() {
+                                $scope.$apply(function() {
+                                    $scope.secrets = secretFactory.getSecrets();
+                                });
                             });
                             break;
                     }
@@ -98,11 +101,25 @@ define([
     angular.module('optionsApp').controller('passcard.edit.controller',
         function ($scope, $modalInstance, item) {
             var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
+            var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
+            var UTILS = PPM.getComponent("UTILS");
             /** log shorthand */
             var log = function (msg, type) {
                 PPM.getComponent("LOGGER").log(msg, "OPTIONS(passcard_edit)", type);
             };
             $scope.item = item;
+            $scope.showPassword = false;
+
+            $scope.togglePasswordVisibility = function() {
+                $scope.showPassword = !$scope.showPassword;
+            };
+
+            $scope.generatePassword = function() {
+                var SyncConfig = CHROMESTORAGE.getConfigByLocation("sync");
+                var length = SyncConfig.get("pwgen.length");
+                var options = SyncConfig.get("pwgen.options");
+                $scope.item.password = UTILS.getGibberish(length, length, options);
+            };
 
             $scope.save = function () {
                 $modalInstance.close($scope.item);
