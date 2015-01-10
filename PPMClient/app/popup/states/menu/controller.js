@@ -2,7 +2,7 @@ define([
     'angular'
 ], function () {
     angular.module('popupApp').controller('menu.controller',
-        function ($scope, settings, $state) {
+        function ($scope, settings, $state, $interval, secretFactory) {
             $scope.settings = settings;
             var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
             var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
@@ -13,48 +13,72 @@ define([
             };
 
             /**
-             * Defaults
-             */
-            $scope.logged_in = PPM.isLoggedIn();
-            $scope.passcards = [
-                {name: "Passcard #1"},
-                {name: "Passcard #2"},
-                {name: "Passcard #3"}
-            ];
-
-            /**
+             * Check access
              * If user is not logged in redirect to "login" state
              */
-            if (!$scope.logged_in && !$state.is("login")) {
+            $scope.logged_in = PPM.isLoggedIn();
+            if (!$scope.logged_in) {
                 $state.go("login");
             }
 
+            $scope.passcards = secretFactory.getSecrets();
 
-            $scope.openInfoTab = function() {
-                UTILS.openOptionsPage("info").then(function() {
+
+
+
+            /**
+             * @param {String} id
+             */
+            $scope.fillInPasscard = function(id) {
+                log("FILL IN PASSCARD: " + id);
+            };
+
+            /**
+             * @param {String} id
+             */
+            $scope.editPasscard = function(id) {
+                log("EDIT PASSCARD: " + id);
+            };
+
+            /**
+             * @param {String} id
+             */
+            $scope.copyPassword = function(id) {
+                log("COPY PASSWORD: " + id);
+            };
+
+            /**
+             * @param {String} id
+             */
+            $scope.copyUsername = function(id) {
+                log("COPY USERNAME: " + id);
+            };
+
+            /**
+             *
+             */
+            $scope.openPasswordGenerator = function() {
+                log("Password Generator");
+            };
+
+            /**
+             *
+             */
+            $scope.registerNewPasscard = function() {
+                log("Register New Passcard");
+            };
+
+
+            /**
+             * Opens options page on the requested tab
+             * @param {String} tabName
+             */
+            $scope.openOptionsTab = function(tabName) {
+                UTILS.openOptionsPage(tabName).then(function() {
                     window.close();//close popup
                 });
             };
 
-            $scope.openConfigurationTab = function() {
-                UTILS.openOptionsPage("configuration").then(function() {
-                    window.close();//close popup
-                });
-            };
-
-            /**
-             * @param {object} PC
-             */
-            $scope.fillInPasscard = function(PC) {
-                log("FILL IN PASSCARD: " + PC.name);
-            };
-
-            /**
-             * @param {object} PC
-             */
-            $scope.copyUsername = function(PC) {
-                log("COPY USERNAME: " + PC.name);
-            }
         }
     );
 });

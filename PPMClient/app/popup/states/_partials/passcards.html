@@ -1,0 +1,32 @@
+<!--PASSCARDS START HERE-->
+<ul class="nav nav-pills nav-stacked passcards">
+    <li class="passcard" ng-repeat="PC in passcards">
+        <ul class="nav nav-pills nav-multi-action">
+            <li class="main">
+                <a ng-click="fillInPasscard(PC._id)">
+                    <span class="glyphicon glyphicon-lock" aria-hidden="true"></span> {{ PC.name }}
+                </a>
+            </li>
+
+            <li class="action pull-right">
+                <a title="Edit" ng-click="editPasscard(PC._id)">
+                    <span class="glyphicon glyphicon-cog"></span>
+                </a>
+            </li>
+
+            <li class="action pull-right">
+                <a title="Copy Password" ng-click="copyPassword(PC._id)">
+                    <span class="glyphicon glyphicon-flash"></span>
+                </a>
+            </li>
+
+            <li class="action pull-right">
+                <a title="Copy Username" ng-click="copyUsername(PC._id)">
+                    <span class="glyphicon glyphicon-user"></span>
+                </a>
+            </li>
+
+        </ul>
+    </li>
+</ul>
+<!--PASSCARDS END HERE-->

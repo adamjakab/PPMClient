@@ -139,10 +139,7 @@ define([
                 var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
                 var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
                 var UTILS = PPM.getComponent("UTILS");
-                /** log shorthand */
-                var log = function (msg, type) {
-                    PPM.getComponent("LOGGER").log(msg, "OPTIONS(passcard_edit)", type);
-                };
+
                 $scope.item = null;
                 $scope.lockUsername = true;
                 $scope.lockPassword = true;
@@ -203,20 +200,11 @@ define([
      * Passcard Delete Modal Controller
      */
     angular.module('optionsApp').controller('passcard.delete.controller', [
-            '$scope', '$modalInstance', 'secretFactory', 'data',
-            function ($scope, $modalInstance, secretFactory, data) {
-                var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
-                var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
-                var UTILS = PPM.getComponent("UTILS");
-                /** log shorthand */
-                var log = function (msg, type) {
-                    PPM.getComponent("LOGGER").log(msg, "OPTIONS(passcard_edit)", type);
-                };
-
+            '$scope', '$modalInstance', 'data',
+            function ($scope, $modalInstance, data) {
                 $scope.data = data;
 
-
-                $scope.delete = function () {
+                $scope.remove = function () {
                     $modalInstance.close();
                 };
 

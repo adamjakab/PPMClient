@@ -3,7 +3,7 @@ define([
     'bluebird',
     'underscore'
 ], function (angular, Promise, _) {
-    angular.module('optionsApp').factory('secretFactory', function() {
+    angular.module('popupApp').factory('secretFactory', function() {
         var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
         var SERVERCONCENTRATOR = PPM.getComponent("SERVERCONCENTRATOR");
 
@@ -17,7 +17,7 @@ define([
              * @return {{}}
              */
             getSecrets: function() {
-                var secrets = {};
+                var secrets = [];
                 var secretStorage = SERVERCONCENTRATOR.getSecrets();
 
                 _.each(secretStorage,
@@ -29,7 +29,7 @@ define([
                         if(_.contains([0,1], sync_state)) {
                             var secretData = _.clone(secretObject.get("data"));
                             secretData.sync_state = sync_state;
-                            secrets[secretData._id] = secretData;
+                            secrets.push(secretData);
                         }
                     }
                 );
@@ -78,25 +78,7 @@ define([
              */
             createSecret: function() {
                 return SERVERCONCENTRATOR.createSecret();
-            },
-
-            /**
-             * Deletes a specific secret
-             * if new(sync_state=3) it will be simply removed from secretStorage
-             * otherwise it will be marked for remote storage deletion(sync_state=2)
-             *
-             * @param {String} id
-             * @param {Boolean} [force] - set true to delete secret in any state
-             */
-            deleteSecret: function(id, force) {
-                var secretObject = SERVERCONCENTRATOR.getSecret(id);
-                if(secretObject) {
-                    if(secretObject.get("sync_state")==3 || force === true) {
-                        SERVERCONCENTRATOR.deleteSecret(id);
-                    }
-                }
             }
-
         };
     });
 });

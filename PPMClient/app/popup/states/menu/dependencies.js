@@ -1,5 +1,6 @@
 define([
-    'states/menu/controller'
+    'states/menu/controller',
+    'services/secretFactory'
 ], function() {
 
 });

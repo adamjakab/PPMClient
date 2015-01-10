@@ -2,7 +2,7 @@ requirejs.config({
     baseUrl: 'popup',
     paths: {
         /** PATHS */
-        services: '../services',
+        vendor: '../../vendor',
         /** MODULES */
         angular: '../../vendor/angular/angular',
         angular_ui_router: '../../vendor/angular-ui-router/release/angular-ui-router',

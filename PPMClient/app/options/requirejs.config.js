@@ -2,7 +2,6 @@ requirejs.config({
     baseUrl: 'options',
     paths: {
         /** PATHS */
-        services: '../services',
         vendor: '../../vendor',
         /** MODULES */
         angular: '../../vendor/angular/angular',

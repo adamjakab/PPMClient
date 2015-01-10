@@ -2,35 +2,40 @@
 <section ng-show="logged_in">
     <div class="row profileMenu">
         <div class="col-md-12">
-            <ul class="nav nav-pills nav-stacked">
-                <!--PASSCARDS START HERE-->
-                <li role="presentation" ng-repeat="PC in passcards">
-                    <div ng-include="'popup/states/_partials/passcard_item.html'"></div>
-                </li>
-                <!--PASSCARDS END HERE-->
 
+            <ng-include src="'popup/states/_partials/passcards.html'"></ng-include>
+
+            <ul class="nav nav-pills nav-stacked utilities">
                 <li role="presentation"><hr /></li>
                 <li role="presentation">
-                    <a href="#">
+                    <a ng-click="registerNewPasscard();">
                         <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> New Passcard
                     </a>
                 </li>
+
                 <li role="presentation">
-                    <a href="#">
+                    <a ng-click="openPasswordGenerator();">
                         <span class="glyphicon glyphicon-flash" aria-hidden="true"></span> Password Generator
                     </a>
                 </li>
+
                 <li role="presentation">
-                    <a ng-click="openConfigurationTab();">
-                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Configuration
-                    </a>
-                </li>
-                <li role="presentation">
-                    <a ng-click="openInfoTab();">
-                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Information
+                    <a ng-click="openOptionsTab('passcard');">
+                        <span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Passcard Management
                     </a>
                 </li>
 
+                <li role="presentation">
+                    <a ng-click="openOptionsTab('configuration');">
+                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Configuration
+                    </a>
+                </li>
+
+                <li role="presentation">
+                    <a ng-click="openOptionsTab('info');">
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Information
+                    </a>
+                </li>
 
                 <li role="presentation"><hr /></li>
                 <li role="presentation">
@@ -39,6 +44,7 @@
                     </a>
                 </li>
             </ul>
+
         </div>
     </div>
 </section>
