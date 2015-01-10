@@ -84,7 +84,6 @@ define([
              * @param {string} prop
              * @param {*} value
              * @param {Boolean} [noSyncCheck] - Force not to set sync-sate (usually when loading and setting username/pwd from payload)
-             * //@todo: getSaveData does NOT have username/pwd so it does not work for pwdchange comparison!
              */
             var set = function(prop, value, noSyncCheck) {
                 noSyncCheck = (noSyncCheck === true);
@@ -103,7 +102,7 @@ define([
                 if(!noSyncCheck && !_.isEqual(before, after)) {
                     config.set("sync_state", 1);
                     config.set("data.modification_ts", utils.getTimestamp());
-                    if(before["password"] != after["password"]) {
+                    if(before["payload"]["password"] != after["payload"]["password"]) {
                         config.set("data.pw_change_ts", utils.getTimestamp());
                     }
                 }
@@ -135,11 +134,11 @@ define([
                             fulfill({username: config.get("data.username"), password: config.get("data.password")});
                         }
                     }, 250);
-                    var secretWaitTimeout = setTimeout(function() {
+                    setTimeout(function() {
                         clearInterval(secretWaitInterval);
                         secretWaitInterval = null;
-                        return reject(new Error("GEttin secret payload has timed out!"));
-                    }, 30*1000);
+                        return reject(new Error("Getting secret payload has timed out!"));
+                    }, 30 * 1000);
                 });
             };
 

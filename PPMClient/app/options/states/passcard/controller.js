@@ -36,8 +36,8 @@ define([
                     backdrop: 'static',
                     backdropClass: 'modalBackdrop',
                     resolve: {
-                        item: function () {
-                            return secretFactory.getSecret(id);
+                        id: function () {
+                            return id;
                         }
                     }
                 });
@@ -98,51 +98,61 @@ define([
     /**
      * Passcard Edit Modal Controller
      */
-    angular.module('optionsApp').controller('passcard.edit.controller',
-        function ($scope, $modalInstance, item) {
-            var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
-            var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
-            var UTILS = PPM.getComponent("UTILS");
-            /** log shorthand */
-            var log = function (msg, type) {
-                PPM.getComponent("LOGGER").log(msg, "OPTIONS(passcard_edit)", type);
-            };
-            $scope.item = item;
-            $scope.lockUsername = true;
-            $scope.lockPassword = true;
-            $scope.showPassword = false;
+    angular.module('optionsApp').controller('passcard.edit.controller', [
+            '$scope', '$modalInstance', 'secretFactory', 'id',
+            function ($scope, $modalInstance, secretFactory, id) {
+                var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
+                var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
+                var UTILS = PPM.getComponent("UTILS");
+                /** log shorthand */
+                var log = function (msg, type) {
+                    PPM.getComponent("LOGGER").log(msg, "OPTIONS(passcard_edit)", type);
+                };
+                $scope.item = null;
+                $scope.lockUsername = true;
+                $scope.lockPassword = true;
+                $scope.showPassword = false;
 
-            $scope.toggleUsernameLock = function() {
-                $scope.lockUsername = !$scope.lockUsername;
-            };
+                secretFactory.getSecret(id).then(function(item) {
+                    _.defer(function() {
+                        $scope.$apply(function() {
+                            $scope.item = item;
+                        });
+                    });
+                });
 
-            $scope.togglePasswordLock = function() {
-                $scope.lockPassword = !$scope.lockPassword;
-            };
+                $scope.toggleUsernameLock = function() {
+                    $scope.lockUsername = !$scope.lockUsername;
+                };
 
-            $scope.togglePasswordVisibility = function() {
-                $scope.showPassword = !$scope.showPassword;
-            };
+                $scope.togglePasswordLock = function() {
+                    $scope.lockPassword = !$scope.lockPassword;
+                };
 
-            $scope.generatePassword = function() {
-                if(!$scope.lockPassword) {
-                    var SyncConfig = CHROMESTORAGE.getConfigByLocation("sync");
-                    var length = SyncConfig.get("pwgen.length");
-                    var options = SyncConfig.get("pwgen.options");
-                    $scope.item.password = UTILS.getGibberish(length, length, options);
-                } else {
-                    //
-                }
-            };
+                $scope.togglePasswordVisibility = function() {
+                    $scope.showPassword = !$scope.showPassword;
+                };
 
-            $scope.save = function () {
-                $modalInstance.close($scope.item);
-            };
+                $scope.generatePassword = function() {
+                    if(!$scope.lockPassword) {
+                        var SyncConfig = CHROMESTORAGE.getConfigByLocation("sync");
+                        var length = SyncConfig.get("pwgen.length");
+                        var options = SyncConfig.get("pwgen.options");
+                        $scope.item.password = UTILS.getGibberish(length, length, options);
+                    } else {
+                        //
+                    }
+                };
 
-            $scope.cancel = function () {
-                $modalInstance.dismiss('cancel');
-            };
+                $scope.save = function () {
+                    $modalInstance.close($scope.item);
+                };
 
-        }
+                $scope.cancel = function () {
+                    $modalInstance.dismiss('cancel');
+                };
+
+            }
+        ]
     );
 });

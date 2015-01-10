@@ -75,7 +75,7 @@ define([
         },
 
         /**
-         * Returns Md5 hash - if key is supplied Hmac is used
+         * Returns Md5 hash - if key is supplied HmacMD5 is used
          * @param {string} txt
          * @param {string} [key]
          * @returns {string}

@@ -27,6 +27,7 @@ define([
 
             getSecret: function(id) {
                 return new Promise(function (fulfill, reject) {
+                    console.log("Getting secret: " + id);
                     /**
                      * @param {Passcard} secretObject
                      */
@@ -43,6 +44,7 @@ define([
                     });
                 });
             },
+
             updateSecret: function(data) {
                 /**
                  * @param {Passcard} secretObject

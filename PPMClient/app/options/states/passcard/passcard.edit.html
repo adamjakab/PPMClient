@@ -2,7 +2,12 @@
     <div class="pull-right text-info">{{item._id}}</div>
     <h3 class="modal-title">Edit Passcard</h3>
 </div>
-<div class="modal-body">
+<!--Waiting for secret to load-->
+<div class="modal-body" ng-hide="item">
+    waiting for secret data to load...
+</div>
+<!--Secret has been loaded so show Form-->
+<div class="modal-body" ng-show="item">
     <div class="row">
         <div class="col-md-9">
             <form>
@@ -69,5 +74,5 @@
 </div>
 <div class="modal-footer">
     <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-    <button class="btn btn-primary" ng-click="save()">Save</button>
+    <button class="btn btn-primary" ng-show="item" ng-click="save()">Save</button>
 </div>

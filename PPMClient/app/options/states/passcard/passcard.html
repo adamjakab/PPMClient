@@ -9,12 +9,18 @@
                 <tr>
                     <th>Name</th>
                     <th>Identifier</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th>Pwd Changed</th>
                     <th class="col-md-1">State</th>
                     <th class="col-md-1">Actions</th>
                 </tr>
                 <tr ng-repeat="secret in secrets">
                     <td>{{ secret.name }}</td>
                     <td>{{ secret.identifier }}</td>
+                    <td>{{ (secret.creation_ts*1000) | date:'yyyy-MM-dd' }}</td>
+                    <td>{{ (secret.modification_ts*1000) | date:'yyyy-MM-dd' }}</td>
+                    <td>{{ (secret.pw_change_ts*1000) | date:'yyyy-MM-dd' }}</td>
                     <td>
                         <label ng-show="secret.sync_state == 0" class="label label-success">In Sync</label>
                         <label ng-show="secret.sync_state == 1" class="label label-warning">Out of Sync</label>
