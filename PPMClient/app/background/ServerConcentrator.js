@@ -4,13 +4,14 @@
 define([
     'syncConfig',
     'PPMLogger',
+    'PPMUtils',
     'ChromeStorage',
     'ParanoiaServer',
     'Passcard',
     'ConfigurationManager',
     'bluebird',
     'underscore'
-], function (syncConfig, logger, ChromeStorage, ParanoiaServer, Passcard, ConfigurationManager, Promise, _) {
+], function (syncConfig, logger, PPMUtils, ChromeStorage, ParanoiaServer, Passcard, ConfigurationManager, Promise, _) {
     /**
      * Log facility
      * @param msg
@@ -42,10 +43,10 @@ define([
             if(!_.isEmpty(saveList)) {
                 log("OOS: " + JSON.stringify(saveList));
                 saveSecrets(saveList).then(function() {
-                    log("checkForActions finished!");
+                    log("checkForActions finished - all items are now in sync with remote");
                 });
             } else {
-                log("--NO ACTIONS!");
+                //log("--NO ACTIONS!");
             }
         }
     };
@@ -239,7 +240,7 @@ define([
     };
 
     /**
-     * Returns list of IDs where passcards result out of sync
+     * Returns list of IDs where passcards result out of sync(1) or deleted(2)
      * @return {Array}
      */
     var getOutOfSyncSecretList = function() {
@@ -250,7 +251,7 @@ define([
              * @param {String} id
              */
             function(pc, id) {
-                if(pc.get("sync_state") == 1) {
+                if(_.contains([1,2], pc.get("sync_state"))) {
                     answer.push(id);
                 }
             }
@@ -279,7 +280,7 @@ define([
     };
 
     /**
-     * Saves the passcard identified by id
+     * Saves/deletes the passcard identified by id
      * @param {String} id
      * @return {Promise}
      */
@@ -290,14 +291,25 @@ define([
                 return reject(new Error("This secret does not exist!"));
             }
             var server = getServerByIndex("server_0");
+            var operation = (secret.get("sync_state") == 2 ? "DELETE" : "SAVE");
             var data = secret.get("save_data");
-            server.saveSecret(data).then(function(savedSecretId) {
-                log("Secret saved: " + savedSecretId);
-                secret.set("sync_state", 0);
-                fulfill();
-            }).catch(function(e) {
-                return reject(e);
-            });
+            if(operation == "SAVE") {
+                server.saveSecret(data).then(function(savedSecretId) {
+                    log("Secret saved: " + savedSecretId);
+                    secret.set("sync_state", 0);
+                    fulfill();
+                }).catch(function(e) {
+                    return reject(e);
+                });
+            } else if (operation == "DELETE") {
+                server.deleteSecret(data._id).then(function(deletedSecretId) {
+                    log("Secret deleted: " + deletedSecretId);
+                    delete secretStorage[deletedSecretId];
+                    fulfill();
+                }).catch(function(e) {
+                    return reject(e);
+                });
+            }
         });
     };
 
@@ -322,6 +334,36 @@ define([
      */
     var getNumberOfSecrets = function() {
         return(_.keys(secretStorage).length);
+    };
+
+    /**
+     * Creates and registers a new passcard and returns its id
+     * @returns {String}
+     */
+    var createSecret = function() {
+        var id = generateUniqueSecretId();
+        var config = new ConfigurationManager({
+            _id: id,
+            name: '_new_passcard_',
+            collection: 'passcard'
+        });
+        var newPasscard = new Passcard(config);
+        secretStorage[id] = newPasscard;
+        newPasscard.set("sync_state", 3);
+        return id;
+    };
+
+    /**
+     * If "cancel" was clicked on UI when creating a new secret it must be removed
+     * @param id
+     */
+    var deleteSecret = function(id) {
+        var secret = getSecret(id);
+        if(secret.get("sync_state") == 3) {
+            delete secretStorage[id];
+        } else {
+            secret.set("sync_state", 2)
+        }
     };
 
     /**
@@ -355,7 +397,11 @@ define([
         });
     };
 
-
+    /**
+     * Loads secure data (payload) for passcard
+     *
+     * @param {Number} id
+     */
     var loadPayloadForSecret = function(id) {
         log("LOADING PAYLOAD FOR: " + id);
         var secret = getSecret(id);
@@ -370,6 +416,22 @@ define([
         }).catch(function(e) {
             log("Could not get payload: " + e.message);
         });
+    };
+
+    /**
+     * Generates and returns a unique id (not used by any other secret)
+     * @return {String}
+     */
+    var generateUniqueSecretId = function() {
+        var id;
+        var isUnique = false;
+        while(!isUnique) {
+            id = PPMUtils.get_uuid_v4();
+            if(!_.contains(_.keys(secretStorage), id)) {
+                isUnique = true;
+            }
+        }
+        return id;
     };
 
     //------------------------------------------------------------------------------------------------------------------
@@ -412,6 +474,8 @@ define([
         disconnectServer: disconnectServer,
         //SECRETS
         getSecrets: getSecrets,
-        getSecret: getSecret
+        getSecret: getSecret,
+        createSecret: createSecret,
+        deleteSecret: deleteSecret
     };
 });

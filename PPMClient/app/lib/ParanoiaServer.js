@@ -216,6 +216,30 @@ define([
                 });
             };
 
+            //---------------------------------------------------------------------------------------------DELETE SECRET
+            /**
+             * Deletes data object
+             * @param {String} id
+             * @return {Promise}
+             */
+            this.deleteSecret = function(id) {
+                return new Promise(function (fulfill, reject) {
+                    _communicateWithServer({
+                        service: "db",
+                        operation: {
+                            name: "delete",
+                            params: {
+                                _id: id
+                            }
+                        }
+                    }).then(function (SCO) {
+                        fulfill(id);
+                    }).catch(function (e) {
+                        return reject(e);
+                    });
+                });
+            };
+
             //-----------------------------------------------------------------------------------KEEP-ALIVE SERVICE(KAS)
             var _keepAliveServiceStart = function() {
                 if(_.isNull(serverConfig.get("KASIREF"))) {

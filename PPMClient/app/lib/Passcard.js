@@ -55,7 +55,7 @@ define([
                     modification_ts: null,
                     pw_change_ts: null
                 },
-                sync_state: 0, // 0=OK(in sync), 1=MODIFIED(out of sync), 2=DELETED(out of sync)
+                sync_state: 0, // 0=OK(in sync), 1=MODIFIED(out of sync), 2=DELETED(out of sync), 3=NEW(created - not yet saved to storage)
                 has_secret: false //payload not yet loaded
             });
             config.merge(pcData.getAll(), "data");
@@ -93,7 +93,7 @@ define([
                     config.merge(value, "data");
                 } else if(_.contains(["name", "identifier", "username", "password"], prop)) {
                     config.set(["data", prop], value);
-                } else if (prop == "sync_state" && _.isNumber(value) && _.contains([0,1,2], value)) {
+                } else if (prop == "sync_state" && _.isNumber(value) && _.contains([0,1,2,3], value)) {
                     config.set(prop, value);
                 } else if (prop == "has_secret" && _.isBoolean(value)) {
                     config.set(prop, value);
@@ -119,6 +119,7 @@ define([
 
             /**
              * Requests,loads, sets and returns secret data
+             * Newly registered and unsaved passcards (sync_state = 3") will not be on server yet so we return empty data
              * @return {Promise}
              */
             var getSecret = function() {
@@ -126,19 +127,24 @@ define([
                     if(hasSecret()) {
                         return fulfill({username: config.get("data.username"), password: config.get("data.password")});
                     }
-                    utils.dispatchCustomEvent({type:"passcard_secret_request", id: config.get("data._id")});
-                    var secretWaitInterval = setInterval(function() {
-                        if(hasSecret()) {
+                    if(config.get("sync_state") == 3) {
+                        //@todo: default values here
+                        fulfill({username: "", password: ""});
+                    } else {
+                        utils.dispatchCustomEvent({type:"passcard_secret_request", id: config.get("data._id")});
+                        var secretWaitInterval = setInterval(function() {
+                            if(hasSecret()) {
+                                clearInterval(secretWaitInterval);
+                                secretWaitInterval = null;
+                                fulfill({username: config.get("data.username"), password: config.get("data.password")});
+                            }
+                        }, 250);
+                        setTimeout(function() {
                             clearInterval(secretWaitInterval);
                             secretWaitInterval = null;
-                            fulfill({username: config.get("data.username"), password: config.get("data.password")});
-                        }
-                    }, 250);
-                    setTimeout(function() {
-                        clearInterval(secretWaitInterval);
-                        secretWaitInterval = null;
-                        return reject(new Error("Getting secret payload has timed out!"));
-                    }, 30 * 1000);
+                            return reject(new Error("Getting secret payload has timed out!"));
+                        }, 30 * 1000);
+                    }
                 });
             };
 

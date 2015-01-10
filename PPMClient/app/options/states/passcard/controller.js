@@ -28,7 +28,7 @@ define([
              * @param {*} id
              */
             $scope.editItem = function(id) {
-                log("EDIT: " + id);
+                log("EDIT PASSCARD: " + id);
                 var modalInstance = $modal.open({
                     templateUrl: 'options/states/passcard/passcard.edit.html',
                     controller: 'passcard.edit.controller',
@@ -42,36 +42,71 @@ define([
                     }
                 });
 
-                modalInstance.result.then(function (modifiedItem) {
+                modalInstance.result.then(function(modifiedItem) {
+                    //MODAL CLOSE)save)
                     secretFactory.updateSecret(modifiedItem);
-                }, function () {
-                    log('Modal dismissed at: ' + new Date());
+                }, function() {
+                    //MODAL DISMISS(cancel)
+                    //refreshSecrets();//not needed
+                });
+            };
+
+            $scope.createItem = function() {
+                var id = secretFactory.createSecret();
+                log("CREATE NEW PASSCARD: " + id);
+                $scope.editItem(id);
+            };
+
+            /**
+             * @param {String} id
+             * @param {String} name
+             */
+            $scope.deleteItem = function(id, name) {
+                var modalInstance = $modal.open({
+                    templateUrl: 'options/states/passcard/passcard.delete.html',
+                    controller: 'passcard.delete.controller',
+                    //size: 'lg',
+                    backdrop: 'static',
+                    backdropClass: 'modalBackdrop',
+                    resolve: {
+                        data: function () {
+                            return { id: id, name: name };
+                        }
+                    }
+                });
+                modalInstance.result.then(function() {
+                    //MODAL CLOSE)save)
+                    secretFactory.deleteSecret(id, true);
+                    refreshSecrets();
+                }, function() {
+                    //MODAL DISMISS(cancel)
                 });
             };
 
             /**
-             * @param {*} id
-             */
-            $scope.deleteItem = function(id) {
-                log("DELETE: " + id);
-            };
-
-            /**
              * PPM CustomEvent Listener - listens to events dispatched in background
+             * @param {*} e
              */
             var customEventListener = function(e) {
                 if(e && _.isObject(e.detail)) {
                     var eventData = e.detail;
                     switch (eventData.type) {
                         case "passcard_change":
-                            _.defer(function() {
-                                $scope.$apply(function() {
-                                    $scope.secrets = secretFactory.getSecrets();
-                                });
-                            });
+                            refreshSecrets();
                             break;
                     }
                 }
+            };
+
+            /**
+             * Refreshes secrets on $scope
+             */
+            var refreshSecrets = function() {
+                _.defer(function() {
+                    $scope.$apply(function() {
+                        $scope.secrets = secretFactory.getSecrets();
+                    });
+                });
             };
 
             //add listener to background document
@@ -117,8 +152,14 @@ define([
                     _.defer(function() {
                         $scope.$apply(function() {
                             $scope.item = item;
+                            $scope.lockUsername = !_.isEmpty($scope.item.username);
+                            $scope.lockPassword = !_.isEmpty($scope.item.password);
+                            //new passcards are created with name:"_new_passcard_" - let's clean this
+                            $scope.item.name = ($scope.item.name=="_new_passcard_" ? "" : $scope.item.name);
                         });
                     });
+                }).catch(function (e) {
+                    $scope.cancel();
                 });
 
                 $scope.toggleUsernameLock = function() {
@@ -149,10 +190,42 @@ define([
                 };
 
                 $scope.cancel = function () {
+                    //will check if secret in a newly created secret(unsaved) and will remove it from secretStorage
+                    secretFactory.deleteSecret($scope.item._id);
                     $modalInstance.dismiss('cancel');
                 };
 
             }
         ]
     );
+
+    /**
+     * Passcard Delete Modal Controller
+     */
+    angular.module('optionsApp').controller('passcard.delete.controller', [
+            '$scope', '$modalInstance', 'secretFactory', 'data',
+            function ($scope, $modalInstance, secretFactory, data) {
+                var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
+                var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
+                var UTILS = PPM.getComponent("UTILS");
+                /** log shorthand */
+                var log = function (msg, type) {
+                    PPM.getComponent("LOGGER").log(msg, "OPTIONS(passcard_edit)", type);
+                };
+
+                $scope.data = data;
+
+
+                $scope.delete = function () {
+                    $modalInstance.close();
+                };
+
+                $scope.cancel = function () {
+                    $modalInstance.dismiss('cancel');
+                };
+
+            }
+        ]
+    );
+
 });

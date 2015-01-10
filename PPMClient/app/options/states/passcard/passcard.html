@@ -1,5 +1,6 @@
 <section>
     <div class="page-header">
+        <button ng-click="createItem();" type="button" class="btn btn-primary pull-right">Create</button>
         <h1>Passcards</h1>
     </div>
     <div class="row">
@@ -24,11 +25,13 @@
                     <td>
                         <label ng-show="secret.sync_state == 0" class="label label-success">In Sync</label>
                         <label ng-show="secret.sync_state == 1" class="label label-warning">Out of Sync</label>
+                        <label ng-show="secret.sync_state == 2" class="label label-danger">Deleted</label>
+                        <label ng-show="secret.sync_state == 3" class="label label-primary">New</label>
                     <td>
                         <button class="btn btn-xs btn-primary pull-right" ng-click="editItem(secret._id)" title="Edit">
                             <i class="glyphicon glyphicon-pencil" aria-hidden="true"></i>
                         </button>
-                        <button class="btn btn-xs btn-danger pull-right" ng-click="deleteItem(secret._id)" title="Delete">
+                        <button class="btn btn-xs btn-danger pull-right" ng-click="deleteItem(secret._id, secret.name)" title="Delete">
                             <i class="glyphicon glyphicon-trash" aria-hidden="true"></i>
                         </button>
                     </td>

@@ -10,20 +10,20 @@
 <div class="modal-body" ng-show="item">
     <div class="row">
         <div class="col-md-9">
-            <form>
-                <div class="form-group">
+            <form novalidate name="passcardForm">
+                <div class="form-group" ng-class="{'has-error': passcardForm.name.$error.required}">
                     <label for="name">Name</label>
-                    <input type="text" id="name" ng-model="item.name" required class="form-control" />
+                    <input type="text" id="name" name="name" ng-model="item.name" required class="form-control" autofocus />
                 </div>
-                <div class="form-group">
+                <div class="form-group" ng-class="{'has-error': passcardForm.identifier.$error.required}">
                     <label for="identifier">Identifier</label>
-                    <input type="text" id="identifier" ng-model="item.identifier" required class="form-control" />
+                    <input type="text" id="identifier" name="identifier" ng-model="item.identifier" required class="form-control" />
                 </div>
 
                 <div class="form-group">
                     <label for="username">Username</label>
                     <div class="input-group">
-                        <input type="text" ng-disabled="lockUsername" id="username" ng-model="item.username" required class="form-control" />
+                        <input type="text" ng-disabled="lockUsername" id="username" ng-model="item.username" class="form-control" />
                         <span class="input-group-btn" dropdown>
                             <button type="button" class="btn dropdown-toggle" dropdown-toggle>
                                 <i ng-show="lockUsername" class="glyphicon glyphicon-lock" aria-hidden="true"></i>
@@ -44,8 +44,8 @@
                             <i ng-hide="showPassword" ng-click="togglePasswordVisibility()" class="glyphicon glyphicon-eye-close" aria-hidden="true"></i>
                         </div>
 
-                        <input ng-show="showPassword" type="text" ng-disabled="lockPassword" ng-model="item.password" required class="form-control" />
-                        <input ng-hide="showPassword" type="password" ng-disabled="lockPassword" ng-model="item.password" required class="form-control" />
+                        <input ng-show="showPassword" type="text" ng-disabled="lockPassword" ng-model="item.password" class="form-control" />
+                        <input ng-hide="showPassword" type="password" ng-disabled="lockPassword" ng-model="item.password" class="form-control" />
 
                         <span class="input-group-btn" dropdown>
                             <button type="button" class="btn dropdown-toggle" dropdown-toggle>
@@ -73,6 +73,6 @@
     </div>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-    <button class="btn btn-primary" ng-show="item" ng-click="save()">Save</button>
+    <button class="btn btn-warning pull-left" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" ng-show="item" ng-disabled="passcardForm.$invalid" ng-click="save()">Save</button>
 </div>
