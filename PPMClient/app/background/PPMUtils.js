@@ -90,6 +90,7 @@ define([
         },
 
         /**
+         * @todo: move this to ChromeTabs module
          * Opens options page in tab
          * @param {string} state
          * @return {Promise}
@@ -124,6 +125,7 @@ define([
         },
 
         /**
+         * @todo: move this to ChromeTabs module
          * Closes options page in tab
          * @return {Promise}
          */
@@ -142,6 +144,24 @@ define([
                     }
                 });
             });
+        },
+
+
+        /**
+         * Copies the text to users clipboard
+         * DON'T WE NEED THEESE?: "clipboardRead", "clipboardWrite"
+         * @param {String} text
+         */
+        copyTextToClipboard: function(text) {
+            var copyDiv = document.createElement('div');
+            copyDiv.contentEditable = true;
+            document.body.appendChild(copyDiv);
+            copyDiv.innerText = text;
+            copyDiv.unselectable = "off";
+            copyDiv.focus();
+            document.execCommand('SelectAll');
+            document.execCommand("Copy", false, null);
+            document.body.removeChild(copyDiv);
         },
 
         /**

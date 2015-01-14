@@ -31,6 +31,14 @@ define([
              */
             $scope.fillInPasscard = function(id) {
                 log("FILL IN PASSCARD: " + id);
+                secretFactory.getSecret(id).then(function(secretData) {
+
+
+
+
+                }).catch(function(e) {
+                    log("Cannot copy password: " + e.message);
+                });
             };
 
             /**
@@ -44,14 +52,26 @@ define([
              * @param {String} id
              */
             $scope.copyPassword = function(id) {
-                log("COPY PASSWORD: " + id);
+                //log("COPY PASSWORD: " + id);
+                secretFactory.getSecret(id).then(function(secretData) {
+                    UTILS.copyTextToClipboard(secretData.password);
+                    //@todo: we need some sort of visible confirmation that it was done
+                }).catch(function(e) {
+                    log("Cannot copy password: " + e.message);
+                });
             };
 
             /**
              * @param {String} id
              */
             $scope.copyUsername = function(id) {
-                log("COPY USERNAME: " + id);
+                //log("COPY USERNAME: " + id);
+                secretFactory.getSecret(id).then(function(secretData) {
+                    UTILS.copyTextToClipboard(secretData.username);
+                    //@todo: we need some sort of visible confirmation that it was done
+                }).catch(function(e) {
+                    log("Cannot copy username: " + e.message);
+                });
             };
 
             /**

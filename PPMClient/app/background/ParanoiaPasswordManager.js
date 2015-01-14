@@ -7,10 +7,11 @@ define([
     'PPMUtils',
     'PPMCryptor',
     'GATracker',
+    'ChromeTabs',
     'ChromeStorage',
     'ServerConcentrator',
     'bluebird'
-], function (logger, utils, cryptor, GATracker, ChromeStorage, ServerConcentrator, Promise) {
+], function (logger, utils, cryptor, GATracker, ChromeTabs, ChromeStorage, ServerConcentrator, Promise) {
     /**
      * Log facility
      * @param msg
@@ -54,6 +55,7 @@ define([
                     utils.initialize(),
                     cryptor.initialize(),
                     GATracker.initialize(),
+                    ChromeTabs.initialize(),
                     ChromeStorage.initialize(),
                     ServerConcentrator.initialize()
                 ]).then(function () {
@@ -98,6 +100,7 @@ define([
                     utils.shutdown(),
                     cryptor.shutdown(),
                     GATracker.shutdown(),
+                    ChromeTabs.shutdown(),
                     ChromeStorage.shutdown(),
                     ServerConcentrator.shutdown()
                 ]).then(function () {
@@ -126,6 +129,8 @@ define([
                     return(cryptor);
                 case "GAT":
                     return(GATracker);
+                case "CHROMETABS":
+                    return(ChromeTabs);
                 case "CHROMESTORAGE":
                     return(ChromeStorage);
                 case "SERVERCONCENTRATOR":

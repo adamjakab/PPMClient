@@ -48,7 +48,24 @@ define([
              * @param type
              */
             var log = function(msg, type) {logger.log(msg, "PPMServer["+serverConfig.get("index")+"]", type);};
-            log("Server is created: " + JSON.stringify(serverConfig.getAll()));
+
+            /**
+             * @type {XMLHttpRequest}
+             */
+            var xhr;
+
+            /**
+             * Initialize server
+             */
+            var init =function() {
+                log("Server was initialized: " + JSON.stringify(serverConfig.getAll()));
+                _setupXHR();
+            };
+
+
+
+
+
 
             /**
              * @return {{connected: *, busy: *, seed: *, timestamp: *, leftPadLength: *, rightPadLength: *}}
@@ -77,7 +94,7 @@ define([
                         return reject(new Error("Server is already connected"));
                     }
                     _keepAliveServiceStart();
-                    _communicateWithServer({service: "login"}).then(function(SCO) {
+                    _communicateWithServer({service: "login"}).then(function() {
                         serverConfig.set("connected", true);
                         serverConfig.set("connection_ts", _getTimestamp());
                         utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
@@ -101,7 +118,7 @@ define([
                         return reject(new Error("Server is already disconnected"));
                     }
                     _keepAliveServiceStop();
-                    _communicateWithServer({service: "logout"}).then(function(SCO) {
+                    _communicateWithServer({service: "logout"}).then(function() {
                         serverConfig.set("connected", false);
                         _putServerInDisconnectedState();
                         utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
@@ -208,8 +225,8 @@ define([
                                 itemdata: data
                             }
                         }
-                    }).then(function (SCO) {
-                        fulfill(data.id);
+                    }).then(function () {
+                        fulfill(data._id);
                     }).catch(function (e) {
                         return reject(e);
                     });
@@ -232,7 +249,7 @@ define([
                                 _id: id
                             }
                         }
-                    }).then(function (SCO) {
+                    }).then(function () {
                         fulfill(id);
                     }).catch(function (e) {
                         return reject(e);
@@ -294,6 +311,17 @@ define([
 
             //----------------------------------------------------------------------- LOW LEVEL XHR COMMUNICATION METHOD
             /**
+             * Set Up XMLHttpRequest and the event listeners
+             * @private
+             */
+            var _setupXHR = function() {
+                xhr = new XMLHttpRequest();
+                xhr.timeout = 10 * 1000;//@todo: make editable option for this
+                xhr.ontimeout = _XHR_timeout;
+                xhr.onreadystatechange = _XHR_readystatechange;
+            };
+
+            /**
              *
              * @note SCO - {service:"name of service", options:{name:get_index, params:{...}}, ...}
              * @param {Object} SCO - the Server Communication Object
@@ -301,70 +329,76 @@ define([
              */
             var _communicateWithServer = function(SCO) {
                 return new Promise(function (fulfill, reject) {
-                    /**
-                     * Puts server in disconnected state before rejecting the promise
-                     * @param {Error} error
-                     * @return {*}
-                     */
-                    var disconnectAndReject = function(error) {
-                        var serverMessage = "";
-                        if (!_.isUndefined(SCO.xhr.responseText) && !_.isEmpty(SCO.xhr.responseText)) {
-                            try {
-                                var serverResponse = JSON.parse(SCO.xhr.responseText);
-                                if(!_.isUndefined(serverResponse["msg"]) && !_.isEmpty(serverResponse["msg"])) {
-                                    serverMessage =  " - The server says: " + serverResponse["msg"];
-                                }
-                            } catch(e) {/**/}
-                        }
-                        log("ERROR IN SERVER RESPONSE(" + error.message + ")" + serverMessage, "error");
-                        _putServerInDisconnectedState();
-                        _setIdle();
-                        return reject(error);
-                    };
-
                     if (_isBusy()) {
                         return reject(new Error("Server is busy!"));
                     }
-
                     _setBusy();
                     _prepareRawPostData(SCO);
                     _encryptRawPostData(SCO);
-                    if (SCO.service != "ping") {
-                        log("SCO[postDataRaw]:" + JSON.stringify(SCO.postDataRaw));
-                    }
-                    var xhr = new XMLHttpRequest();
+                    xhr.customData = {
+                        "SCO": SCO,
+                        "fulfill": fulfill,
+                        "reject": reject
+                    };
                     xhr.open("POST", serverConfig.get("url"), true);
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.timeout = 10 * 1000;
-                    xhr.ontimeout = function() {
-                        return disconnectAndReject(new Error("Connection has timed out!"));
-                    };
-                    xhr.onreadystatechange = function (ev) {
-                        if (ev.target && ev.target.readyState == 4) {
-                            SCO.xhr = ev.target;
-                            if(SCO.xhr.status == 0) {
-                                return disconnectAndReject(new Error("Connection refused!"));
-                            } else if (SCO.xhr.status != 200) {
-                                return disconnectAndReject(new Error("Server error!"));
-                            }
-                            //log("XHR: " + JSON.stringify(SCO.xhr), "info");
-                            _decryptSrvResponse(SCO);
-                            if (SCO.responseObject == false || !_.isObject(SCO.responseObject)) {
-                                return disconnectAndReject(new Error("Unable to decrypt server response!"));
-                            }
-                            if (SCO.service != "ping") {
-                                log("SCO[IN](" + SCO.service + "):" + JSON.stringify(SCO.responseObject));
-                            }
-                            if(!_register_new_seed(SCO)) {
-                                return disconnectAndReject(new Error("Unable to extract Seed or Timestamp or PadLengths from server response!"));
-                            }
-                            _setIdle();
-                            utils.dispatchCustomEvent({type: 'server_xchange', index: serverConfig.get("index")});
-                            fulfill(SCO);
-                        }
-                    };
                     xhr.send(SCO.postDataCrypted);
                 });
+            };
+
+            var _XHR_readystatechange = function() {
+                var SCO = xhr.customData["SCO"];
+                var fulfill = xhr.customData["fulfill"];
+                //
+                if (xhr.readyState == 4) {
+                    if(xhr.status == 0) {
+                        return _XHR_abort_and_reject(new Error("Connection refused!"));
+                    } else if (xhr.status != 200) {
+                        return _XHR_abort_and_reject(new Error("Server error!"));
+                    }
+                    _decryptSrvResponse(SCO);
+                    if (SCO.responseObject == false || !_.isObject(SCO.responseObject)) {
+                        return _XHR_abort_and_reject(new Error("Unable to decrypt server response!"));
+                    }
+                    if (SCO.service != "ping") {
+                        log("SCO[IN](" + SCO.service + "):" + JSON.stringify(SCO.responseObject));
+                    }
+                    if(!_register_new_seed(SCO)) {
+                        return _XHR_abort_and_reject(new Error("Unable to extract Seed or Timestamp or PadLengths from server response!"));
+                    }
+                    _setIdle();
+                    utils.dispatchCustomEvent({type: 'server_xchange', index: serverConfig.get("index")});
+                    xhr.customData = null;
+                    fulfill(SCO);
+                }
+            };
+
+            var _XHR_timeout = function() {
+                return _XHR_abort_and_reject(new Error("Connection has timed out!"));
+            };
+
+            /**
+             * Puts server in disconnected state before rejecting the promise
+             * @param {Error} error
+             * @return {*}
+             */
+            var _XHR_abort_and_reject = function(error) {
+                var reject = xhr.customData["reject"];
+                var serverMessage = "";
+                if (!_.isUndefined(xhr.responseText) && !_.isEmpty(xhr.responseText)) {
+                    try {
+                        var serverResponse = JSON.parse(xhr.responseText);
+                        if(!_.isUndefined(serverResponse["msg"]) && !_.isEmpty(serverResponse["msg"])) {
+                            serverMessage =  " - The server says: " + serverResponse["msg"];
+                        }
+                    } catch(e) {/**/}
+                }
+                log("ERROR IN SERVER RESPONSE(" + error.message + ")" + serverMessage, "error");
+                _putServerInDisconnectedState();
+                xhr.abort();
+                xhr.customData = null;
+                _setIdle();
+                return reject(error);
             };
 
             //---------------------------------------------------------------------------------------- PRIVATE UTILITIES
@@ -397,7 +431,7 @@ define([
              * @param {Object} SCO - the Server Communication Object
              */
             var _decryptSrvResponse = function(SCO) {
-                var trimmedResponse = utils.leftRightTrimString(SCO.xhr.responseText, SCO.postDataRaw.leftPadLength, SCO.postDataRaw.rightPadLength);
+                var trimmedResponse = utils.leftRightTrimString(xhr.responseText, SCO.postDataRaw.leftPadLength, SCO.postDataRaw.rightPadLength);
                 SCO.responseObject = cryptor.decryptAES(trimmedResponse, SCO.postDataRaw.seed, true);
             };
 
@@ -409,6 +443,9 @@ define([
             var _encryptRawPostData = function(SCO) {
                 var Ed2s;
                 var str2crypt = JSON.stringify(SCO.postDataRaw);
+                if (SCO.service != "ping") {
+                    log("SCO[postDataRaw]:" + str2crypt);
+                }
                 if (_.isNull(serverConfig.get("seed"))) {
                     //if we have no seed yet we must encrypt data with combination username & password (md5hash of it 'coz server has only that)
                     //also padding will be done on both left and right side with the length of the username
@@ -460,6 +497,9 @@ define([
             var _isBusy = function() {return(serverConfig.get("busy"));};
             var _setBusy = function() {serverConfig.set("busy", true);};
             var _setIdle = function() {serverConfig.set("busy", false);};
+
+            //initialize server
+            init();
         }
 
         return ParanoiaServer;
