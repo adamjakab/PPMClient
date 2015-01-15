@@ -86,6 +86,8 @@ define([
             //-------------------------------------------------------------------------------------------------- CONNECT
             /**
              * Connects the server
+             * //@todo: on login server should send configuration/version information from which we should extract the
+             * session timeout so we know how often to ping and other stuff(like version check)
              * @return {Promise}
              */
             var _connect = function() {
@@ -299,7 +301,9 @@ define([
                 //#2 - CHECK FOR OPERATION IN QUEUE - IF ANY - AND EXECUTE
 
                 //#3 - PING
-                var ping_in_secs = parseInt(serverConfig.get("last_ping_ts"))+parseInt(serverConfig.get("ping_interval"))-_getTimestamp();
+                var ping_interval = parseInt(serverConfig.get("ping_interval"));
+                var last_ping_ts = parseInt(serverConfig.get("last_ping_ts"));
+                var ping_in_secs = last_ping_ts + ping_interval - _getTimestamp();
                 if (ping_in_secs <= 0) {
                     serverConfig.set("last_ping_ts", _getTimestamp());
                     _ping();
