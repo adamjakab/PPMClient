@@ -68,6 +68,7 @@ define([
                 var secretObject = SERVERCONCENTRATOR.getSecret(data._id);
                 if(secretObject) {
                     secretObject.set("data", data);
+                    SERVERCONCENTRATOR.saveSecret(data._id);
                 }
             },
 

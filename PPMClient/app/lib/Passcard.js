@@ -128,7 +128,7 @@ define([
                         return fulfill({username: config.get("data.username"), password: config.get("data.password")});
                     }
                     if(config.get("sync_state") == 3) {
-                        //@todo: default values here
+                        //@todo: put default values here from config
                         fulfill({username: "", password: ""});
                     } else {
                         utils.dispatchCustomEvent({type:"passcard_secret_request", id: config.get("data._id")});

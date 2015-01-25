@@ -11,7 +11,7 @@
                     <th>Name</th>
                     <th>Type</th>
                     <th>Url</th>
-                    <th class="col-md-3">Values</th>
+                    <th class="col-md-4">Values</th>
                     <th>State</th>
                     <th>Actions</th>
                 </tr>
@@ -24,6 +24,7 @@
                         seed: {{ server.seed }}<br />
                         timestamp: {{ server.timestamp }}<br />
                         padding: {{ server.leftPadLength }}/{{ server.rightPadLength }}<br />
+                        queue length: {{ server.queue_length }}<br />
                     </td>
                     <td>{{ server.connected ? "Connected" : "Disconnected"}}</td>
                     <td>

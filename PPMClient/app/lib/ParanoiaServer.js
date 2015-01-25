@@ -55,17 +55,19 @@ define([
             var xhr;
 
             /**
+             * Hold fulfill/reject Promise pairs for operations which cannot be executed right away because
+             * server is busy
+             * @type {Array}
+             */
+            var operationQueue = [];
+
+            /**
              * Initialize server
              */
             var init =function() {
                 log("Server was initialized: " + JSON.stringify(serverConfig.getAll()));
                 _setupXHR();
             };
-
-
-
-
-
 
             /**
              * @return {{connected: *, busy: *, seed: *, timestamp: *, leftPadLength: *, rightPadLength: *}}
@@ -74,6 +76,7 @@ define([
                 return {
                     connected: serverConfig.get("connected", false),
                     busy: serverConfig.get("busy", false),
+                    queue_length: operationQueue.length,
                     seed: serverConfig.get("seed", false),
                     timestamp: serverConfig.get("timestamp", false),
                     leftPadLength: serverConfig.get("leftPadLength", false),
@@ -310,9 +313,6 @@ define([
                 }
             };
 
-
-
-
             //----------------------------------------------------------------------- LOW LEVEL XHR COMMUNICATION METHOD
             /**
              * Set Up XMLHttpRequest and the event listeners
@@ -333,21 +333,27 @@ define([
              */
             var _communicateWithServer = function(SCO) {
                 return new Promise(function (fulfill, reject) {
-                    if (_isBusy()) {
-                        return reject(new Error("Server is busy!"));
-                    }
-                    _setBusy();
-                    _prepareRawPostData(SCO);
-                    _encryptRawPostData(SCO);
-                    xhr.customData = {
-                        "SCO": SCO,
-                        "fulfill": fulfill,
-                        "reject": reject
-                    };
-                    xhr.open("POST", serverConfig.get("url"), true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.send(SCO.postDataCrypted);
+                    operationQueue.push({SCO:SCO, fulfill:fulfill, reject:reject});
+                    //log("OPERATION QUEUE LENGTH: " + operationQueue.length);
+                    _executeNextOperationInQueue();
                 });
+            };
+
+            var _executeNextOperationInQueue = function() {
+                if (_isBusy() || operationQueue.length == 0) {
+                    return;
+                }
+                log("REMAINIG OPERATIONS IN QUEUE: " + operationQueue.length);
+                var currentOperation = _.first(operationQueue);//get the first item in the queue
+                operationQueue = _.rest(operationQueue);//remove the queue without the first item
+                //
+                _setBusy();
+                _prepareRawPostData(currentOperation.SCO);
+                _encryptRawPostData(currentOperation.SCO);
+                xhr.customData = currentOperation;
+                xhr.open("POST", serverConfig.get("url"), true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send(currentOperation.SCO.postDataCrypted);
             };
 
             var _XHR_readystatechange = function() {
@@ -374,6 +380,7 @@ define([
                     utils.dispatchCustomEvent({type: 'server_xchange', index: serverConfig.get("index")});
                     xhr.customData = null;
                     fulfill(SCO);
+                    _executeNextOperationInQueue();
                 }
             };
 
@@ -402,7 +409,8 @@ define([
                 xhr.abort();
                 xhr.customData = null;
                 _setIdle();
-                return reject(error);
+                reject(error);
+                _executeNextOperationInQueue();
             };
 
             //---------------------------------------------------------------------------------------- PRIVATE UTILITIES

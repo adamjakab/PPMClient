@@ -43,11 +43,10 @@ define([
                 });
 
                 modalInstance.result.then(function(modifiedItem) {
-                    //MODAL CLOSE)save)
+                    //MODAL CLOSE(save)
                     secretFactory.updateSecret(modifiedItem);
                 }, function() {
                     //MODAL DISMISS(cancel)
-                    //refreshSecrets();//not needed
                 });
             };
 
@@ -75,7 +74,7 @@ define([
                     }
                 });
                 modalInstance.result.then(function() {
-                    //MODAL CLOSE)save)
+                    //MODAL CLOSE(save)
                     secretFactory.deleteSecret(id, true);
                     refreshSecrets();
                 }, function() {

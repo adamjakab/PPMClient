@@ -31,22 +31,27 @@ define([
      */
     var secretStorage = {};
 
-    var checkIntervalTime = 30 * 1000;
+    /**
+     * Interval for checking out of sync passcards
+     * @type {number}
+     */
+    var checkIntervalTime = 5 * 60 * 1000;
     var checkIntervalRef = null;
 
     /**
-     * Main check function executed on regular intervals to check if any action is needed
+     * Main check function executed on regular intervals to check if there are any
+     * passcards out of sync waiting to be persisted
+     * This is maybe unnecessary - passcards are saved/deleted right away
+     * However if some temporary server error occurs passcard could remain out of sync
      */
     var checkForActions = function() {
         if (ChromeStorage.hasDecryptedSyncData() && areAllServersConnected() && hasSecrets()) {
             var saveList = getOutOfSyncSecretList();
             if(!_.isEmpty(saveList)) {
-                log("OOS: " + JSON.stringify(saveList));
+                log("Passcards OutOfSync: " + JSON.stringify(saveList));
                 saveSecrets(saveList).then(function() {
                     log("checkForActions finished - all items are now in sync with remote");
                 });
-            } else {
-                //log("--NO ACTIONS!");
             }
         }
     };
@@ -291,9 +296,9 @@ define([
                 return reject(new Error("This secret does not exist!"));
             }
             var server = getServerByIndex("server_0");
-            var operation = (secret.get("sync_state") == 2 ? "DELETE" : "SAVE");
+            //var operation = (secret.get("sync_state") == 2 ? "DELETE" : "SAVE");
             var data = secret.get("save_data");
-            if(operation == "SAVE") {
+            if(_.contains([1,3], secret.get("sync_state"))) {
                 server.saveSecret(data).then(function(savedSecretId) {
                     log("Secret saved: " + savedSecretId);
                     secret.set("sync_state", 0);
@@ -301,7 +306,7 @@ define([
                 }).catch(function(e) {
                     return reject(e);
                 });
-            } else if (operation == "DELETE") {
+            } else if (secret.get("sync_state") == 2) {
                 server.deleteSecret(data._id).then(function(deletedSecretId) {
                     log("Secret deleted: " + deletedSecretId);
                     delete secretStorage[deletedSecretId];
@@ -362,7 +367,8 @@ define([
         if(secret.get("sync_state") == 3) {
             delete secretStorage[id];
         } else {
-            secret.set("sync_state", 2)
+            secret.set("sync_state", 2);
+            saveSecret(id);
         }
     };
 
@@ -476,6 +482,7 @@ define([
         getSecrets: getSecrets,
         getSecret: getSecret,
         createSecret: createSecret,
-        deleteSecret: deleteSecret
+        deleteSecret: deleteSecret,
+        saveSecret: saveSecret
     };
 });
