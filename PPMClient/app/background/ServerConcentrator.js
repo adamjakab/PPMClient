@@ -41,8 +41,8 @@ define([
     /**
      * Main check function executed on regular intervals to check if there are any
      * passcards out of sync waiting to be persisted
-     * This is maybe unnecessary - passcards are saved/deleted right away
-     * However if some temporary server error occurs passcard could remain out of sync
+     * Normally, passcards are saved/deleted right away
+     * However if server comunication error occurs passcards could remain out of sync
      */
     var checkForActions = function() {
         if (ChromeStorage.hasDecryptedSyncData() && areAllServersConnected() && hasSecrets()) {
