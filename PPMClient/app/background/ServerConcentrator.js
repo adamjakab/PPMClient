@@ -33,9 +33,10 @@ define([
 
     /**
      * Interval for checking out of sync passcards
+     * @todo: add an option for this
      * @type {number}
      */
-    var checkIntervalTime = 5 * 60 * 1000;
+    var checkIntervalTime = 60 * 1000;
     var checkIntervalRef = null;
 
     /**
