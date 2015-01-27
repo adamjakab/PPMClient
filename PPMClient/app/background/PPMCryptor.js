@@ -2,11 +2,8 @@
  * Crypt/Decrypt methods
  */
 define([
-    'PPMLogger', 'underscore', 'bluebird',
-    'CryptoJs/md5', 'CryptoJs/hmac-md5',
-    'CryptoJs/sha3',
-    'CryptoJs/aes', 'CryptoJsComponents/mode-ctr'
-], function (logger, _, Promise) {
+    'PPMLogger', 'PPMUtils', 'CryptoModule', 'underscore', 'bluebird'
+], function (logger, PPMUtils, CryptoModule, _, Promise) {
     /**
      * Log facility
      * @param msg
@@ -14,39 +11,62 @@ define([
      */
     var log = function(msg, type) {logger.log(msg, "CRYPTOR", type);};
 
-    var AesMode = { mode: CryptoJS.mode.CTR, padding: CryptoJS.pad.Pkcs7};
+    /**
+     * The Iframe where the encryption schemes are registered in the background page
+     */
+    var encryptionSchemesSandbox = document.getElementById('encryptionSchemesSandbox');
 
-    AesMode.format = {
-        /**
-         * creates a string divided by ":" character with [cipherText]:[iv]:[salt]
-         * @param cipherParams
-         * @return {string}
-         */
-        stringify: function (cipherParams) {
-            return (
-                cipherParams.ciphertext.toString(CryptoJS.enc.Hex)
-                + ":"
-                + cipherParams.iv.toString()
-                + ":"
-                + cipherParams.salt.toString()
-            );
-        },
-        /**
-         * parse and extract the above stringified values to cipherParams
-         * @param {string} parsable
-         */
-        parse: function (parsable) {
-            var parsedArray = parsable.split(":");
-            if(parsedArray.length === 3) {
-                return CryptoJS.lib.CipherParams.create({
-                    ciphertext: CryptoJS.enc.Hex.parse(parsedArray[0]),
-                    iv: CryptoJS.enc.Hex.parse(parsedArray[1]),
-                    salt: CryptoJS.enc.Hex.parse(parsedArray[2])
-                });
-            } else {
-                return false;
+    /**
+     * PPM CustomEvent Listener - main event listener
+     * DISPATCH CUSTOM EVENT LIKE THIS: UTILS.dispatchCustomEvent({type:"logged_in", ...});
+     */
+    var customEventListener = function(e) {
+        if(e && _.isObject(e.detail)) {
+            var eventData = e.detail;
+            switch (eventData.type) {
+                case "logged_in":
+                    //log("Caught CustomEvent["+eventData.type+"]");
+                    registerEncryptionSchemes();
+                    break;
+                case "logged_out":
+                    //log("Caught CustomEvent["+eventData.type+"]");
+                    //registerEncryptionSchemes();
+                    break;
             }
         }
+    };
+
+
+    var listenToSandboxEvents = function(event) {
+        if(!_.isUndefined(event.data)) {
+            log("SBResponse: " + JSON.stringify(event.data), "warning");
+        }
+    };
+
+    /**
+     * @todo: problem we cannot require ChromeStorage because ChromeStorage requires PPMCryptor so we'd have circular reqs
+     * @todo: check if ChromeStorage can use the new CryptoModule without requiring this PPMCryptor module!
+     * @todo: YES, I checked! It could!
+     */
+    var registerEncryptionSchemes = function() {
+        var ChromeStorage = require("ChromeStorage");
+        var syncConfig = ChromeStorage.getConfigByLocation("sync");
+        var schemes = syncConfig.get("cryptor.schemes");
+        log("SCHEMES: " + JSON.stringify(schemes));
+        return;
+        var messageId = PPMUtils.get_uuid_v4();
+        var data = {
+            domain: 'encryptionSchemes',
+            messageId: messageId,
+            command: 'registerScheme',
+            schemeName: 'testScheme',
+            /* args: ["text", "key", "id", "CryptoModule"]*/
+            //encryptMethodBody: 'return CryptoModule.encryptAES(text, key+id);',
+            //decryptMethodBody: 'return CryptoModule.decryptAES(text, key+id);'
+            encryptMethodBody: 'return CryptoModule.encryptAES(CryptoModule.encryptAES(text, key+id), CryptoModule.md5Hash(key, id));',
+            decryptMethodBody: 'return CryptoModule.decryptAES(CryptoModule.decryptAES(text, CryptoModule.md5Hash(key, id)), key+id);'
+        };
+        encryptionSchemesSandbox.contentWindow.postMessage(data, "*");
     };
 
 
@@ -58,6 +78,8 @@ define([
          */
         initialize: function() {
             return new Promise(function (fulfill, reject) {
+                window.addEventListener('message', listenToSandboxEvents);
+                document.addEventListener("PPM", customEventListener, false);
                 log("INITIALIZED", "info");
                 fulfill();
             });
@@ -69,6 +91,8 @@ define([
          */
         shutdown: function() {
             return new Promise(function (fulfill, reject) {
+                document.removeEventListener("PPM", customEventListener, false);
+                window.removeEventListener('message', listenToSandboxEvents);
                 log("SHUTDOWN COMPLETED", "info");
                 fulfill();
             });
@@ -80,20 +104,14 @@ define([
          * @param {string} [key]
          * @returns {string}
          */
-        md5hash: function(txt, key) {
-            key = (_.isUndefined(key) ? null : key);
-            var hash = (key===null ? CryptoJS.MD5(txt) : CryptoJS.HmacMD5(txt, key));
-            return(hash.toString(CryptoJS.enc.Hex));
-        },
+        md5Hash: CryptoModule.md5Hash,
 
         /**
          * Returns Sha3 hash (using by default 256 bit length)
          * @param {string} txt
          * @returns {string}
          */
-        sha3Hash: function(txt) {
-            return(CryptoJS.SHA3(txt, { outputLength: 256 }).toString(CryptoJS.enc.Hex));
-        },
+        sha3Hash: CryptoModule.sha3Hash,
 
         /**
          *
@@ -101,11 +119,7 @@ define([
          * @param {string} key
          * @returns {string}
          */
-        encryptAES: function(txt, key) {
-            var encrypted = CryptoJS.AES.encrypt(txt, key, AesMode);
-            var ciphertext = encrypted.toString();
-            return(ciphertext);
-        },
+        encryptAES: CryptoModule.encryptAES,
 
         /**
          * @param {string} cipherText - text to decrypt
@@ -115,9 +129,8 @@ define([
          */
         decryptAES: function(cipherText, key, parse) {
             try {
-                var answer = CryptoJS.AES.decrypt(cipherText, key, AesMode);
-                answer = answer.toString(CryptoJS.enc.Utf8);
-                if (parse === true) {
+                var answer = CryptoModule.decryptAES(cipherText, key);
+                if (answer !== false && parse === true) {
                     answer = JSON.parse(answer);
                     if (!_.isObject(answer)) {
                         answer = false;

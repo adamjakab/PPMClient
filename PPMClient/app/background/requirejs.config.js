@@ -10,6 +10,7 @@ requirejs.config({
         ConfigurationManager: '../../vendor/configuration-manager/ConfigurationManager',
         localConfig: '../config/localConfig',
         syncConfig: '../config/syncConfig',
+        CryptoModule: '../lib/CryptoModule',
         ParanoiaServer: '../lib/ParanoiaServer',
         Passcard: '../lib/Passcard'
     },

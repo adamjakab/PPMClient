@@ -1,3 +1,7 @@
+/**
+ * The content script injected into web pages
+ * @todo: me me to "content" folder
+ */
 (function() {
 
     var init = function() {

@@ -19,16 +19,16 @@ define(['TestUtils', 'PPMCryptor', 'PPMUtils', 'underscore'],
             var testKey = "85781829968fe5d680a0da14224816e6";
 
             it("should return the same md5 hash", function () {
-                var hash1 = PPMCryptor.md5hash(testString);
-                var hash2 = PPMCryptor.md5hash(testString);
+                var hash1 = PPMCryptor.md5Hash(testString);
+                var hash2 = PPMCryptor.md5Hash(testString);
                 expect(hash1.length).toBe(32);
                 expect(hash2.length).toBe(32);
                 expect(hash1).toBe(hash2);
             });
 
             it("should return the same md5(hmac) hash", function () {
-                var hash1 = PPMCryptor.md5hash(testString, testKey);
-                var hash2 = PPMCryptor.md5hash(testString, testKey);
+                var hash1 = PPMCryptor.md5Hash(testString, testKey);
+                var hash2 = PPMCryptor.md5Hash(testString, testKey);
                 expect(hash1.length).toBe(32);
                 expect(hash2.length).toBe(32);
                 expect(hash1).toBe(hash2);

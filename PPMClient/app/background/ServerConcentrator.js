@@ -183,8 +183,16 @@ define([
         return false;
     };
 
+    /**
+     * @todo: This is wrong!!! syncConfig loaded by requirejs is holding the default values and NOT the decrypted ones!!!
+     * @todo: Actually syncConfig should be removed from all modules except for ChromeStorage which needs the default config
+     * this is ok: var syncConfig = ChromeStorage.getConfigByLocation("sync");
+     * @param index
+     * @return {*}
+     */
     var getServerConfigurationByIndex = function(index) {
         if (_.contains(getRegisteredServerNames(), index)) {
+            //var syncConfig = ChromeStorage.getConfigByLocation("sync");
             return syncConfig.get("serverconcentrator.servers." + index);
         }
         return false;

@@ -31,5 +31,8 @@
         "storage",
         "http://*/*",
         "https://*/*"
-    ]
+    ],
+    "sandbox": {
+        "pages": ["app/sandbox/encryptionSchemes/index.html"]
+    }
 }

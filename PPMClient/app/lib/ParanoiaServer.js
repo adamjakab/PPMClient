@@ -459,10 +459,10 @@ define([
                     log("SCO[postDataRaw]:" + str2crypt);
                 }
                 if (_.isNull(serverConfig.get("seed"))) {
-                    //if we have no seed yet we must encrypt data with combination username & password (md5hash of it 'coz server has only that)
+                    //if we have no seed yet we must encrypt data with combination username & password (md5Hash of it 'coz server has only that)
                     //also padding will be done on both left and right side with the length of the username
                     Ed2s = cryptor.encryptAES(str2crypt, serverConfig.get("username"));
-                    Ed2s = cryptor.encryptAES(Ed2s, cryptor.md5hash(serverConfig.get("password")));
+                    Ed2s = cryptor.encryptAES(Ed2s, cryptor.md5Hash(serverConfig.get("password")));
                     Ed2s = utils.leftRightPadString(Ed2s, serverConfig.get("username").length, serverConfig.get("username").length);
                 } else {
                     //encrypt data normally with current seed, leftPadLength, rightPadLength

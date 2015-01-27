@@ -17,10 +17,17 @@ define(['ConfigurationManager'],
 
                 },
                 cryptor: {
-                    /* these are not yet implemented so changing the values below will not do anything*/
+                    /* these are not yet implemented so changing the values below will not do anything */
                     aes: {
                         mode: "CTR", /* modes: CBC, CFB, CTR, OFB, ECB */
                         padding: "Pkcs7" /* paddings: Pkcs7, Iso97971, AnsiX923, Iso10126, ZeroPadding, NoPadding*/
+                    },
+                    schemes: {
+                        "AesMd5": {
+                            description: "Default double Aes encryption with key+id in first pass and with HmacMD5 of key in second.",
+                            encryptMethodBody: 'return CryptoModule.encryptAES(CryptoModule.encryptAES(text, key+id), CryptoModule.md5Hash(key, id));',
+                            decryptMethodBody: 'return CryptoModule.decryptAES(CryptoModule.decryptAES(text, CryptoModule.md5Hash(key, id)), key+id);'
+                        }
                     }
                 },
                 gat: {
@@ -50,7 +57,7 @@ define(['ConfigurationManager'],
                         "alphaUpper": true,
                         "alphaLower": true,
                         "numeric": true,
-                        "special": true, /* #@?!|&%^*+-=.:,;/([{<>}]) */
+                        "special": true,
                         "extendedUpper": false,
                         "extendedLower": false,
                         "extra": false,
