@@ -5,11 +5,11 @@ define([
     'localConfig',
     'syncConfig',
     'PPMLogger',
-    'PPMCryptor',
     'PPMUtils',
+    'CryptoModule',
     'bluebird',
     'underscore'
-], function (localConfig, syncConfig, PPMLogger, PPMCryptor, PPMUtils, Promise, _) {
+], function (localConfig, syncConfig, PPMLogger, PPMUtils, CryptoModule, Promise, _) {
     /**
      * @type {object} rawSyncStorageData
      */
@@ -83,7 +83,7 @@ define([
             } else if(location == "sync") {
                 var CPDSTR = JSON.stringify(syncConfig.getAll());
                 //log("CRYPTING CURRENT PROFILE("+currentProfileName+"):"+CPDSTR);
-                rawSyncStorageData[currentProfileName] = PPMCryptor.encryptAES(CPDSTR, currentMasterKey);
+                rawSyncStorageData[currentProfileName] = CryptoModule.encryptAES(CPDSTR, currentMasterKey);
                 data = rawSyncStorageData;
             }
             chromeStorage.set(data, function() {
@@ -221,7 +221,8 @@ define([
             }
             log("Trying to decrypt data for profile["+profile+"]...");
             var CPDENC = rawSyncStorageData[profile];
-            var profileDataObject = PPMCryptor.decryptAES(CPDENC, masterKey, true);
+            var profileData = CryptoModule.decryptAES(CPDENC, masterKey);
+            var profileDataObject = PPMUtils.objectizeJsonString(profileData);
             if(!profileDataObject) {
                 return reject(new Error("This MasterKey does not open the door!", "info"));
             }

@@ -145,6 +145,22 @@ define([
             });
         },
 
+        /**
+         * @param {String} json
+         * @return {Object|false}
+         */
+        objectizeJsonString: function(json) {
+            var answer;
+            try {
+                answer = JSON.parse(json);
+                if (!_.isObject(answer)) {
+                    answer = false;
+                }
+            } catch (e) {
+                answer = false;
+            }
+            return(answer);
+        },
 
         /**
          * Copies the text to users clipboard

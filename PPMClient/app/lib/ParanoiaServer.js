@@ -4,11 +4,11 @@
 define([
         'PPMLogger',
         'PPMUtils',
-        'PPMCryptor',
+        'CryptoModule',
         'bluebird',
         'underscore'
     ],
-    function(logger, utils, cryptor, Promise, _) {
+    function(PPMLogger, PPMUtils, CryptoModule, Promise, _) {
         /**
          *
          * @param {ConfigurationManager} srvCfg
@@ -47,7 +47,7 @@ define([
              * @param msg
              * @param type
              */
-            var log = function(msg, type) {logger.log(msg, "PPMServer["+serverConfig.get("index")+"]", type);};
+            var log = function(msg, type) {PPMLogger.log(msg, "PPMServer["+serverConfig.get("index")+"]", type);};
 
             /**
              * @type {XMLHttpRequest}
@@ -102,7 +102,7 @@ define([
                     _communicateWithServer({service: "login"}).then(function() {
                         serverConfig.set("connected", true);
                         serverConfig.set("connection_ts", _getTimestamp());
-                        utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
+                        PPMUtils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
                         log("connected");
                         fulfill();
                     }).catch(function(e) {
@@ -126,7 +126,7 @@ define([
                     _communicateWithServer({service: "logout"}).then(function() {
                         serverConfig.set("connected", false);
                         _putServerInDisconnectedState();
-                        utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
+                        PPMUtils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
                         log("disconnected");
                         fulfill();
                     }).catch(function(e) {
@@ -195,7 +195,7 @@ define([
                         if(_.isUndefined(SCO.responseObject.data) || _.isEmpty(SCO.responseObject.data)) {
                             return reject(new Error("Server did not return payload!"));
                         }
-                        var decryptedPayload = cryptor.decryptAES(SCO.responseObject.data, serverConfig.get("master_key"), true);
+                        var decryptedPayload = CryptoModule.decryptAES(SCO.responseObject.data, serverConfig.get("master_key"), true);
                         if(!_.isObject(decryptedPayload)) {
                             return reject(new Error("Unable to decrypt payload!"));
                         }
@@ -217,7 +217,7 @@ define([
                     if(!_.isUndefined(data["payload"])) {
                         if(_.isObject(data["payload"])) {
                             var unencryptedPayload = JSON.stringify(data["payload"]);
-                            data["payload"] = cryptor.encryptAES(unencryptedPayload, serverConfig.get("master_key"));
+                            data["payload"] = CryptoModule.encryptAES(unencryptedPayload, serverConfig.get("master_key"));
                         } else {
                             delete data["payload"];
                         }
@@ -377,7 +377,7 @@ define([
                         return _XHR_abort_and_reject(new Error("Unable to extract Seed or Timestamp or PadLengths from server response!"));
                     }
                     _setIdle();
-                    utils.dispatchCustomEvent({type: 'server_xchange', index: serverConfig.get("index")});
+                    PPMUtils.dispatchCustomEvent({type: 'server_xchange', index: serverConfig.get("index")});
                     xhr.customData = null;
                     fulfill(SCO);
                     _executeNextOperationInQueue();
@@ -443,8 +443,9 @@ define([
              * @param {Object} SCO - the Server Communication Object
              */
             var _decryptSrvResponse = function(SCO) {
-                var trimmedResponse = utils.leftRightTrimString(xhr.responseText, SCO.postDataRaw.leftPadLength, SCO.postDataRaw.rightPadLength);
-                SCO.responseObject = cryptor.decryptAES(trimmedResponse, SCO.postDataRaw.seed, true);
+                var trimmedResponse = PPMUtils.leftRightTrimString(xhr.responseText, SCO.postDataRaw.leftPadLength, SCO.postDataRaw.rightPadLength);
+                var decryptedResponse = CryptoModule.decryptAES(trimmedResponse, SCO.postDataRaw.seed);
+                SCO.responseObject = PPMUtils.objectizeJsonString(decryptedResponse);
             };
 
             /**
@@ -461,13 +462,13 @@ define([
                 if (_.isNull(serverConfig.get("seed"))) {
                     //if we have no seed yet we must encrypt data with combination username & password (md5Hash of it 'coz server has only that)
                     //also padding will be done on both left and right side with the length of the username
-                    Ed2s = cryptor.encryptAES(str2crypt, serverConfig.get("username"));
-                    Ed2s = cryptor.encryptAES(Ed2s, cryptor.md5Hash(serverConfig.get("password")));
-                    Ed2s = utils.leftRightPadString(Ed2s, serverConfig.get("username").length, serverConfig.get("username").length);
+                    Ed2s = CryptoModule.encryptAES(str2crypt, serverConfig.get("username"));
+                    Ed2s = CryptoModule.encryptAES(Ed2s, CryptoModule.md5Hash(serverConfig.get("password")));
+                    Ed2s = PPMUtils.leftRightPadString(Ed2s, serverConfig.get("username").length, serverConfig.get("username").length);
                 } else {
                     //encrypt data normally with current seed, leftPadLength, rightPadLength
-                    Ed2s = cryptor.encryptAES(str2crypt, serverConfig.get("seed"));
-                    Ed2s = utils.leftRightPadString(Ed2s, serverConfig.get("leftPadLength"), serverConfig.get("rightPadLength"));
+                    Ed2s = CryptoModule.encryptAES(str2crypt, serverConfig.get("seed"));
+                    Ed2s = PPMUtils.leftRightPadString(Ed2s, serverConfig.get("leftPadLength"), serverConfig.get("rightPadLength"));
                 }
                 SCO.postDataCrypted = Ed2s;
             };
@@ -479,9 +480,9 @@ define([
             var _prepareRawPostData = function(SCO) {
                 SCO.postDataRaw = {
                     service:            SCO.service,
-                    seed:               utils.getGibberish(serverConfig.get("seed_length_min"), serverConfig.get("seed_length_max")),
-                    leftPadLength:      utils.getRandomNumberInRange(serverConfig.get("padding_length_min"), serverConfig.get("padding_length_max")),
-                    rightPadLength:     utils.getRandomNumberInRange(serverConfig.get("padding_length_min"), serverConfig.get("padding_length_max"))
+                    seed:               PPMUtils.getGibberish(serverConfig.get("seed_length_min"), serverConfig.get("seed_length_max")),
+                    leftPadLength:      PPMUtils.getRandomNumberInRange(serverConfig.get("padding_length_min"), serverConfig.get("padding_length_max")),
+                    rightPadLength:     PPMUtils.getRandomNumberInRange(serverConfig.get("padding_length_min"), serverConfig.get("padding_length_max"))
                 };
                 //db operation parameters
                 if(!_.isUndefined(SCO.operation)) {
@@ -501,7 +502,7 @@ define([
                 serverConfig.set("rightPadLength", null);
                 serverConfig.set("disconnection_ts", _getTimestamp());
                 serverConfig.set("connection_ts", null);
-                utils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
+                PPMUtils.dispatchCustomEvent({type: 'server_state_change', index: serverConfig.get("index")});
             };
 
             var _getTimestamp = function() {return(Math.round((Date.now()/1000)));};

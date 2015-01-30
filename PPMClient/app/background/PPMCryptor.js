@@ -4,10 +4,11 @@
 define([
     'PPMLogger',
     'PPMUtils',
+    'ChromeStorage',
     'CryptoModule',
     'underscore',
     'bluebird'
-], function (PPMLogger, PPMUtils, CryptoModule, _, Promise) {
+], function (PPMLogger, PPMUtils, ChromeStorage, CryptoModule, _, Promise) {
     /**
      * Log facility
      * @param msg
@@ -48,12 +49,9 @@ define([
     };
 
     /**
-     * @todo: problem we cannot require ChromeStorage because ChromeStorage requires PPMCryptor so we'd have circular reqs
-     * @todo: check if ChromeStorage can use the new CryptoModule without requiring this PPMCryptor module!
-     * @todo: YES, I checked! It could!
+     *
      */
     var registerEncryptionSchemes = function() {
-        var ChromeStorage = require("ChromeStorage");
         var syncConfig = ChromeStorage.getConfigByLocation("sync");
         var schemes = syncConfig.get("cryptor.schemes");
         log("SCHEMES: " + JSON.stringify(schemes));
@@ -100,50 +98,6 @@ define([
                 log("SHUTDOWN COMPLETED", "info");
                 fulfill();
             });
-        },
-
-        /**
-         * Returns Md5 hash - if key is supplied HmacMD5 is used
-         * @param {string} txt
-         * @param {string} [key]
-         * @returns {string}
-         */
-        md5Hash: CryptoModule.md5Hash,
-
-        /**
-         * Returns Sha3 hash (using by default 256 bit length)
-         * @param {string} txt
-         * @returns {string}
-         */
-        sha3Hash: CryptoModule.sha3Hash,
-
-        /**
-         *
-         * @param {string} txt
-         * @param {string} key
-         * @returns {string}
-         */
-        encryptAES: CryptoModule.encryptAES,
-
-        /**
-         * @param {string} cipherText - text to decrypt
-         * @param {string} key - key to decrypt with
-         * @param {boolean} [parse] - return json parsed object
-         * @return {string|object|boolean} answer - the decrypted string or parsed object or false
-         */
-        decryptAES: function(cipherText, key, parse) {
-            try {
-                var answer = CryptoModule.decryptAES(cipherText, key);
-                if (answer !== false && parse === true) {
-                    answer = JSON.parse(answer);
-                    if (!_.isObject(answer)) {
-                        answer = false;
-                    }
-                }
-            } catch (e) {
-                answer = false;
-            }
-            return(answer);
         }
     };
 });

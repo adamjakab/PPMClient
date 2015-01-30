@@ -4,17 +4,16 @@
 define([
         'PPMLogger',
         'PPMUtils',
-        'PPMCryptor',
         'bluebird',
         'underscore'
     ],
-    function (logger, utils, cryptor, Promise, _) {
+    function (PPMLogger, PPMUtils, Promise, _) {
         /**
          * Log facility
          * @param {String} msg
          * @param {String} [type]
          */
-        var log = function(msg, type) {logger.log(msg, "PASSCARD", type);};
+        var log = function(msg, type) {PPMLogger.log(msg, "PASSCARD", type);};
 
         /**
          *
@@ -51,7 +50,7 @@ define([
                     payload: null,
                     username: null,
                     password: null,
-                    creation_ts: utils.getTimestamp(),
+                    creation_ts: PPMUtils.getTimestamp(),
                     modification_ts: null,
                     pw_change_ts: null
                 },
@@ -101,13 +100,13 @@ define([
                 var after = getSaveData();
                 if(!noSyncCheck && !_.isEqual(before, after)) {
                     config.set("sync_state", 1);
-                    config.set("data.modification_ts", utils.getTimestamp());
+                    config.set("data.modification_ts", PPMUtils.getTimestamp());
                     if(before["payload"]["password"] != after["payload"]["password"]) {
-                        config.set("data.pw_change_ts", utils.getTimestamp());
+                        config.set("data.pw_change_ts", PPMUtils.getTimestamp());
                     }
                 }
                 //dispatch "passcard_change" event in any case (maybe only sync_state was set back to 0)
-                utils.dispatchCustomEvent({type:"passcard_change"});
+                PPMUtils.dispatchCustomEvent({type:"passcard_change"});
             };
 
             /**
@@ -131,7 +130,7 @@ define([
                         //@todo: put default values here from config
                         fulfill({username: "", password: ""});
                     } else {
-                        utils.dispatchCustomEvent({type:"passcard_secret_request", id: config.get("data._id")});
+                        PPMUtils.dispatchCustomEvent({type:"passcard_secret_request", id: config.get("data._id")});
                         var secretWaitInterval = setInterval(function() {
                             if(hasSecret()) {
                                 clearInterval(secretWaitInterval);
