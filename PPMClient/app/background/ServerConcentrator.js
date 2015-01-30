@@ -2,7 +2,6 @@
  * PPM Server Concentrator
  */
 define([
-    'syncConfig',
     'PPMLogger',
     'PPMUtils',
     'ChromeStorage',
@@ -11,7 +10,7 @@ define([
     'ConfigurationManager',
     'bluebird',
     'underscore'
-], function (syncConfig, logger, PPMUtils, ChromeStorage, ParanoiaServer, Passcard, ConfigurationManager, Promise, _) {
+], function (logger, PPMUtils, ChromeStorage, ParanoiaServer, Passcard, ConfigurationManager, Promise, _) {
     /**
      * Log facility
      * @param msg
@@ -175,6 +174,10 @@ define([
         return false;
     };
 
+    /**
+     * @param {String} index
+     * @return {*}
+     */
     var getServerStateByIndex = function(index) {
         var server = getServerByIndex(index);
         if(server) {
@@ -184,15 +187,12 @@ define([
     };
 
     /**
-     * @todo: This is wrong!!! syncConfig loaded by requirejs is holding the default values and NOT the decrypted ones!!!
-     * @todo: Actually syncConfig should be removed from all modules except for ChromeStorage which needs the default config
-     * this is ok: var syncConfig = ChromeStorage.getConfigByLocation("sync");
-     * @param index
+     * @param {string} index
      * @return {*}
      */
     var getServerConfigurationByIndex = function(index) {
         if (_.contains(getRegisteredServerNames(), index)) {
-            //var syncConfig = ChromeStorage.getConfigByLocation("sync");
+            var syncConfig = ChromeStorage.getConfigByLocation("sync");
             return syncConfig.get("serverconcentrator.servers." + index);
         }
         return false;
@@ -415,7 +415,7 @@ define([
     /**
      * Loads secure data (payload) for passcard
      *
-     * @param {Number} id
+     * @param {String} id
      */
     var loadPayloadForSecret = function(id) {
         log("LOADING PAYLOAD FOR: " + id);
