@@ -2,15 +2,15 @@
  * Google Analitics usage tracker
  */
 define([
-    'bluebird',
-    'PPMLogger'
-], function (Promise, logger) {
+    'PPMLogger',
+    'bluebird'
+], function (PPMLogger, Promise) {
     /**
      * Log facility
      * @param msg
      * @param type
      */
-    var log = function(msg, type) {logger.log(msg, "GAT", type);};
+    var log = function(msg, type) {PPMLogger.log(msg, "GAT", type);};
 
     return {
         /**

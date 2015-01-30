@@ -2,17 +2,16 @@
  * Chrome browser window and tab utility methods
  */
 define([
-    'syncConfig',
     'PPMLogger',
     'bluebird',
     'underscore'
-], function (syncConfig, logger, Promise, _) {
+], function (PPMLogger, Promise, _) {
     /**
      * Log facility
      * @param msg
      * @param type
      */
-    var log = function (msg, type) {logger.log(msg, "CHROMETABS", type);};
+    var log = function (msg, type) {PPMLogger.log(msg, "CHROMETABS", type);};
 
     /**
      * This will hold Boolean value for each chrome tab so we can check if content script is present

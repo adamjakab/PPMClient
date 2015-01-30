@@ -10,13 +10,13 @@ define([
     'ConfigurationManager',
     'bluebird',
     'underscore'
-], function (logger, PPMUtils, ChromeStorage, ParanoiaServer, Passcard, ConfigurationManager, Promise, _) {
+], function (PPMLogger, PPMUtils, ChromeStorage, ParanoiaServer, Passcard, ConfigurationManager, Promise, _) {
     /**
      * Log facility
      * @param msg
      * @param type
      */
-    var log = function(msg, type) {logger.log(msg, "SERVERCONCENTRATOR", type);};
+    var log = function(msg, type) {PPMLogger.log(msg, "SERVERCONCENTRATOR", type);};
 
     /**
      * Storage for registered servers

@@ -11,13 +11,13 @@ define([
     'ChromeStorage',
     'ServerConcentrator',
     'bluebird'
-], function (logger, utils, cryptor, GATracker, ChromeTabs, ChromeStorage, ServerConcentrator, Promise) {
+], function (PPMLogger, PPMUtils, PPMCryptor, GATracker, ChromeTabs, ChromeStorage, ServerConcentrator, Promise) {
     /**
      * Log facility
      * @param msg
      * @param type
      */
-    var log = function(msg, type) {logger.log(msg, "PPM", type);};
+    var log = function(msg, type) {PPMLogger.log(msg, "PPM", type);};
 
     /**
      * PPM CustomEvent Listener - listens to events dispatched in background
@@ -27,17 +27,17 @@ define([
             var eventData = e.detail;
             switch (eventData.type) {
                 case "logged_in":
-                    utils.updateStateIcon(null, "authenticated");
+                    PPMUtils.updateStateIcon(null, "authenticated");
                     break;
                 case "logged_out":
-                    utils.updateStateIcon(null, "unauthenticated");
+                    PPMUtils.updateStateIcon(null, "unauthenticated");
                     break;
                 case "server_state_change":
                     var state = ChromeStorage.hasDecryptedSyncData() ? "authenticated" : "unauthenticated";
                     if(state == "authenticated") {
                         state = ServerConcentrator.areAllServersConnected() ? "connected" : "disconnected";
                     }
-                    utils.updateStateIcon(null, state);
+                    PPMUtils.updateStateIcon(null, state);
                     break;
             }
         }
@@ -52,8 +52,8 @@ define([
             return new Promise(function (fulfill, reject) {
                 log("Starting...");
                 Promise.all([
-                    utils.initialize(),
-                    cryptor.initialize(),
+                    PPMUtils.initialize(),
+                    PPMCryptor.initialize(),
                     GATracker.initialize(),
                     ChromeTabs.initialize(),
                     ChromeStorage.initialize(),
@@ -97,8 +97,8 @@ define([
         logout: function() {
             return new Promise(function (fulfill, reject) {
                 Promise.all([
-                    utils.shutdown(),
-                    cryptor.shutdown(),
+                    PPMUtils.shutdown(),
+                    PPMCryptor.shutdown(),
                     GATracker.shutdown(),
                     ChromeTabs.shutdown(),
                     ChromeStorage.shutdown(),
@@ -122,11 +122,11 @@ define([
         getComponent: function(name) {
             switch(name) {
                 case "LOGGER":
-                    return(logger);
+                    return(PPMLogger);
                 case "UTILS":
-                    return(utils);
+                    return(PPMUtils);
                 case "CRYPTOR":
-                    return(cryptor);
+                    return(PPMCryptor);
                 case "GAT":
                     return(GATracker);
                 case "CHROMETABS":

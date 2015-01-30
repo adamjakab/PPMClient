@@ -2,17 +2,16 @@
  * Generic utility methods
  */
 define([
-    'syncConfig',
     'PPMLogger',
     'bluebird',
     'underscore'
-], function (syncConfig, logger, Promise, _) {
+], function (PPMLogger, Promise, _) {
     /**
      * Log facility
      * @param msg
      * @param type
      */
-    var log = function(msg, type) {logger.log(msg, "UTILS", type);};
+    var log = function(msg, type) {PPMLogger.log(msg, "UTILS", type);};
 
     /**
      * Available characters to use for gibberish string

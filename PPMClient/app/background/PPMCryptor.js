@@ -2,14 +2,18 @@
  * Crypt/Decrypt methods
  */
 define([
-    'PPMLogger', 'PPMUtils', 'CryptoModule', 'underscore', 'bluebird'
-], function (logger, PPMUtils, CryptoModule, _, Promise) {
+    'PPMLogger',
+    'PPMUtils',
+    'CryptoModule',
+    'underscore',
+    'bluebird'
+], function (PPMLogger, PPMUtils, CryptoModule, _, Promise) {
     /**
      * Log facility
      * @param msg
      * @param type
      */
-    var log = function(msg, type) {logger.log(msg, "CRYPTOR", type);};
+    var log = function(msg, type) {PPMLogger.log(msg, "CRYPTOR", type);};
 
     /**
      * The Iframe where the encryption schemes are registered in the background page

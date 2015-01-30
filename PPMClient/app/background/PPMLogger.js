@@ -1,7 +1,9 @@
 /**
  * Logger Interface and Log keeper for in-app log management
  */
-define(['syncConfig'], function (syncConfig) {
+define([
+    'syncConfig'
+], function (syncConfig) {
     /**
      * @type {Array}
      */

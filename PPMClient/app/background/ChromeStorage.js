@@ -9,7 +9,7 @@ define([
     'PPMUtils',
     'bluebird',
     'underscore'
-], function (localConfig, syncConfig, logger, cryptor, utils, Promise, _) {
+], function (localConfig, syncConfig, PPMLogger, PPMCryptor, PPMUtils, Promise, _) {
     /**
      * @type {object} rawSyncStorageData
      */
@@ -40,7 +40,7 @@ define([
      * @param msg
      * @param type
      */
-    var log = function(msg, type) {logger.log(msg, "CHROMESTORAGE", type);};
+    var log = function(msg, type) {PPMLogger.log(msg, "CHROMESTORAGE", type);};
 
     /**
      * Read from local/sync storage
@@ -83,7 +83,7 @@ define([
             } else if(location == "sync") {
                 var CPDSTR = JSON.stringify(syncConfig.getAll());
                 //log("CRYPTING CURRENT PROFILE("+currentProfileName+"):"+CPDSTR);
-                rawSyncStorageData[currentProfileName] = cryptor.encryptAES(CPDSTR, currentMasterKey);
+                rawSyncStorageData[currentProfileName] = PPMCryptor.encryptAES(CPDSTR, currentMasterKey);
                 data = rawSyncStorageData;
             }
             chromeStorage.set(data, function() {
@@ -221,7 +221,7 @@ define([
             }
             log("Trying to decrypt data for profile["+profile+"]...");
             var CPDENC = rawSyncStorageData[profile];
-            var profileDataObject = cryptor.decryptAES(CPDENC, masterKey, true);
+            var profileDataObject = PPMCryptor.decryptAES(CPDENC, masterKey, true);
             if(!profileDataObject) {
                 return reject(new Error("This MasterKey does not open the door!", "info"));
             }
@@ -332,7 +332,7 @@ define([
                     syncConfig.removeAllChangeListeners();
                     syncConfig.restoreDefaults();
                     log("SHUTDOWN COMPLETED", "info");
-                    utils.dispatchCustomEvent({type:"logged_out"});
+                    PPMUtils.dispatchCustomEvent({type:"logged_out"});
                     fulfill();
                 }).error(function(e) {
                     log(e, "error");
@@ -355,7 +355,7 @@ define([
                 unlockSyncStorage(profile, masterKey).then(function() {
                     log("Loaded configuration: " + JSON.stringify(syncConfig.getAll()));
                     syncConfig.addChangeListener(syncStorageChangeListener);
-                    utils.dispatchCustomEvent({type:"logged_in"});
+                    PPMUtils.dispatchCustomEvent({type:"logged_in"});
                     fulfill();
                 }).error(function(e) {
                     log(e, "error");
