@@ -23,6 +23,11 @@ define(['ConfigurationManager'],
                         padding: "Pkcs7" /* paddings: Pkcs7, Iso97971, AnsiX923, Iso10126, ZeroPadding, NoPadding*/
                     },
                     schemes: {
+                        "OnePass": {
+                            description: "Single pass variable key Aes encryption.",
+                            encryptMethodBody: 'return CryptoModule.encryptAES(text, key+id);',
+                            decryptMethodBody: 'return CryptoModule.decryptAES(text, key+id);'
+                        },
                         "AesMd5": {
                             description: "Default double Aes encryption with key+id in first pass and with HmacMD5 of key in second.",
                             encryptMethodBody: 'return CryptoModule.encryptAES(CryptoModule.encryptAES(text, key+id), CryptoModule.md5Hash(key, id));',

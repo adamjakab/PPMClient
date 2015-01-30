@@ -58,7 +58,7 @@ define([
                 has_secret: false //payload not yet loaded
             });
             config.merge(pcData.getAll(), "data");
-            log("Initialized with: " + JSON.stringify(config.getAll()));
+            //log("Initialized with: " + JSON.stringify(config.getAll()));
 
 
             /**

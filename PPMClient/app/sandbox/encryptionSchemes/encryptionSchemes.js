@@ -21,15 +21,21 @@ require([
 ], function(_, CryptoModule) {
         console.log("SANDBOX READY!");
 
-        var encryptionSchemes = [];
+        /**
+         * @type {{}}
+         */
+        var encryptionSchemes = {};
 
         /**
          *
          * @param {object} data
-         * @return {boolean}
+         * @return {{}}
          */
         var registerEncryptionScheme = function(data) {
-            var answer = false;
+            var answer = {
+                error: true,
+                message: 'Unknown error!'
+            };
 
             try {
                 var scheme = {};
@@ -51,24 +57,24 @@ require([
                 //The Decryption function
                 scheme.decrypt = new Function(args, data.decryptMethodBody);
 
+                //test methods
                 var testString = getRandomString(256);
                 var testKey = getRandomString(64);
                 var testId = getRandomString(32);
-
                 var encString = scheme.encrypt(testString, testKey, testId, CryptoModule);
                 var decString = scheme.decrypt(encString, testKey, testId, CryptoModule);
 
-                console.warn("ENC: " + encString);
-                console.warn("DEC: " + decString);
-
-                console.warn("ORIG?=DEC: " + (_.isEqual(testString, decString)?"Y":"N"));
+                if(_.isEqual(testString, decString)) {
+                    encryptionSchemes[data.schemeName] = scheme;
+                    answer["error"] = false;
+                    answer["message"] = "Encryption Scheme("+data.schemeName+") registered.";
+                } else {
+                    answer["message"] = "Encryption Scheme("+data.schemeName+") registration error: "
+                        + "String after encryption and decryption is not equal to original string!";
+                }
             } catch(e) {
-                console.error("Scheme registration error: " + e);
+                answer["message"] = "Encryption Scheme("+data.schemeName+") registration error: " + e;
             }
-
-
-
-
             return answer;
         };
 
@@ -97,13 +103,11 @@ require([
                 var response = {
                     domain: event.data.domain,
                     command: event.data.command,
-                    messageId: event.data.messageId,
-                    originalData: event.data
+                    messageId: event.data.messageId
                 };
                 switch (event.data.command) {
                     case 'registerScheme':
-                        var res = registerEncryptionScheme(event.data);
-                        response["message"] = (res ? "registration OK" : "registration FAIL");
+                        response["response"] = registerEncryptionScheme(event.data);
                         break;
                     default:
                         response["message"] = "Unknown command: " + event.data.command;
