@@ -45,6 +45,8 @@ define([
                     registerEncryptionSchemes();
                     break;
                 case "logged_out":
+                    //@todo: we need to unregister ES from sandbox on log out because another profile might have
+                    // different schemes with same name - just to be on the safe side ;)
                     //unregisterEncryptionSchemes();
                     break;
             }
