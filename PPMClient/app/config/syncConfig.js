@@ -52,6 +52,7 @@ define(['ConfigurationManager'],
                             username: "your-user-name",
                             password: "(:-very_secure_password-:)",
                             master_key: "Paranoia",
+                            encryption_scheme: "OnePass",
                             ping_interval: 60
                         }
                     }

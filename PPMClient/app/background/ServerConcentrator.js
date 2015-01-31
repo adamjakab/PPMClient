@@ -42,13 +42,13 @@ define([
      * Main check function executed on regular intervals to check if there are any
      * passcards out of sync waiting to be persisted
      * Normally, passcards are saved/deleted right away
-     * However if server comunication error occurs passcards could remain out of sync
+     * However if server communication error occurs passcards could remain out of sync
      */
     var checkForActions = function() {
         if (ChromeStorage.hasDecryptedSyncData() && areAllServersConnected() && hasSecrets()) {
             var saveList = getOutOfSyncSecretList();
             if(!_.isEmpty(saveList)) {
-                log("Passcards OutOfSync: " + JSON.stringify(saveList));
+                log("Passcards OutOfSync: " + saveList.length);
                 saveSecrets(saveList).then(function() {
                     log("checkForActions finished - all items are now in sync with remote");
                 });
@@ -75,11 +75,6 @@ define([
                 case "server_state_change":
                     if (ChromeStorage.hasDecryptedSyncData() && areAllServersConnected() && !hasSecrets()) {
                         loadSecrets();
-                    }
-                    break;
-                case "passcard_secret_request":
-                    if (!_.isUndefined(eventData["id"])) {
-                        loadPayloadForSecret(eventData["id"]);
                     }
                     break;
             }
@@ -413,23 +408,32 @@ define([
     };
 
     /**
-     * Loads secure data (payload) for passcard
+     *  Gets/Loads secure data (payload) for passcard
      *
      * @param {String} id
+     * @return {Promise}
      */
-    var loadPayloadForSecret = function(id) {
-        log("LOADING PAYLOAD FOR: " + id);
-        var secret = getSecret(id);
-        if(secret === false) {
-            return reject(new Error("This secret does not exist!"));
-        }
-        var server = getServerByIndex("server_0");
-        server.loadSecret(id).then(function(secretData) {
-            //log("Got Secret: " + JSON.stringify(secretData));
-            secret.set("data", secretData, true);
-            secret.set("has_secret", true);
-        }).catch(function(e) {
-            log("Could not get payload: " + e.message);
+    var getPayloadForSecret = function(id) {
+        return new Promise(function (fulfill, reject) {
+            log("GETTING PAYLOAD FOR SECRET: " + id);
+            var secret = getSecret(id);
+            if (secret === false) {
+                return reject(new Error("This secret does not exist!"));
+            }
+            if(secret.getSecret() !== false) {
+                fulfill(secret.getSecret());
+            } else {
+                var server = getServerByIndex("server_0");
+                server.loadSecret(id).then(function (secretData) {
+                    log("Got Secret: " + JSON.stringify(secretData));
+                    secret.set("data", secretData, true);
+                    secret.set("has_secret", true);
+                    fulfill(secret.getSecret());
+                }).catch(function (e) {
+                    log("getPayloadForSecret failed: " + e);
+                    return reject(new Error("getPayloadForSecret failed: " + e));
+                });
+            }
         });
     };
 
@@ -492,6 +496,7 @@ define([
         getSecret: getSecret,
         createSecret: createSecret,
         deleteSecret: deleteSecret,
-        saveSecret: saveSecret
+        saveSecret: saveSecret,
+        getPayloadForSecret: getPayloadForSecret
     };
 });

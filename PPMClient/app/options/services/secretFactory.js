@@ -43,7 +43,6 @@ define([
              */
             getSecret: function(id) {
                 return new Promise(function (fulfill, reject) {
-                    //console.log("Getting secret: " + id);
                     /**
                      * @param {Passcard} secretObject
                      */
@@ -52,11 +51,11 @@ define([
                         return reject(new Error("Secret not found!"));
                     }
                     var secretData = _.clone(secretObject.get("data"));
-                    secretObject.getSecret().then(function(secretSecret) {
+                    SERVERCONCENTRATOR.getPayloadForSecret(id).then(function(secretSecret) {
                         secretData = _.extend(secretData, secretSecret);
                         fulfill(secretData);
                     }).catch(function (e) {
-                        return reject(e);
+                        return reject(new Error("Unable to load secret data! " + e));
                     });
                 });
             },
@@ -68,7 +67,9 @@ define([
                 var secretObject = SERVERCONCENTRATOR.getSecret(data._id);
                 if(secretObject) {
                     secretObject.set("data", data);
-                    SERVERCONCENTRATOR.saveSecret(data._id);
+                    SERVERCONCENTRATOR.saveSecret(data._id).catch(function(e) {
+                        //save failed
+                    })
                 }
             },
 

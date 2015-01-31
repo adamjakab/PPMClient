@@ -34,6 +34,66 @@ define([
     var MQCSI = null;
 
     /**
+     * Encrypt text with encryptionScheme
+     * @param {String} passcardPayloadText
+     * @param {String} passcardId
+     * @param {String} encryptionScheme
+     * @param {String} encryptionKey
+     * @return {Promise}
+     */
+    var encryptPayload = function(passcardPayloadText, passcardId, encryptionScheme, encryptionKey) {
+        return new Promise(function (fulfill, reject) {
+            sendMessageToSandbox({
+                domain: 'encryptionSchemes',
+                command: 'encryptPayload',
+                passcardPayloadText: passcardPayloadText,
+                encryptionKey: encryptionKey,
+                passcardId: passcardId,
+                encryptionScheme: encryptionScheme
+            }).then(function (response) {
+                if(response["response"]["error"] === false) {
+                    fulfill(response["response"]["message"]);
+                } else {
+                    log("Payload("+encryptionScheme+") decryption failed! " + response["response"]["message"]);
+                    return reject(new Error(response["response"]["message"]));
+                }
+            }).catch(function (e) {
+                return reject(new Error("Payload("+encryptionScheme+") Encryption error: " + e));
+            });
+        });
+    };
+
+    /**
+     * Decrypt text with encryptionScheme
+     * @param {String} passcardPayloadText
+     * @param {String} passcardId
+     * @param {String} encryptionScheme
+     * @param {String} encryptionKey
+     * @return {Promise}
+     */
+    var decryptPayload = function(passcardPayloadText, passcardId, encryptionScheme, encryptionKey) {
+        return new Promise(function (fulfill, reject) {
+            sendMessageToSandbox({
+                domain: 'encryptionSchemes',
+                command: 'decryptPayload',
+                passcardPayloadText: passcardPayloadText,
+                encryptionKey: encryptionKey,
+                passcardId: passcardId,
+                encryptionScheme: encryptionScheme
+            }).then(function (response) {
+                if(response["response"]["error"] === false) {
+                    fulfill(response["response"]["message"]);
+                } else {
+                    log("Payload("+encryptionScheme+") decryption failed! " + response["response"]["message"]);
+                    return reject(new Error(response["response"]["message"]));
+                }
+            }).catch(function (e) {
+                return reject(new Error("Payload("+encryptionScheme+") decryption error: " + e));
+            });
+        });
+    };
+
+    /**
      * PPM CustomEvent Listener - main event listener
      * DISPATCH CUSTOM EVENT LIKE THIS: PPMUtils.dispatchCustomEvent({type:"logged_in", ...});
      */
@@ -43,11 +103,6 @@ define([
             switch (eventData.type) {
                 case "logged_in":
                     registerEncryptionSchemes();
-                    break;
-                case "logged_out":
-                    //@todo: we need to unregister ES from sandbox on log out because another profile might have
-                    // different schemes with same name - just to be on the safe side ;)
-                    //unregisterEncryptionSchemes();
                     break;
             }
         }
@@ -89,27 +144,69 @@ define([
     };
 
     /**
-     *
+     * Register Encryption Schemes in Sandbox
+     * This method is called twice:
+     *  1) on initialize when we are registering default ESs
+     *  2) after login when we might have additional ESs
+     * @return {Promise}
      */
     var registerEncryptionSchemes = function() {
-        var syncConfig = ChromeStorage.getConfigByLocation("sync");
-        var schemes = syncConfig.get("cryptor.schemes");
-        //log("SCHEMES: " + JSON.stringify(schemes));
-        var registrationData = {
-            domain: 'encryptionSchemes',
-            command: 'registerScheme'
-        };
-        _.each(schemes, function(schemeData, schemeName) {
-            schemeData["schemeName"] = schemeName;
-            schemeData = _.extend(registrationData, schemeData);
-            sendMessageToSandbox(schemeData).then(function(response) {
-                if(!response["response"]["error"]) {
-                    log(response["response"]["message"]);
+        return new Promise(function (fulfill, reject) {
+            var registeredEncryptionSchemes = [];
+            sendMessageToSandbox({
+                domain: 'encryptionSchemes',
+                command: 'getRegisteredSchemeNames'
+            }).then(function (response) {
+                registeredEncryptionSchemes = response["response"]["message"];
+                var syncConfig = ChromeStorage.getConfigByLocation("sync");
+                var schemes = syncConfig.get("cryptor.schemes");
+                //log("SCHEMES: " + JSON.stringify(schemes));
+                var registrationData = {
+                    domain: 'encryptionSchemes',
+                    command: 'registerEncryptionScheme'
+                };
+
+                var registrationPromises = [];
+                _.each(schemes, function (schemeData, schemeName) {
+                    if(!_.contains(registeredEncryptionSchemes, schemeName)) {
+                        schemeData["schemeName"] = schemeName;
+                        schemeData = _.extend(registrationData, schemeData);
+                        registrationPromises.push(sendMessageToSandbox(schemeData));
+                    }
+                });
+
+                if(!_.isEmpty(registrationPromises)) {
+                    Promise.settle(registrationPromises).then(function () {
+                        sendMessageToSandbox({
+                            domain: 'encryptionSchemes',
+                            command: 'getRegisteredSchemeNames'
+                        }).then(function (response) {
+                            registeredEncryptionSchemes = response["response"]["message"];
+                            log("Registered Encryption Schemes: " + JSON.stringify(registeredEncryptionSchemes));
+                            fulfill();
+                        }).catch(function (e) {
+                            return reject(new Error("Cannot retrieve registered encryption schemes: " + e));
+                        });
+                    });
                 } else {
-                    log(response["response"]["message"], "warning");
+                    fulfill();
                 }
-            }).catch(function(e) {
-                log("SANDBOX RESP(ERR): " + e, "warning");
+            }).catch(function (e) {
+                return reject(new Error("Cannot retrieve registered encryption schemes: " + e));
+            });
+        });
+    };
+
+    var unregisterAllEncryptionSchemes = function() {
+        return new Promise(function (fulfill, reject) {
+            sendMessageToSandbox({
+                domain: 'encryptionSchemes',
+                command: 'unregisterAllEncryptionSchemes'
+            }).then(function (response) {
+                log(response["response"]["message"]);
+                fulfill();
+            }).catch(function (e) {
+                return reject(new Error("Encryption Scheme unregistration error: " + e));
             });
         });
     };
@@ -153,8 +250,12 @@ define([
                 window.addEventListener('message', listenToSandboxEvents);
                 document.addEventListener("PPM", customEventListener, false);
                 _messageQueueCleanupServiceStart();
-                log("INITIALIZED", "info");
-                fulfill();
+                registerEncryptionSchemes().then(function() {
+                    log("INITIALIZED", "info");
+                    fulfill();
+                }).catch(function (e) {
+                    return reject(e);
+                });
             });
         },
 
@@ -164,12 +265,19 @@ define([
          */
         shutdown: function() {
             return new Promise(function (fulfill, reject) {
-                document.removeEventListener("PPM", customEventListener, false);
-                window.removeEventListener('message', listenToSandboxEvents);
-                _messageQueueCleanupServiceStop();
-                log("SHUTDOWN COMPLETED", "info");
-                fulfill();
+                unregisterAllEncryptionSchemes().then(function() {
+                    document.removeEventListener("PPM", customEventListener, false);
+                    window.removeEventListener('message', listenToSandboxEvents);
+                    _messageQueueCleanupServiceStop();
+                    log("SHUTDOWN COMPLETED", "info");
+                    fulfill();
+                }).catch(function (e) {
+                    return reject(e);
+                });
             });
-        }
+        },
+
+        encryptPayload: encryptPayload,
+        decryptPayload: decryptPayload
     };
 });

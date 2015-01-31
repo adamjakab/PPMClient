@@ -1,6 +1,8 @@
 define([
-    'angular', 'underscore'
-], function (angular, _) {
+    'angular',
+    'bluebird',
+    'underscore'
+], function (angular, Promise, _) {
     angular.module('optionsApp').controller('passcard.controller',
         function ($scope, settings, $state, $interval, secretFactory, $modal) {
             $scope.settings = settings;
@@ -143,6 +145,7 @@ define([
                 $scope.lockUsername = true;
                 $scope.lockPassword = true;
                 $scope.showPassword = false;
+                $scope.noItemMessage = "Waiting for secret data to load...";
 
                 secretFactory.getSecret(id).then(function(item) {
                     _.defer(function() {
@@ -155,7 +158,11 @@ define([
                         });
                     });
                 }).catch(function (e) {
-                    $scope.cancel();
+                    _.defer(function() {
+                        $scope.$apply(function() {
+                            $scope.noItemMessage = e.message;
+                        });
+                    });
                 });
 
                 $scope.toggleUsernameLock = function() {
@@ -187,7 +194,9 @@ define([
 
                 $scope.cancel = function () {
                     //will check if secret in a newly created secret(unsaved) and will remove it from secretStorage
-                    secretFactory.deleteSecret($scope.item._id);
+                    if(!_.isNull($scope.item) && !_.isUndefined($scope.item._id)) {
+                        secretFactory.deleteSecret($scope.item._id);
+                    }
                     $modalInstance.dismiss('cancel');
                 };
 

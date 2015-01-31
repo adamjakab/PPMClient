@@ -105,6 +105,9 @@ define([
                     ServerConcentrator.shutdown()
                 ]).then(function () {
                     log("All components have been shut down");
+                    log("--------------------------------------------------");
+                    log("--------------------------------------------------");
+                    log("--------------------------------------------------");
                     fulfill();
                 }).error(function (e) {
                     return reject(e);

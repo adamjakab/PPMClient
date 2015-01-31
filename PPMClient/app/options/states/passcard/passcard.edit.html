@@ -4,7 +4,7 @@
 </div>
 <!--Waiting for secret to load-->
 <div class="modal-body" ng-hide="item">
-    waiting for secret data to load...
+    {{ noItemMessage }}
 </div>
 <!--Secret has been loaded so show Form-->
 <div class="modal-body" ng-show="item">

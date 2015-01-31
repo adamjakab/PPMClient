@@ -4,11 +4,12 @@
 define([
         'PPMLogger',
         'PPMUtils',
+        'PPMCryptor',
         'CryptoModule',
         'bluebird',
         'underscore'
     ],
-    function(PPMLogger, PPMUtils, CryptoModule, Promise, _) {
+    function(PPMLogger, PPMUtils, PPMCryptor, CryptoModule, Promise, _) {
         /**
          *
          * @param {ConfigurationManager} srvCfg
@@ -195,11 +196,21 @@ define([
                         if(_.isUndefined(SCO.responseObject.data) || _.isEmpty(SCO.responseObject.data)) {
                             return reject(new Error("Server did not return payload!"));
                         }
-                        var decryptedPayload = CryptoModule.decryptAES(SCO.responseObject.data, serverConfig.get("master_key"), true);
-                        if(!_.isObject(decryptedPayload)) {
-                            return reject(new Error("Unable to decrypt payload!"));
-                        }
-                        fulfill(decryptedPayload);
+                        PPMCryptor.decryptPayload(SCO.responseObject.data,
+                            id,
+                            serverConfig.get("encryption_scheme"),
+                            serverConfig.get("master_key")
+                        ).then(function(decryptedPayload) {
+                                var decryptedPayloadObject = PPMUtils.objectizeJsonString(decryptedPayload);
+                                if(decryptedPayloadObject===false) {
+                                    return reject(new Error("Unable to decrypt payload!"));
+                                }
+                                fulfill(decryptedPayloadObject);
+                            }
+                        ).catch(function (e) {
+                                return reject(e);
+                            }
+                        );
                     }).catch(function (e) {
                         return reject(e);
                     });
@@ -214,27 +225,44 @@ define([
              */
             this.saveSecret = function(data) {
                 return new Promise(function (fulfill, reject) {
+                    var doSave = function() {
+                        _communicateWithServer({
+                            service: "db",
+                            operation: {
+                                name: "save",
+                                params: {
+                                    itemdata: data
+                                }
+                            }
+                        }).then(function () {
+                            fulfill(data._id);
+                        }).catch(function (e) {
+                            return reject(e);
+                        });
+                    };
+
                     if(!_.isUndefined(data["payload"])) {
                         if(_.isObject(data["payload"])) {
                             var unencryptedPayload = JSON.stringify(data["payload"]);
-                            data["payload"] = CryptoModule.encryptAES(unencryptedPayload, serverConfig.get("master_key"));
+                            PPMCryptor.encryptPayload(unencryptedPayload,
+                                data["_id"],
+                                serverConfig.get("encryption_scheme"),
+                                serverConfig.get("master_key")
+                            ).then(function(encryptedPayload) {
+                                    data["payload"] = encryptedPayload;
+                                    doSave();
+                                }
+                            ).catch(function (e) {
+                                    return reject(e);
+                                }
+                            );
                         } else {
                             delete data["payload"];
+                            doSave();
                         }
+                    } else {
+                        doSave();
                     }
-                    _communicateWithServer({
-                        service: "db",
-                        operation: {
-                            name: "save",
-                            params: {
-                                itemdata: data
-                            }
-                        }
-                    }).then(function () {
-                        fulfill(data._id);
-                    }).catch(function (e) {
-                        return reject(e);
-                    });
                 });
             };
 
@@ -343,7 +371,7 @@ define([
                 if (_isBusy() || operationQueue.length == 0) {
                     return;
                 }
-                log("REMAINIG OPERATIONS IN QUEUE: " + operationQueue.length);
+                //log("REMAINIG OPERATIONS IN QUEUE: " + operationQueue.length);
                 var currentOperation = _.first(operationQueue);//get the first item in the queue
                 operationQueue = _.rest(operationQueue);//remove the queue without the first item
                 //

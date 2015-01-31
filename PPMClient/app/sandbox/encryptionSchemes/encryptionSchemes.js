@@ -27,7 +27,6 @@ require([
         var encryptionSchemes = {};
 
         /**
-         *
          * @param {object} data
          * @return {{}}
          */
@@ -79,6 +78,87 @@ require([
         };
 
         /**
+         * @return {{error: boolean, message: string}}
+         */
+        var unregisterAllEncryptionSchemes = function() {
+            encryptionSchemes = {};
+            return {
+                error: false,
+                message: "All encryption schemes have been unregistered."
+            };
+        };
+
+        /**
+         * @return {{error: boolean, message: *}}
+         */
+        var getRegisteredSchemeNames = function() {
+            return {
+                error: false,
+                message: _.keys(encryptionSchemes)
+            };
+        };
+
+        /**
+         * Encrypts text with specified ES
+         *
+         * @param {{
+                passcardPayloadText: passcardPayloadText,
+                encryptionKey: encryptionKey,
+                passcardId: passcardId,
+                encryptionScheme: encryptionScheme
+            }} data
+         * @return {{}}
+         */
+        var encryptPayload = function(data) {
+            var answer = {
+                error: true,
+                message: 'Unknown error!'
+            };
+            try {
+                if(_.contains(_.keys(encryptionSchemes), data.encryptionScheme)) {
+                    var scheme = encryptionSchemes[data.encryptionScheme];
+                    answer["message"] = scheme.encrypt(data.passcardPayloadText, data.encryptionKey, data.passcardId, CryptoModule);
+                    answer["error"] = false;
+                } else {
+                    answer["message"] = "Encryption Scheme("+data.encryptionScheme+") is not registered";
+                }
+            } catch(e) {
+                answer["message"] = "Encryption("+data.encryptionScheme+") error: " + e;
+            }
+            return answer;
+        };
+
+        /**
+         * Decrypts text with specified ES
+         *
+         * @param {{
+                passcardPayloadText: passcardPayloadText,
+                encryptionKey: encryptionKey,
+                passcardId: passcardId,
+                encryptionScheme: encryptionScheme
+            }} data
+         * @return {{}}
+         */
+        var decryptPayload = function(data) {
+            var answer = {
+                error: true,
+                message: 'Unknown error!'
+            };
+            try {
+                if(_.contains(_.keys(encryptionSchemes), data.encryptionScheme)) {
+                    var scheme = encryptionSchemes[data.encryptionScheme];
+                    answer["message"] = scheme.decrypt(data.passcardPayloadText, data.encryptionKey, data.passcardId, CryptoModule);
+                    answer["error"] = false;
+                } else {
+                    answer["message"] = "Decryption Scheme("+data.encryptionScheme+") is not registered";
+                }
+            } catch(e) {
+                answer["message"] = "Decryption("+data.encryptionScheme+") error: " + e;
+            }
+            return answer;
+        };
+
+        /**
          * Returns random string
          * @param {Number} length
          * @return {string}
@@ -93,7 +173,7 @@ require([
             var randomstring = '';
             for (var i=0; i<length; i++) {
                 var rnum = Math.floor(Math.random() * chars.length);
-                randomstring += chars.substring(rnum,rnum+1);
+                randomstring += chars.substring(rnum, rnum+1);
             }
             return randomstring;
         };
@@ -106,11 +186,26 @@ require([
                     messageId: event.data.messageId
                 };
                 switch (event.data.command) {
-                    case 'registerScheme':
+                    case 'registerEncryptionScheme':
                         response["response"] = registerEncryptionScheme(event.data);
                         break;
+                    case 'unregisterAllEncryptionSchemes':
+                        response["response"] = unregisterAllEncryptionSchemes();
+                        break;
+                    case 'getRegisteredSchemeNames':
+                        response["response"] = getRegisteredSchemeNames();
+                        break;
+                    case 'encryptPayload':
+                        response["response"] = encryptPayload(event.data);
+                        break;
+                    case 'decryptPayload':
+                        response["response"] = decryptPayload(event.data);
+                        break;
                     default:
-                        response["message"] = "Unknown command: " + event.data.command;
+                        response["response"] = {
+                            error: true,
+                            message: "Unknown command: " + event.data.command
+                        };
                 }
                 event.source.postMessage(response, event.origin);
             }

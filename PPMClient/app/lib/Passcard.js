@@ -117,34 +117,31 @@ define([
             };
 
             /**
-             * Requests,loads, sets and returns secret data
+             * Returns secret data if it has been already loaded otherwise false
              * Newly registered and unsaved passcards (sync_state = 3") will not be on server yet so we return empty data
-             * @return {Promise}
+             *
+             * @return {object | boolean}
              */
             var getSecret = function() {
-                return new Promise(function (fulfill, reject) {
-                    if(hasSecret()) {
-                        return fulfill({username: config.get("data.username"), password: config.get("data.password")});
-                    }
-                    if(config.get("sync_state") == 3) {
-                        //@todo: put default values here from config
-                        fulfill({username: "", password: ""});
-                    } else {
-                        PPMUtils.dispatchCustomEvent({type:"passcard_secret_request", id: config.get("data._id")});
-                        var secretWaitInterval = setInterval(function() {
-                            if(hasSecret()) {
-                                clearInterval(secretWaitInterval);
-                                secretWaitInterval = null;
-                                fulfill({username: config.get("data.username"), password: config.get("data.password")});
-                            }
-                        }, 250);
-                        setTimeout(function() {
-                            clearInterval(secretWaitInterval);
-                            secretWaitInterval = null;
-                            return reject(new Error("Getting secret payload has timed out!"));
-                        }, 30 * 1000);
-                    }
-                });
+                var answer = false;
+
+                if(hasSecret()) {
+                    answer = {
+                        username: config.get("data.username"),
+                        password: config.get("data.password")
+                    };
+                }
+
+                if(config.get("sync_state") == 3) {
+                    //@todo: put default values here from config
+                    //@todo: this should not be here anyways but on initialization
+                    answer = {
+                        username: "",
+                        password: ""
+                    };
+                }
+
+                return answer;
             };
 
 
