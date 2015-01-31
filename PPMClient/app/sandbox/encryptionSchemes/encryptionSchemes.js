@@ -19,8 +19,6 @@ require([
         'underscore',
         'CryptoModule'
 ], function(_, CryptoModule) {
-        console.log("SANDBOX READY!");
-
         /**
          * @type {{}}
          */

@@ -47,6 +47,7 @@ define([
     return {
         /**
          * Inizialize all components
+         * @todo: we need to execute these in order
          */
         initialize: function() {
             return new Promise(function (fulfill, reject) {
@@ -93,6 +94,7 @@ define([
 
         /**
          * Logout from current profile
+         * @todo: we need to execute these in REVERSED order
          */
         logout: function() {
             return new Promise(function (fulfill, reject) {
