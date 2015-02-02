@@ -62,7 +62,7 @@ define([
          */
         dispatchCustomEvent: function(eventData) {
             if(_.isObject(eventData) && eventData.hasOwnProperty("type")) {
-                log("Dispatching CustomEvent: " + JSON.stringify(eventData));
+                //log("Dispatching CustomEvent: " + JSON.stringify(eventData));
                 var customEvent = new CustomEvent("PPM");
                 customEvent.initCustomEvent("PPM", true, true, eventData);
                 document.dispatchEvent(customEvent);

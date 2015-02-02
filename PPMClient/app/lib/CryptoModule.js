@@ -1,4 +1,5 @@
 /**
+ * CryptoModule - Encryption and utility methods for encryption schemes
  * Aes Encrypt/Decrypt and Hashing methods
  */
 define([

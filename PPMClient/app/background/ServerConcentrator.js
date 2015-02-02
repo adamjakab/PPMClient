@@ -65,12 +65,7 @@ define([
             var eventData = e.detail;
             switch (eventData.type) {
                 case "logged_in":
-                    //log("Caught CustomEvent["+eventData.type+"]");
                     registerServers();
-                    break;
-                case "logged_out":
-                    //log("Caught CustomEvent["+eventData.type+"]");
-                    unregisterServers();
                     break;
                 case "server_state_change":
                     if (ChromeStorage.hasDecryptedSyncData() && areAllServersConnected() && !hasSecrets()) {
@@ -112,18 +107,24 @@ define([
 
     /**
      * Disconnects and unregisters all registered servers
+     *
+     * @return {Promise}
      */
     var unregisterServers = function() {
-        var disconnectionPromises = [];
-        _.each(serverStorage, function(server) {
-            disconnectionPromises.push(server.disconnect());
+        return new Promise(function (fulfill, reject) {
+            var disconnectionPromises = [];
+            _.each(serverStorage, function(server) {
+                disconnectionPromises.push(server.disconnect());
+            });
+            Promise.all(disconnectionPromises).finally(function() {
+                serverStorage = {};
+                log("All servers have been disconnected.");
+                fulfill();
+            }).catch(function(e) {
+                reject(e);
+            });
         });
-        Promise.all(disconnectionPromises).finally(function() {
-            serverStorage = {};
-            log("All servers have been disconnected.");
-        }).catch(function(e) {
-            //well, nobody is perfect
-        });
+
     };
 
     //----------------------------------------------------------------------------------------------------SERVER STORAGE
@@ -479,8 +480,14 @@ define([
                 document.removeEventListener("PPM", customEventListener, false);
                 clearInterval(checkIntervalRef);
                 checkIntervalRef = null;
-                log("SHUTDOWN COMPLETED", "info");
-                fulfill();
+                unregisterServers().then(function() {
+                    log("SHUTDOWN COMPLETED", "info");
+                    fulfill();
+                }).catch(function (e) {
+                    log("Some servers could not be disconnected! " + e, "warning");
+                    log("SHUTDOWN COMPLETED", "info");
+                    fulfill();
+                });
             });
         },
 

@@ -1,5 +1,5 @@
 /**
- * Google Analitics usage tracker
+ * Google Analytics usage tracker
  */
 define([
     'PPMLogger',

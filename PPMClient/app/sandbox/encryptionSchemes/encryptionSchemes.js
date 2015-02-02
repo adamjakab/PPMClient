@@ -1,5 +1,9 @@
 /**
- * Loaded with requirejs
+ * EncryptionSchemes Sandbox Script
+ * ---------------------------------
+ *
+ * This module is responsible for registering encryption schemes and providing
+ * a way to use encrypt/decrypt methods of ESs.
  */
 requirejs.config({
     baseUrl: '',

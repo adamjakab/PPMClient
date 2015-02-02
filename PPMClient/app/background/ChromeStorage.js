@@ -305,8 +305,8 @@ define([
                     initLocalStorage(),
                     initSyncStorage()
                 ]).then(function() {
-                    log("INITIALIZED", "info");
                     log("Available profiles: " + JSON.stringify(getAvailableProfiles()));
+                    log("INITIALIZED", "info");
                     fulfill();
                 }).error(function(e) {
                     log(e, "error");
@@ -328,6 +328,7 @@ define([
                 ]).then(function() {
                     currentProfileName = null;
                     currentMasterKey = null;
+                    rawSyncStorageData = null;
                     localConfig.removeAllChangeListeners();
                     localConfig.restoreDefaults();
                     syncConfig.removeAllChangeListeners();

@@ -1,10 +1,7 @@
 /**
  * Main background application
- */
-
-
-/**
- * Exposing PPM for popup/options usage with:
+ *
+ * Exposes ParanoiaPasswordManager variable for popup/options:
  * chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
  */
 var ParanoiaPasswordManager;
@@ -13,18 +10,15 @@ require(['ParanoiaPasswordManager'], function(PPM) {
     ParanoiaPasswordManager = PPM;
 
     /**
-     * Reinizialises the entire application
+     * Start/restart the application
      */
     var restartApplication = function() {
-        PPM.initialize().then(function() {
-            /**
-             * todo: to be removed (TESTING ONLY)
-             */
-            //PPM.login("DEFAULT", "Paranoia");
+        PPM.initialize().catch(function (e) {
+            console.error(e);
+            window.location.reload(true);
         });
     };
-
-    //autostart application
+    //autostart
     restartApplication();
 
 

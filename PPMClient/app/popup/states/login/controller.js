@@ -17,7 +17,7 @@ define([
              */
             $scope.logged_in = PPM.isLoggedIn();
             $scope.profile = "DEFAULT";
-            $scope.masterKey = "";
+            $scope.masterKey = "Paranoia";//@todo: unset default password(!TESTING ONLY!)
             $scope.profiles = CHROMESTORAGE.getAvailableProfiles();
 
             /**
@@ -64,7 +64,8 @@ define([
                     log("LOGOUT OK");
                     UTILS.closeOptionsPage().then(function() {
                         PPM.initialize().then(function () {
-                            $state.go("login");
+                            //$state.go("login");
+                            window.close();
                         });
                     });
                 }).error(function () {
