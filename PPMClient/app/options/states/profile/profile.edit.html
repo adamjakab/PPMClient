@@ -1,0 +1,30 @@
+<div class="modal-header">
+    <div class="pull-right text-info">{{item.name}}</div>
+    <h3 class="modal-title">Edit Profile</h3>
+</div>
+
+<!--Waiting for profile to load-->
+<div class="modal-body" ng-hide="item">
+    {{ noItemMessage }}
+</div>
+
+<!-- Profile edit module-->
+<div class="modal-body" ng-show="item">
+    <div class="row">
+        <div class="col-md-9">
+            <form novalidate name="profileForm">
+                <div class="form-group" ng-class="{'has-error': profileForm.name.$error.required}">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" ng-model="item.name" required class="form-control" autofocus />
+                </div>
+            </form>
+        </div>
+        <div class="col-md-3">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning pull-left" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" ng-show="item" ng-disabled="profileForm.$invalid" ng-click="save()">Save</button>
+</div>

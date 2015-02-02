@@ -3,6 +3,7 @@ requirejs.config({
     paths: {
         /** PATHS */
         vendor: '../../vendor',
+        sharedServices: '../services',//@todo: move all services here! so they can be shared btwn apps
         /** MODULES */
         angular: '../../vendor/angular/angular',
         angular_ui_router: '../../vendor/angular-ui-router/release/angular-ui-router',

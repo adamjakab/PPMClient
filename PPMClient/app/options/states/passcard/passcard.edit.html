@@ -11,11 +11,11 @@
     <div class="row">
         <div class="col-md-9">
             <form novalidate name="passcardForm">
-                <div class="form-group" ng-class="{'has-error': passcardForm.name.$error.required}">
+                <div class="form-group" ng-class="{'has-error': profileForm.name.$error.required}">
                     <label for="name">Name</label>
                     <input type="text" id="name" name="name" ng-model="item.name" required class="form-control" autofocus />
                 </div>
-                <div class="form-group" ng-class="{'has-error': passcardForm.identifier.$error.required}">
+                <div class="form-group" ng-class="{'has-error': profileForm.identifier.$error.required}">
                     <label for="identifier">Identifier</label>
                     <input type="text" id="identifier" name="identifier" ng-model="item.identifier" required class="form-control" />
                 </div>
@@ -74,5 +74,5 @@
 </div>
 <div class="modal-footer">
     <button class="btn btn-warning pull-left" ng-click="cancel()">Cancel</button>
-    <button class="btn btn-primary" ng-show="item" ng-disabled="passcardForm.$invalid" ng-click="save()">Save</button>
+    <button class="btn btn-primary" ng-show="item" ng-disabled="profileForm.$invalid" ng-click="save()">Save</button>
 </div>

@@ -1,5 +1,6 @@
 define([
-    'states/profile/controller'
+    'states/profile/controller',
+    'sharedServices/profileFactory'
 ], function() {
 
 });

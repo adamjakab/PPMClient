@@ -132,6 +132,10 @@ define([
         return(_.keys(rawSyncStorageData));
     };
 
+    var getCurrentProfile = function() {
+        return currentProfileName;
+    };
+
     /**
      * Checks if profile exists
      * @param profile
@@ -370,6 +374,7 @@ define([
         },
 
         getAvailableProfiles: getAvailableProfiles,
+        getCurrentProfile: getCurrentProfile,
         hasDecryptedSyncData: hasDecryptedSyncData,
         getConfigByLocation: getConfigByLocation
     };
