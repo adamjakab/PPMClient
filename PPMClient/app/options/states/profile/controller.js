@@ -2,7 +2,7 @@ define([
     'angular'
 ], function () {
     angular.module('App').controller('profile.controller',
-        function ($scope, settings, $state, profileFactory, $modal) {
+        function ($scope, settings, $state, storageFactory, $modal) {
             $scope.settings = settings;
             var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
             /** log shorthand */
@@ -10,7 +10,7 @@ define([
                 PPM.getComponent("LOGGER").log(msg, "OPTIONS(profile)", type);
             };
 
-            $scope.profiles = profileFactory.getProfiles();
+            $scope.profiles = storageFactory.getProfiles();
 
             /**
              * @param {string} name
@@ -47,8 +47,8 @@ define([
      * Profile Edit Modal Controller
      */
     angular.module('App').controller('profile.edit.controller', [
-            '$scope', '$modalInstance', 'profileFactory', 'name',
-            function ($scope, $modalInstance, profileFactory, name) {
+            '$scope', '$modalInstance', 'storageFactory', 'name',
+            function ($scope, $modalInstance, storageFactory, name) {
                 var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
                 var ChromeStorage = PPM.getComponent("CHROMESTORAGE");
                 var PPMUtils = PPM.getComponent("UTILS");

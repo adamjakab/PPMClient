@@ -3,7 +3,7 @@ define([
     'angular',
     'underscore'
 ], function (angular, _) {
-    angular.module('App').factory('profileFactory', function() {
+    angular.module('App').factory('storageFactory', function() {
         var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
         var ChromeStorage = PPM.getComponent("CHROMESTORAGE");
 
