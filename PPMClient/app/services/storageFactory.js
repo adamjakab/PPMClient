@@ -1,4 +1,3 @@
-//@todo: this file/module should be called storageFactory
 define([
     'angular',
     'underscore'
