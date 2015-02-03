@@ -11,6 +11,7 @@
                     <label for="schemeSel">Encryption Scheme</label>
                     <select id="schemeSel" ng-model="scheme" required ng-options="s for s in schemes" class="form-control"></select>
                 </div>
+                <!--@todo: implement show/hide for pwd-->
                 <div class="form-group" ng-class="{'has-error': !loginForm.masterKey.$valid}">
                     <label for="masterKey">Master Key</label>
                     <input id="masterKey" name="masterKey" ng-model="masterKey" type="password" required class="form-control" />
