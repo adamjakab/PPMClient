@@ -28,16 +28,22 @@ require(['ParanoiaPasswordManager'], function(PPM) {
             case "help":
                 alert("You can use one of the following commands: resetStorage");
                 break;
-            case "resetStorage":
-                if(confirm("Are you sure you want to reset all local and sync storage to default values?\nAll your configuration will be lost and default settings will be applied!")) {
+            case "resetLocalStorage":
+                if(confirm("Are you sure you want to reset local storage to default values?")) {
                     chrome.storage.local.clear();
+                    alert("Loacl storage has been cleared!");
+                    window.location.reload(true);
+                }
+                break;
+            case "resetSyncStorage":
+                if(confirm("Are you sure you want to reset sync storage to default values?")) {
                     chrome.storage.sync.clear();
-                    alert("All storage areas have been cleared!");
-                    restartApplication();
+                    alert("Sync storage has been cleared!");
+                    window.location.reload(true);
                 }
                 break;
             default:
-                alert('PPM - I do not understand the command: "' + cmd + '"');
+                alert('PPM2 - I do not understand this command: "' + cmd + '"');
                 break;
         }
     });

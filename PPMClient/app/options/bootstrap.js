@@ -11,7 +11,7 @@ require([
 ], function() {
     require(['domReady!'], function (document) {
         try {
-            angular.bootstrap(document, ['optionsApp']);
+            angular.bootstrap(document, ['App']);
         } catch(e) {
             console.error("AngularJs is unavailable! ", e);
         }

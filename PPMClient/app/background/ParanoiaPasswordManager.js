@@ -173,12 +173,13 @@ define([
 
         /**
          * Main login interface
-         * @param {string} profile
-         * @param {string} masterKey
+         * @param {string} profileName
+         * @param {string} encryptionScheme
+         * @param {string} encryptionKey
          */
-        login: function(profile, masterKey) {
+        login: function(profileName, encryptionScheme, encryptionKey) {
             return new Promise(function (fulfill, reject) {
-                ChromeStorage.unlockSyncedStorage(profile, masterKey).then(function () {
+                ChromeStorage.unlockSyncStorage(profileName, encryptionScheme, encryptionKey).then(function () {
                     log("You are now logged in!", "info");
                     fulfill();
                 }).catch(Error, function (e) {

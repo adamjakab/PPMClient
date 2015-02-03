@@ -2,7 +2,7 @@ define([
     'angular',
     'underscore'
 ], function (angular, _) {
-    angular.module('optionsApp').factory('serverFactory', function() {
+    angular.module('App').factory('serverFactory', function() {
         var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
         var SERVERCONCENTRATOR = PPM.getComponent("SERVERCONCENTRATOR");
 

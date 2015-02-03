@@ -1,8 +1,8 @@
 define([
     'angular'
 ], function () {
-    angular.module('popupApp').controller('login.controller',
-        function ($scope, settings, $state) {
+    angular.module('App').controller('login.controller',
+        function ($scope, settings, $state, cryptorFactory) {
             $scope.settings = settings;
             var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
             var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
@@ -16,9 +16,12 @@ define([
              * Defaults
              */
             $scope.logged_in = PPM.isLoggedIn();
-            $scope.profile = "DEFAULT";
-            $scope.masterKey = "Paranoia";//@todo: unset default password(!TESTING ONLY!)
             $scope.profiles = CHROMESTORAGE.getAvailableProfiles();
+            $scope.profile = "DEFAULT";
+            $scope.schemes = cryptorFactory.getEncryptionSchemes();
+            $scope.scheme = "OnePass";
+            $scope.masterKey = "Paranoia";//@todo: unset default password(!TESTING ONLY!)
+
 
             /**
              * If user is not logged in redirect to "login" state
@@ -39,7 +42,7 @@ define([
              */
             $scope.login = function () {
                 //window.close();//close popup
-                PPM.login($scope.profile, $scope.masterKey).then(function () {
+                PPM.login($scope.profile, $scope.scheme, $scope.masterKey).then(function () {
                     $scope.masterKey = "";
                     $scope.logged_in = CHROMESTORAGE.hasDecryptedSyncData();
                     $scope.$apply();

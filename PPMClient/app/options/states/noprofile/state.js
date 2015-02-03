@@ -3,7 +3,7 @@ define([
         'states/noprofile/dependencies'
 ],
 function(angular) {
-    var module = angular.module('optionsApp');
+    var module = angular.module('App');
 
     module.config(function($stateProvider) {
         $stateProvider

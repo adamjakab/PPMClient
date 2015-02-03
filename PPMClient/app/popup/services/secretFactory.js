@@ -3,7 +3,7 @@ define([
     'bluebird',
     'underscore'
 ], function (angular, Promise, _) {
-    angular.module('popupApp').factory('secretFactory', function() {
+    angular.module('App').factory('secretFactory', function() {
         var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
         var SERVERCONCENTRATOR = PPM.getComponent("SERVERCONCENTRATOR");
 

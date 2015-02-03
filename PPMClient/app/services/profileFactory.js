@@ -1,8 +1,9 @@
+//@todo: this file/module should be called storageFactory
 define([
     'angular',
     'underscore'
 ], function (angular, _) {
-    angular.module('optionsApp').factory('profileFactory', function() {
+    angular.module('App').factory('profileFactory', function() {
         var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
         var ChromeStorage = PPM.getComponent("CHROMESTORAGE");
 

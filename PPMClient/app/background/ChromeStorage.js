@@ -6,34 +6,29 @@ define([
     'syncConfig',
     'PPMLogger',
     'PPMUtils',
+    'PPMCryptor',
     'CryptoModule',
     'bluebird',
     'underscore'
-], function (localConfig, syncConfig, PPMLogger, PPMUtils, CryptoModule, Promise, _) {
+], function (localConfig, syncConfig, PPMLogger, PPMUtils, PPMCryptor, CryptoModule, Promise, _) {
     /**
      * @type {object} rawSyncStorageData
      */
     var rawSyncStorageData;
 
-    /**
-     * @type {string}
-     */
-    var defaultProfileName =  "DEFAULT";
+    /** @type {string} */
+    var defaultProfileName = "DEFAULT";
+    /** @type {string} */
+    var defaultEncryptionScheme = "AesMd5";
+    /** @type {string} */
+    var defaultEncryptionKey = "Paranoia";
 
-    /**
-     * @type {string}
-     */
-    var defaultMasterKey =  "Paranoia";
-
-    /**
-     * @type {string|null}
-     */
+    /** @type {string|null} */
     var currentProfileName = null;
-
-    /**
-     * @type {string|null}
-     */
-    var currentMasterKey = null;
+    /** @type {string|null} */
+    var currentEncryptionScheme = null;
+    /** @type {string|null} */
+    var currentEncryptionKey = null;
 
     /**
      * Log facility
@@ -73,26 +68,41 @@ define([
      */
     var writeToStorage = function(location) {
         return new Promise(function (fulfill, reject) {
+            var data;
+            var _doWrite = function() {
+                chromeStorage.set(data, function() {
+                    if (chrome.runtime.lastError) {
+                        return reject(chrome.runtime.lastError);
+                    }
+                    log("STORAGE("+location+") STORED.");
+                    fulfill();
+                });
+            };
+
             var chromeStorage = getStorageByLocation(location);
             if(_.isNull(chromeStorage)) {
                 return reject(new Error("The specified location("+location+") does not exists in chrome.storage!"));
             }
-            var data;
+
             if(location == "local") {
                 data = localConfig.getAll();
+                _doWrite();
             } else if(location == "sync") {
-                var CPDSTR = JSON.stringify(syncConfig.getAll());
-                //log("CRYPTING CURRENT PROFILE("+currentProfileName+"):"+CPDSTR);
-                rawSyncStorageData[currentProfileName] = CryptoModule.encryptAES(CPDSTR, currentMasterKey);
-                data = rawSyncStorageData;
+                PPMCryptor.encryptPayload(
+                    JSON.stringify(syncConfig.getAll()),
+                    currentProfileName,
+                    currentEncryptionScheme,
+                    currentEncryptionKey
+                ).then(function(encryptedData) {
+                        rawSyncStorageData[currentProfileName] = encryptedData;
+                        data = rawSyncStorageData;
+                        _doWrite();
+                    }
+                ).catch(function (e) {
+                        return reject(e);
+                    }
+                );
             }
-            chromeStorage.set(data, function() {
-                if (chrome.runtime.lastError) {
-                    return reject(chrome.runtime.lastError);
-                }
-                log("STORAGE("+location+") STORED.");
-                fulfill();
-            });
         });
     };
 
@@ -107,10 +117,12 @@ define([
                 //must be a first-runner - let's create default profile
                 log("CREATING DEFAULT PROFILE("+defaultProfileName+")...", "info");
                 currentProfileName = defaultProfileName;
-                currentMasterKey = defaultMasterKey;
+                currentEncryptionScheme = defaultEncryptionScheme;
+                currentEncryptionKey = defaultEncryptionKey;
                 writeToStorage("sync").then(function() {
                     currentProfileName = null;
-                    currentMasterKey = null;
+                    currentEncryptionScheme = null;
+                    currentEncryptionKey = null;
                     fulfill();
                 }).error(function (e) {
                     return reject(e);
@@ -150,7 +162,7 @@ define([
      * @returns {boolean}
      */
     var hasDecryptedSyncData = function() {
-        return(!_.isNull(currentProfileName) && !_.isNull(currentMasterKey));
+        return(!_.isNull(currentProfileName) && !_.isNull(currentEncryptionKey));
     };
 
     /**
@@ -209,36 +221,51 @@ define([
 
     /**
      * Unlock sync storage by merging decrypted sync storage data to "sync" section of configuration
-     * @param {string} profile
-     * @param {string} masterKey
+     * @param {string} profileName
+     * @param {string} encryptionScheme
+     * @param {string} encryptionKey
      * @returns {Promise}
      */
-    var unlockSyncStorage = function(profile, masterKey) {
-        profile = profile ? profile : defaultProfileName;
+    var unlockSyncStorage = function(profileName, encryptionScheme, encryptionKey) {
+        profileName = profileName ? profileName : defaultProfileName;
         log("unlocking sync storage profile...");
         return new Promise(function (fulfill, reject) {
-            if(!hasProfile(profile)) {
-                return reject(new Error("Inexistent profile("+profile+")! Available: " + JSON.stringify(getAvailableProfiles())));
+            if(!hasProfile(profileName)) {
+                return reject(new Error("Inexistent profile("+profileName+")! Available: " + JSON.stringify(getAvailableProfiles())));
             }
-            if(!masterKey) {
-                return reject(new Error("No MasterKey supplied to decrypt profile["+profile+"]!"));
+            if(!encryptionScheme) {
+                return reject(new Error("No encryptionScheme supplied to decrypt profile["+profileName+"]!"));
             }
-            log("Trying to decrypt data for profile["+profile+"]...");
-            var CPDENC = rawSyncStorageData[profile];
-            var profileData = CryptoModule.decryptAES(CPDENC, masterKey);
-            var profileDataObject = PPMUtils.objectizeJsonString(profileData);
-            if(!profileDataObject) {
-                return reject(new Error("This MasterKey does not open the door!", "info"));
+            if(!encryptionKey) {
+                return reject(new Error("No encryptionKey supplied to decrypt profile["+profileName+"]!"));
             }
-            log("PROFILE DATA DECRYPTED", "info");
-            //calling merge on syncConfig with "deep" option true so we deep-merge the objects
-            syncConfig.merge(profileDataObject, false, true);
-            //
-            currentProfileName = profile;
-            currentMasterKey = masterKey;
-            //login successful - increasing login count
-            syncConfig.set("chromestorage.login_count", syncConfig.get("chromestorage.login_count") + 1);
-            fulfill();
+            log("Trying to decrypt data for profile["+profileName+"] with encryption scheme["+encryptionScheme+"]...");
+            PPMCryptor.decryptPayload(
+                rawSyncStorageData[profileName],
+                profileName,
+                encryptionScheme,
+                encryptionKey
+            ).then(function(decryptedData) {
+                    var profileDataObject = PPMUtils.objectizeJsonString(decryptedData);
+                    if(!profileDataObject) {
+                        return reject(new Error("This key does not open the door!", "info"));
+                    }
+                    log("PROFILE DATA DECRYPTED", "info");
+                    //calling merge on syncConfig with "deep" option true so we deep-merge the objects
+                    syncConfig.merge(profileDataObject, false, true);
+                    //
+                    currentProfileName = profileName;
+                    currentEncryptionScheme = encryptionScheme;
+                    currentEncryptionKey = encryptionKey;
+                    //login successful - increasing login count
+                    syncConfig.set("chromestorage.login_count", syncConfig.get("chromestorage.login_count") + 1);
+                    fulfill();
+                }
+            ).catch(function (e) {
+                    log("Sync Storage Unlock Error: " + e, "error");
+                    return reject(e);
+                }
+            );
         });
     };
 
@@ -331,7 +358,8 @@ define([
                     writeToStorage("sync")
                 ]).then(function() {
                     currentProfileName = null;
-                    currentMasterKey = null;
+                    currentEncryptionScheme = null;
+                    currentEncryptionKey = null;
                     rawSyncStorageData = null;
                     localConfig.removeAllChangeListeners();
                     localConfig.restoreDefaults();
@@ -352,13 +380,14 @@ define([
 
         /**
          * Main interface to unlock sync storage profile
-         * @param {string} profile
-         * @param {string} masterKey
+         * @param {string} profileName
+         * @param {string} encryptionScheme
+         * @param {string} encryptionKey
          * @returns {Promise}
          */
-        unlockSyncedStorage: function(profile, masterKey) {
+        unlockSyncStorage: function(profileName, encryptionScheme, encryptionKey) {
             return new Promise(function (fulfill, reject) {
-                unlockSyncStorage(profile, masterKey).then(function() {
+                unlockSyncStorage(profileName, encryptionScheme, encryptionKey).then(function() {
                     log("Loaded configuration: " + JSON.stringify(syncConfig.getAll()));
                     syncConfig.addChangeListener(syncStorageChangeListener);
                     PPMUtils.dispatchCustomEvent({type:"logged_in"});

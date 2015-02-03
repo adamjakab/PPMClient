@@ -7,6 +7,10 @@
                     <label for="profileSel">Profile</label>
                     <select id="profileSel" ng-model="profile" required ng-options="p for p in profiles" class="form-control"></select>
                 </div>
+                <div class="form-group">
+                    <label for="schemeSel">Encryption Scheme</label>
+                    <select id="schemeSel" ng-model="scheme" required ng-options="s for s in schemes" class="form-control"></select>
+                </div>
                 <div class="form-group" ng-class="{'has-error': !loginForm.masterKey.$valid}">
                     <label for="masterKey">Master Key</label>
                     <input id="masterKey" name="masterKey" ng-model="masterKey" type="password" required class="form-control" />

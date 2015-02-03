@@ -1,7 +1,7 @@
 define([
     'angular'
 ], function () {
-    angular.module('optionsApp').controller('profile.controller',
+    angular.module('App').controller('profile.controller',
         function ($scope, settings, $state, profileFactory, $modal) {
             $scope.settings = settings;
             var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
@@ -46,7 +46,7 @@ define([
     /**
      * Profile Edit Modal Controller
      */
-    angular.module('optionsApp').controller('profile.edit.controller', [
+    angular.module('App').controller('profile.edit.controller', [
             '$scope', '$modalInstance', 'profileFactory', 'name',
             function ($scope, $modalInstance, profileFactory, name) {
                 var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;

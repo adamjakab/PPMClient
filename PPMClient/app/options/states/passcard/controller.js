@@ -3,7 +3,7 @@ define([
     'bluebird',
     'underscore'
 ], function (angular, Promise, _) {
-    angular.module('optionsApp').controller('passcard.controller',
+    angular.module('App').controller('passcard.controller',
         function ($scope, settings, $state, $interval, secretFactory, $modal) {
             $scope.settings = settings;
             var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
@@ -134,7 +134,7 @@ define([
     /**
      * Passcard Edit Modal Controller
      */
-    angular.module('optionsApp').controller('passcard.edit.controller', [
+    angular.module('App').controller('passcard.edit.controller', [
             '$scope', '$modalInstance', 'secretFactory', 'id',
             function ($scope, $modalInstance, secretFactory, id) {
                 var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
@@ -207,7 +207,7 @@ define([
     /**
      * Passcard Delete Modal Controller
      */
-    angular.module('optionsApp').controller('passcard.delete.controller', [
+    angular.module('App').controller('passcard.delete.controller', [
             '$scope', '$modalInstance', 'data',
             function ($scope, $modalInstance, data) {
                 $scope.data = data;

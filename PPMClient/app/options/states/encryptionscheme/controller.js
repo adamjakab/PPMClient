@@ -1,7 +1,7 @@
 define([
     'angular'
 ], function () {
-    angular.module('optionsApp').controller('encryptionscheme.controller',
+    angular.module('App').controller('encryptionscheme.controller',
         function ($scope, settings, $state) {
             $scope.settings = settings;
             var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;

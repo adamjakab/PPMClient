@@ -2,19 +2,25 @@
  * Crypt/Decrypt methods
  */
 define([
+    'syncConfig',
     'PPMLogger',
     'PPMUtils',
-    'ChromeStorage',
     'CryptoModule',
     'underscore',
     'bluebird'
-], function (PPMLogger, PPMUtils, ChromeStorage, CryptoModule, _, Promise) {
+], function (syncConfig, PPMLogger, PPMUtils, CryptoModule, _, Promise) {
     /**
      * Log facility
      * @param msg
      * @param type
      */
     var log = function(msg, type) {PPMLogger.log(msg, "CRYPTOR", type);};
+
+    /**
+     * List of registered Encryption Schemes
+     * @type {Array}
+     */
+    var registeredEncryptionSchemes = [];
 
     /**
      * The Iframe where the encryption schemes are registered in the background page
@@ -152,13 +158,12 @@ define([
      */
     var registerEncryptionSchemes = function() {
         return new Promise(function (fulfill, reject) {
-            var registeredEncryptionSchemes = [];
-            sendMessageToSandbox({
-                domain: 'encryptionSchemes',
-                command: 'getRegisteredSchemeNames'
-            }).then(function (response) {
-                registeredEncryptionSchemes = response["response"]["message"];
-                var syncConfig = ChromeStorage.getConfigByLocation("sync");
+            //var registeredEncryptionSchemes = [];
+            //sendMessageToSandbox({
+            //    domain: 'encryptionSchemes',
+            //    command: 'getRegisteredSchemeNames'
+            //}).then(function (response) {
+            //    registeredEncryptionSchemes = response["response"]["message"];
                 var schemes = syncConfig.get("cryptor.schemes");
                 //log("SCHEMES: " + JSON.stringify(schemes));
                 var registrationData = {
@@ -191,9 +196,9 @@ define([
                 } else {
                     fulfill();
                 }
-            }).catch(function (e) {
-                return reject(new Error("Cannot retrieve registered encryption schemes: " + e));
-            });
+            //}).catch(function (e) {
+            //    return reject(new Error("Cannot retrieve registered encryption schemes: " + e));
+            //});
         });
     };
 
@@ -204,11 +209,20 @@ define([
                 command: 'unregisterAllEncryptionSchemes'
             }).then(function (response) {
                 log(response["response"]["message"]);
+                registeredEncryptionSchemes = [];
                 fulfill();
             }).catch(function (e) {
                 return reject(new Error("Encryption Scheme unregistration error: " + e));
             });
         });
+    };
+
+    /**
+     *
+     * @return {Array}
+     */
+    var getRegisteredEncryptionSchemes = function() {
+        return registeredEncryptionSchemes;
     };
 
     /**
@@ -278,6 +292,7 @@ define([
         },
 
         encryptPayload: encryptPayload,
-        decryptPayload: decryptPayload
+        decryptPayload: decryptPayload,
+        getRegisteredEncryptionSchemes: getRegisteredEncryptionSchemes
     };
 });

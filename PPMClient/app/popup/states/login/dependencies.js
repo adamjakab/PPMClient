@@ -1,5 +1,6 @@
 define([
-    'states/login/controller'
+    'states/login/controller',
+    'sharedServices/cryptorFactory'
 ], function() {
     
 });

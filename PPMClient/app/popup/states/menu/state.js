@@ -3,7 +3,7 @@ define([
         'states/menu/dependencies'
 ],
 function(angular) {
-    var module = angular.module('popupApp');
+    var module = angular.module('App');
 
     module.config(function($stateProvider) {
         $stateProvider

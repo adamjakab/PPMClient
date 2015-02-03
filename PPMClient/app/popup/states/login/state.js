@@ -3,7 +3,7 @@ define([
         'states/login/dependencies'
 ],
 function(angular) {
-    var module = angular.module('popupApp');
+    var module = angular.module('App');
 
     module.config(function($stateProvider, $urlRouterProvider) {
         //any unmatched url will go to login state
