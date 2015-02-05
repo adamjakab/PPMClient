@@ -1,6 +1,6 @@
 define([
     'states/server/controller',
-    'services/serverFactory'
+    'sharedServices/serverFactory'
 ], function() {
 
 });

@@ -1,6 +1,6 @@
 define([
     'states/log/controller',
-    'services/logFactory'
+    'sharedServices/logFactory'
 ], function() {
 
 });

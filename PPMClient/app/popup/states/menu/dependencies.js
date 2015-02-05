@@ -1,6 +1,6 @@
 define([
     'states/menu/controller',
-    'services/secretFactory'
+    'sharedServices/secretFactory'
 ], function() {
 
 });
