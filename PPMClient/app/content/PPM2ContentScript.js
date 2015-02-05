@@ -1,6 +1,5 @@
 /**
  * The content script injected into web pages
- * @todo: move me to "content" folder
  */
 (function() {
 

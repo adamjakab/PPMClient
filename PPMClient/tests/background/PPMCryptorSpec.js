@@ -3,7 +3,7 @@
  */
 define(['TestUtils', 'PPMCryptor', 'PPMUtils', 'underscore'],
     function (TestUtils, PPMCryptor, PPMUtils, _) {
-
+        /*
         describe("PPMCryptor Main", function () {
             it("should return Promise on initialize", function () {
                 TestUtils.isPromise(PPMCryptor.initialize());
@@ -94,5 +94,6 @@ define(['TestUtils', 'PPMCryptor', 'PPMUtils', 'underscore'],
 
 
         });
+        */
     }
 );

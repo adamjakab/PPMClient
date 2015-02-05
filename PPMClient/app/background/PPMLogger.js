@@ -55,7 +55,7 @@ define([
          * Note: we cannot use PPMUtils(dispatchCustomEvent) here because PPMLogger
          * is a requirejs dependency of PPMUtils so it would create a circular dependency
          */
-        var customEvent = new CustomEvent("PPM");
+        var customEvent = document.createEvent('CustomEvent');
         customEvent.initCustomEvent("PPM", true, true, {type: 'new_log_object'});
         document.dispatchEvent(customEvent);
     };

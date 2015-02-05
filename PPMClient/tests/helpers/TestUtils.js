@@ -5,9 +5,8 @@ define([
     'bluebird'
 ], function (Promise) {
     return {
-
         /**
-         * Check if object is a Promise
+         * Check if object is a bluebird Promise
          * @param {{}} obj
          */
         isPromise: function(obj) {

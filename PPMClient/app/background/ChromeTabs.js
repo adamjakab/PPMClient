@@ -115,7 +115,7 @@ define([
                 var protocolRegExp = new RegExp('(http|https):\/\/', '');
                 if(protocolRegExp.test(tab.url)) {
                     chrome.tabs.executeScript(tabId, {
-                        file: "app/lib/PPM2ContentScript.js",
+                        file: "app/content/PPM2ContentScript.js",
                         allFrames: true
                     }, function(resArr) {
                         log("Content Script was injected into tab #" + tabId + "resArr: " + JSON.stringify(resArr));

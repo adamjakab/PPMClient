@@ -27,7 +27,6 @@
     "bluebird": "~2.3.11",
     "bootstrap-css-only": "~3.3.0",
     "crypto-js-evanvosberg": "~3.1.2",
-    "prototypejs": "~1.7.1",
     "requirejs": "~2.1.15",
     "requirejs-domready": "~2.0.1",
     "underscore": "~1.7.0",

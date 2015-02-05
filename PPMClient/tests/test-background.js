@@ -23,7 +23,10 @@ requirejs.config({
         bluebird: '../../vendor/bluebird/js/browser/bluebird',
         ConfigurationManager: '../../vendor/configuration-manager/ConfigurationManager',
         localConfig: '../config/localConfig',
-        syncConfig: '../config/syncConfig'
+        syncConfig: '../config/syncConfig',
+        CryptoModule: '../lib/CryptoModule',
+        ParanoiaServer: '../lib/ParanoiaServer',
+        Passcard: '../lib/Passcard'
     },
     shim: {
     },

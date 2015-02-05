@@ -16,12 +16,12 @@ module.exports = function(config) {
       'tests/test-background.js',
       {pattern: 'app/background/**/*.js', included: false},
       {pattern: 'app/config/**/*.js', included: false},
+      {pattern: 'app/lib/**/*.js', included: false},
       {pattern: 'tests/background/**/*.js', included: false},
       {pattern: 'tests/helpers/**/*.js', included: false},
       {pattern: 'vendor/underscore/underscore.js', included: false, watched: false},
       {pattern: 'vendor/bluebird/js/browser/bluebird.js', included: false, watched: false},
       {pattern: 'vendor/configuration-manager/ConfigurationManager.js', included: false, watched: false},
-      {pattern: 'vendor/js-md5/js/md5.js', included: false, watched: false},
       {pattern: 'vendor/crypto-js-evanvosberg/build/rollups/*.js', included: false, watched: false},
       {pattern: 'vendor/crypto-js-evanvosberg/build/components/*.js', included: false, watched: false}
     ],

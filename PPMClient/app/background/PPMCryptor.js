@@ -158,47 +158,38 @@ define([
      */
     var registerEncryptionSchemes = function() {
         return new Promise(function (fulfill, reject) {
-            //var registeredEncryptionSchemes = [];
-            //sendMessageToSandbox({
-            //    domain: 'encryptionSchemes',
-            //    command: 'getRegisteredSchemeNames'
-            //}).then(function (response) {
-            //    registeredEncryptionSchemes = response["response"]["message"];
-                var schemes = syncConfig.get("cryptor.schemes");
-                //log("SCHEMES: " + JSON.stringify(schemes));
-                var registrationData = {
-                    domain: 'encryptionSchemes',
-                    command: 'registerEncryptionScheme'
-                };
+            var schemes = syncConfig.get("cryptor.schemes");
+            //log("SCHEMES: " + JSON.stringify(schemes));
+            var registrationData = {
+                domain: 'encryptionSchemes',
+                command: 'registerEncryptionScheme'
+            };
 
-                var registrationPromises = [];
-                _.each(schemes, function (schemeData, schemeName) {
-                    if(!_.contains(registeredEncryptionSchemes, schemeName)) {
-                        schemeData["schemeName"] = schemeName;
-                        schemeData = _.extend(registrationData, schemeData);
-                        registrationPromises.push(sendMessageToSandbox(schemeData));
-                    }
-                });
-
-                if(!_.isEmpty(registrationPromises)) {
-                    Promise.settle(registrationPromises).then(function () {
-                        sendMessageToSandbox({
-                            domain: 'encryptionSchemes',
-                            command: 'getRegisteredSchemeNames'
-                        }).then(function (response) {
-                            registeredEncryptionSchemes = response["response"]["message"];
-                            log("Registered Encryption Schemes: " + JSON.stringify(registeredEncryptionSchemes));
-                            fulfill();
-                        }).catch(function (e) {
-                            return reject(new Error("Cannot retrieve registered encryption schemes: " + e));
-                        });
-                    });
-                } else {
-                    fulfill();
+            var registrationPromises = [];
+            _.each(schemes, function (schemeData, schemeName) {
+                if(!_.contains(registeredEncryptionSchemes, schemeName)) {
+                    schemeData["schemeName"] = schemeName;
+                    schemeData = _.extend(registrationData, schemeData);
+                    registrationPromises.push(sendMessageToSandbox(schemeData));
                 }
-            //}).catch(function (e) {
-            //    return reject(new Error("Cannot retrieve registered encryption schemes: " + e));
-            //});
+            });
+
+            if(!_.isEmpty(registrationPromises)) {
+                Promise.settle(registrationPromises).then(function () {
+                    sendMessageToSandbox({
+                        domain: 'encryptionSchemes',
+                        command: 'getRegisteredSchemeNames'
+                    }).then(function (response) {
+                        registeredEncryptionSchemes = response["response"]["message"];
+                        log("Registered Encryption Schemes: " + JSON.stringify(registeredEncryptionSchemes));
+                        fulfill();
+                    }).catch(function (e) {
+                        return reject(new Error("Cannot retrieve registered encryption schemes: " + e));
+                    });
+                });
+            } else {
+                fulfill();
+            }
         });
     };
 
