@@ -11,22 +11,15 @@ define([
     'bluebird',
     'underscore'
 ], function (localConfig, syncConfig, PPMLogger, PPMUtils, PPMCryptor, CryptoModule, Promise, _) {
-    /**
-     * @type {object} rawSyncStorageData
-     */
+    /** @type {object} rawSyncStorageData */
     var rawSyncStorageData;
-
-    /** @type {string} */
-    var defaultProfileName = "DEFAULT";
-    /** @type {string} */
-    var defaultEncryptionScheme = "AesMd5";
-    /** @type {string} */
-    var defaultEncryptionKey = "Paranoia";
 
     /** @type {string|null} */
     var currentProfileName = null;
+
     /** @type {string|null} */
     var currentEncryptionScheme = null;
+
     /** @type {string|null} */
     var currentEncryptionKey = null;
 
@@ -107,18 +100,85 @@ define([
     };
 
     /**
-     * Called by initSyncStorage when there is no default profile
+     *
+     * @param {string} profileName
+     * @param {string} newProfileName
+     * @param {string} newEncryptionScheme
+     * @param {string} newEncryptionKey
+     * @return {Promise}
+     */
+    var updateProfile = function(profileName, newProfileName, newEncryptionScheme, newEncryptionKey) {
+        return new Promise(function (fulfill, reject) {
+            if(profileName != currentProfileName) {
+                return reject(new Error("For now only the current(decrypted) profile can be updated!"));
+            }
+
+            var _doWrite = function(data) {
+                removeProfile(currentProfileName).then(function() {
+                    var chromeStorage = getStorageByLocation("sync");
+                    chromeStorage.set(data, function() {
+                        if (chrome.runtime.lastError) {
+                            return reject(chrome.runtime.lastError);
+                        }
+                        log("Profile["+newProfileName+"] updated.");
+                        currentProfileName = newProfileName;
+                        currentEncryptionScheme = newEncryptionScheme;
+                        currentEncryptionKey = newEncryptionKey;
+                        fulfill();
+                    });
+                }).catch(function (e) {
+                        return reject(e);
+                    }
+                );
+            };
+
+            PPMCryptor.encryptPayload(
+                JSON.stringify(syncConfig.getAll()),
+                newProfileName,
+                newEncryptionScheme,
+                newEncryptionKey
+            ).then(function(encryptedData) {
+                    rawSyncStorageData[newProfileName] = encryptedData;
+                    _doWrite(rawSyncStorageData);
+                }
+            ).catch(function (e) {
+                    return reject(e);
+                }
+            );
+        });
+    };
+
+    /**
+     * @param profileName
+     * @returns {Promise}
+     */
+    var removeProfile = function(profileName) {
+        return new Promise(function (fulfill, reject) {
+            var chromeStorage = getStorageByLocation("sync");
+            chromeStorage.remove(profileName, function() {
+                if (chrome.runtime.lastError) {
+                    return reject(chrome.runtime.lastError);
+                }
+                log("Profile["+profileName+"] removed.");
+                delete rawSyncStorageData[profileName];
+                fulfill();
+            });
+        });
+    };
+
+    /**
+     * Called by initSyncStorage when there is no available profiles(after first installation)
      * It creates and stores it by duplicating the "sync" section of the default configuration(config.js)
      * @returns {Promise}
      */
     var createAndStoreDefaultProfile = function() {
         return new Promise(function (fulfill, reject) {
-            if(!hasProfile(defaultProfileName)) {
+            if(_.isEmpty(getAvailableProfiles())) {
                 //must be a first-runner - let's create default profile
-                log("CREATING DEFAULT PROFILE("+defaultProfileName+")...", "info");
-                currentProfileName = defaultProfileName;
-                currentEncryptionScheme = defaultEncryptionScheme;
-                currentEncryptionKey = defaultEncryptionKey;
+                log("CREATING DEFAULT PROFILE...", "info");
+                currentProfileName = "DEFAULT";
+                currentEncryptionScheme = "AesMd5";
+                currentEncryptionKey = "Paranoia";
                 writeToStorage("sync").then(function() {
                     currentProfileName = null;
                     currentEncryptionScheme = null;
@@ -144,8 +204,22 @@ define([
         return(_.keys(rawSyncStorageData));
     };
 
+    /**
+     * @return {string|null}
+     */
     var getCurrentProfile = function() {
         return currentProfileName;
+    };
+
+    /**
+     * @return {string|null}
+     */
+    var getCurrentEncryptionScheme = function() {
+        return currentEncryptionScheme;
+    };
+
+    var getCurrentEncryptionKey = function() {
+        return currentEncryptionKey;
     };
 
     /**
@@ -227,7 +301,7 @@ define([
      * @returns {Promise}
      */
     var unlockSyncStorage = function(profileName, encryptionScheme, encryptionKey) {
-        profileName = profileName ? profileName : defaultProfileName;
+        //profileName = profileName ? profileName : defaultProfileName;
         log("unlocking sync storage profile...");
         return new Promise(function (fulfill, reject) {
             if(!hasProfile(profileName)) {
@@ -402,8 +476,14 @@ define([
             });
         },
 
+        /* Exposed private methods */
         getAvailableProfiles: getAvailableProfiles,
         getCurrentProfile: getCurrentProfile,
+        getCurrentEncryptionScheme: getCurrentEncryptionScheme,
+        getCurrentEncryptionKey: getCurrentEncryptionKey,
+        hasProfile: hasProfile,
+        updateProfile: updateProfile,
+        removeProfile: removeProfile,
         hasDecryptedSyncData: hasDecryptedSyncData,
         getConfigByLocation: getConfigByLocation
     };

@@ -6,12 +6,11 @@ define([
     'PPMLogger',
     'PPMUtils',
     'PPMCryptor',
-    'GATracker',
     'ChromeTabs',
     'ChromeStorage',
     'ServerConcentrator',
     'bluebird'
-], function (PPMLogger, PPMUtils, PPMCryptor, GATracker, ChromeTabs, ChromeStorage, ServerConcentrator, Promise) {
+], function (PPMLogger, PPMUtils, PPMCryptor, ChromeTabs, ChromeStorage, ServerConcentrator, Promise) {
     /**
      * Log facility
      * @param msg
@@ -127,8 +126,6 @@ define([
                 }).then(function() {
                     return PPMCryptor.initialize();
                 }).then(function() {
-                    return GATracker.initialize();
-                }).then(function() {
                     return ChromeTabs.initialize();
                 }).then(function() {
                     return ChromeStorage.initialize();
@@ -153,8 +150,6 @@ define([
                     return ChromeStorage.shutdown();
                 }).then(function() {
                     return ChromeTabs.shutdown();
-                }).then(function() {
-                    return GATracker.shutdown();
                 }).then(function() {
                     return PPMCryptor.shutdown();
                 }).then(function() {
@@ -201,8 +196,6 @@ define([
                     return(PPMUtils);
                 case "CRYPTOR":
                     return(PPMCryptor);
-                case "GAT":
-                    return(GATracker);
                 case "CHROMETABS":
                     return(ChromeTabs);
                 case "CHROMESTORAGE":

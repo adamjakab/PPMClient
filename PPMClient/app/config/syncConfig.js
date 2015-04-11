@@ -14,11 +14,11 @@ define(['ConfigurationManager'],
                     log_objects_to_keep: 250
                 },
                 utils: {
-
                 },
                 cryptor: {
-                    /* these are not yet implemented so changing the values below will not do anything */
                     aes: {
+                        /* these are not yet implemented so changing the values below will not do anything */
+                        /* hardcoded mode: CTR - hardcoded padding: Pkcs7 */
                         mode: "CTR", /* modes: CBC, CFB, CTR, OFB, ECB */
                         padding: "Pkcs7" /* paddings: Pkcs7, Iso97971, AnsiX923, Iso10126, ZeroPadding, NoPadding */
                     },
@@ -34,9 +34,6 @@ define(['ConfigurationManager'],
                             decryptMethodBody: 'return CryptoModule.decryptAES(CryptoModule.decryptAES(text, CryptoModule.md5Hash(key, id)), key+id);'
                         }
                     }
-                },
-                gat: {
-                    enabled: false
                 },
                 chromestorage: {
                     login_count: 0,

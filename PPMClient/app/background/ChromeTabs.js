@@ -82,7 +82,7 @@ define([
      * @param {Object} winTabInfo - something like {"tabId":465,"windowId":14}
      */
     var tabFocusListener = function(winTabInfo) {
-        log("tabFocusListener info: " + JSON.stringify(winTabInfo));
+        //log("tabFocusListener info: " + JSON.stringify(winTabInfo));
         activeWinTabInfo = winTabInfo;
         injectContentScriptIntoTab(winTabInfo.tabId);
         //_checkPasscardAvailabilityForTab(aInfo.tabId);
@@ -94,7 +94,7 @@ define([
      * @param {Object} changeInfo - {"status":"loading"} / {"status":"complete"}
      */
     var tabUpdateListener = function(tabId, changeInfo) {
-        log("tabUpdateListener tabId: " + tabId + " changeInfo: " + JSON.stringify(changeInfo));
+        //log("tabUpdateListener tabId: " + tabId + " changeInfo: " + JSON.stringify(changeInfo));
         contentScriptInjectedIntoTab[tabId] = false;
         if(changeInfo.status == "complete") {
             //_checkPasscardAvailabilityForTab(tId);

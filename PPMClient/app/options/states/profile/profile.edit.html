@@ -1,5 +1,5 @@
 <div class="modal-header">
-    <div class="pull-right text-info">{{item.name}}</div>
+    <div class="pull-right text-info">{{currentProfileName}}</div>
     <h3 class="modal-title">Edit Profile</h3>
 </div>
 
@@ -7,24 +7,56 @@
 <div class="modal-body" ng-hide="item">
     {{ noItemMessage }}
 </div>
+<div class="modal-footer" ng-hide="item">
+    <button class="btn btn-warning pull-left" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" ng-click="updateProfile()">Update Profile</button>
+</div>
 
 <!-- Profile edit module-->
 <div class="modal-body" ng-show="item">
     <div class="row">
         <div class="col-md-9">
             <form novalidate name="profileForm">
-                <div class="form-group" ng-class="{'has-error': profileForm.name.$error.required}">
+
+                <div class="form-group" ng-class="{'has-error': profileForm.name.$error.pattern}">
                     <label for="name">Name</label>
-                    <input type="text" id="name" name="name" ng-model="item.name" required class="form-control" autofocus />
+                    <input type="text" id="name" name="name" ng-model="item.name"
+                           required
+                           ng-pattern="/^[a-zA-Z][a-zA-Z0-9_]{2,63}$/"
+                           class="form-control" autofocus />
                 </div>
+
+                <div class="form-group">
+                    <label for="schemeSel">Encryption Scheme</label>
+                    <select id="schemeSel" name="schemeSel" ng-model="item.encryptionScheme" required ng-options="s for s in schemes" class="form-control"></select>
+                </div>
+
+                <div class="form-group" ng-class="{'has-error': !profileForm.masterKey.$valid}">
+                    <label>Master Key</label>
+
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i ng-show="showPassword" ng-click="togglePasswordVisibility()" class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
+                            <i ng-hide="showPassword" ng-click="togglePasswordVisibility()" class="glyphicon glyphicon-eye-close" aria-hidden="true"></i>
+                        </div>
+
+                        <input ng-show="showPassword" required ng-minlength="8"
+                               type="text" name="masterKey" ng-model="item.encryptionKey" class="form-control" />
+                        <input ng-hide="showPassword" required ng-minlength="8"
+                               type="password" name="masterKey" ng-model="item.encryptionKey" class="form-control" />
+
+                    </div>
+
+                </div>
+
             </form>
         </div>
         <div class="col-md-3">
-            ...
+
         </div>
     </div>
 </div>
-<div class="modal-footer">
+<div class="modal-footer" ng-show="item">
     <button class="btn btn-warning pull-left" ng-click="cancel()">Cancel</button>
     <button class="btn btn-primary" ng-show="item" ng-disabled="profileForm.$invalid" ng-click="save()">Save</button>
 </div>

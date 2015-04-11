@@ -7,6 +7,10 @@ define([
         var ChromeStorage = PPM.getComponent("CHROMESTORAGE");
 
         return {
+            /**
+             * Get list of profiles
+             * @return {{}}
+             */
             getProfiles: function() {
                 var profiles = {};
                 var profileNames = ChromeStorage.getAvailableProfiles();
@@ -19,7 +23,31 @@ define([
                     profiles[profileName] = profile;
                 });
                 return profiles;
+            },
+
+            /**
+             *
+             * @param {string} profileName
+             */
+            getProfile: function(profileName) {
+                if(!ChromeStorage.hasProfile(profileName)) {
+                    //throw new Error("No profile by this name["+profileName+"]!");
+                    return {
+                        name: "",
+                        active: false,
+                        encryptionScheme: "AesMd5",
+                        encryptionKey: ""
+                    };
+                }
+                var currentProfile = ChromeStorage.getCurrentProfile();
+                return {
+                    name: profileName,
+                    active: (profileName === currentProfile),
+                    encryptionScheme: ChromeStorage.getCurrentEncryptionScheme(),
+                    encryptionKey: ChromeStorage.getCurrentEncryptionKey()
+                };
             }
+
         };
     });
 });

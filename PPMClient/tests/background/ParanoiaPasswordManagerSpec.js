@@ -23,7 +23,7 @@ define(['TestUtils', 'ParanoiaPasswordManager'],
                 expect(ParanoiaPasswordManager.getComponent("LOGGER") !== null).toBeTruthy();
                 expect(ParanoiaPasswordManager.getComponent("UTILS") !== null).toBeTruthy();
                 expect(ParanoiaPasswordManager.getComponent("CRYPTOR") !== null).toBeTruthy();
-                expect(ParanoiaPasswordManager.getComponent("GAT") !== null).toBeTruthy();
+                expect(ParanoiaPasswordManager.getComponent("CHROMETABS") !== null).toBeTruthy();
                 expect(ParanoiaPasswordManager.getComponent("CHROMESTORAGE") !== null).toBeTruthy();
                 expect(ParanoiaPasswordManager.getComponent("SERVERCONCENTRATOR") !== null).toBeTruthy();
             });

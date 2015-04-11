@@ -1,10 +1,6 @@
 .directory
 .idea
 
-# Old project Code (to be removed)
-PPMClientOld
-PPMClientOld2
-
 # Bower project dependencies
 PPMClient/vendor
 
