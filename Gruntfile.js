@@ -8,6 +8,8 @@ module.exports = function (grunt) {
 
     //setup project ready for development
     grunt.registerTask("setup-project", "Setup Project files and folders", function () {
+        grunt.task.run('clean:setup_vendor');
+        grunt.task.run('copy:setup_vendor');
         //@todo: we need to copy ui-bootstrap template folder to app folder
     });
 
@@ -32,10 +34,35 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         manifest: grunt.file.readJSON('PPMClient/manifest.json'),
         clean: {
-            build_before: ['build'],
-            build_after: ['build/tmp/xxx']
+            setup_vendor: ['PPMClient/vendor'],
+            build_before: ['build']
         },
         copy: {
+            setup_vendor: {
+                files: [
+                    {
+                        expand: true,
+                        flatten: true,
+                        cwd: 'node_modules',
+                        src: [
+                            'angular/angular.js',
+                            'angular-ui-router/release/angular-ui-router.js',
+                            /*'angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',*/
+                            'angular-ui-bootstrap/dist/ui-bootstrap.js',
+                            'requirejs/require.js',
+                            'requirejs-domready/domReady.js',
+                            'underscore/underscore.js',
+                            'bluebird/js/browser/bluebird.js',
+                            'configuration-manager/Configurator.js',
+                            'bootstrap-css-only/css/bootstrap.css',
+                            'bootstrap-css-only/css/bootstrap-grid.css',
+                            'bootstrap-css-only/css/bootstrap-reboot.css',
+                            'angular/angular-csp.css'
+                        ],
+                        dest: 'PPMClient/vendor/'
+                    },
+                ]
+            },
             build: {
                 files: [
                     {

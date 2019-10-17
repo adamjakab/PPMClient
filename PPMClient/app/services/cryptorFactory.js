@@ -5,6 +5,9 @@ define([
 
 
     angular.module('App').factory('cryptorFactory', function() {
+
+        console.log("cryptorFactory accessing background...");
+
         var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
         var PPMCryptor = PPM.getComponent("CRYPTOR");
 

@@ -4,6 +4,9 @@ define([
     angular.module('App').controller('login.controller',
         function ($scope, settings, $state, cryptorFactory) {
             $scope.settings = settings;
+
+            console.log("accessing background...");
+
             var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
             var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
             var UTILS = PPM.getComponent("UTILS");

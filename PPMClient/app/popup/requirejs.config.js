@@ -5,16 +5,16 @@ requirejs.config({
         vendor: '../../vendor',
         sharedServices: '../services',
         /** MODULES */
-        angular: '../../vendor/angular/angular',
-        angular_ui_router: '../../vendor/angular-ui-router/release/angular-ui-router',
-        ui_bootstrap: '../../vendor/angular-ui-bootstrap/dist/ui-bootstrap-0.12.0',
-        require: '../../vendor/requirejs/require',
-        domReady: '../../vendor/requirejs-domready/domReady',
-        underscore: '../../vendor/underscore/underscore',
-        bluebird: '../../vendor/bluebird/js/browser/bluebird',
-        ConfigurationManager: '../../vendor/configuration-manager/ConfigurationManager',
+        angular: '../../vendor/angular',
+        angular_ui_router: '../../vendor/angular-ui-router',
+        ui_bootstrap: '../../vendor/ui-bootstrap',
+        require: '../../vendor/require',
+        domReady: '../../vendor/domReady',
+        underscore: '../../vendor/underscore',
+        bluebird: '../../vendor/bluebird',
+        ConfigurationManager: '../../vendor/Configurator',
         localConfig: '../config/localConfig',
-        syncConfig: '../config/syncConfig'
+        syncConfig: '../config/syncConfig',
     },
     shim: {
         angular: {
