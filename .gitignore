@@ -13,6 +13,7 @@ build
 
 # Other
 yarn.lock
+yarn-error.log
 
 # playground folder
 ideas
