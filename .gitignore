@@ -1,5 +1,5 @@
 .directory
-.idea
+.idea/**
 
 # Bower project dependencies
 PPMClient/vendor
@@ -11,5 +11,9 @@ node_modules
 # the extension will be created
 build
 
+# Other
+yarn.lock
+
 # playground folder
 ideas
+
