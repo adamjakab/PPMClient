@@ -12,7 +12,7 @@ requirejs.config({
         domReady: '../../vendor/domReady',
         underscore: '../../vendor/underscore',
         bluebird: '../../vendor/bluebird',
-        ConfigurationManager: '../../vendor/Configurator',
+        ConfigurationManager: '../lib/ConfigurationManager',
         localConfig: '../config/localConfig',
         syncConfig: '../config/syncConfig',
     },

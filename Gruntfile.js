@@ -51,7 +51,6 @@ module.exports = function (grunt) {
                             'angular-ui-router/release/angular-ui-router.js',
                             /*'angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',*/
                             'bluebird/js/browser/bluebird.js',
-                            'configuration-manager/Configurator.js',
                             'requirejs/require.js',
                             'requirejs-domready/domReady.js',
                             'underscore/underscore.js',

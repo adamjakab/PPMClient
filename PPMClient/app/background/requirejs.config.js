@@ -6,9 +6,9 @@ requirejs.config({
         /* MODULES */
         underscore: '../../vendor/underscore',
         bluebird: '../../vendor/bluebird',
-        ConfigurationManager: '../../vendor/Configurator',
         localConfig: '../config/localConfig',
         syncConfig: '../config/syncConfig',
+        ConfigurationManager: '../lib/ConfigurationManager',
         CryptoModule: '../lib/CryptoModule',
         ParanoiaServer: '../lib/ParanoiaServer',
         Passcard: '../lib/Passcard'

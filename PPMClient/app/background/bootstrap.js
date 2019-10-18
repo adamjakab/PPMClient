@@ -4,26 +4,29 @@
  * Exposes ParanoiaPasswordManager variable for popup/options:
  * chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
  */
-var ParanoiaPasswordManager;
+let ParanoiaPasswordManager;
 
-require(['ParanoiaPasswordManager'], function(PPM) {
+require(['ParanoiaPasswordManager'],
+
+    function(PPM) {
     ParanoiaPasswordManager = PPM;
 
     /**
      * Start/restart the application
      */
-    var restartApplication = function() {
+    let restartApplication = function() {
         PPM.initialize().catch(function (e) {
             console.error(e);
             window.location.reload(true);
         });
     };
+
     //autostart
     restartApplication();
 
 
     //OMNIBOX COMMANDS
-    chrome.omnibox.onInputEntered.addListener(function(cmd) {
+/*    chrome.omnibox.onInputEntered.addListener(function(cmd) {
         switch(cmd){
             case "help":
                 alert("You can use one of the following commands: resetStorage");
@@ -46,7 +49,6 @@ require(['ParanoiaPasswordManager'], function(PPM) {
                 alert('PPM2 - I do not understand this command: "' + cmd + '"');
                 break;
         }
-    });
-
+    });*/
 });
 

@@ -175,7 +175,10 @@ define([
             });
 
             if(!_.isEmpty(registrationPromises)) {
-                Promise.settle(registrationPromises).then(function () {
+
+                //@todo: this is a quick fix to substitute the deprecated settle method below.
+                // there is no feedback on failed registration!
+                Promise.all(registrationPromises).then(function() {
                     sendMessageToSandbox({
                         domain: 'encryptionSchemes',
                         command: 'getRegisteredSchemeNames'
@@ -187,6 +190,21 @@ define([
                         return reject(new Error("Cannot retrieve registered encryption schemes: " + e));
                     });
                 });
+
+                /*
+                Promise.settle(registrationPromises).then(function () {
+                    sendMessageToSandbox({
+                        domain: 'encryptionSchemes',
+                        command: 'getRegisteredSchemeNames'
+                    }).then(function (response) {
+                        registeredEncryptionSchemes = response["response"]["message"];
+                        log("Registered Encryption Schemes: " + JSON.stringify(registeredEncryptionSchemes));
+                        fulfill();
+                    }).catch(function (e) {
+                        return reject(new Error("Cannot retrieve registered encryption schemes: " + e));
+                    });
+                });*/
+
             } else {
                 fulfill();
             }
