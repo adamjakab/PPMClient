@@ -5,11 +5,10 @@ define([
         function ($scope, settings, $state, cryptorFactory) {
             $scope.settings = settings;
 
-            console.log("accessing background...");
-
             var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
             var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
             var UTILS = PPM.getComponent("UTILS");
+
             /** log shorthand */
             var log = function (msg, type) {
                 PPM.getComponent("LOGGER").log(msg, "POPUP(login)", type);
