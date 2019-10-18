@@ -1,19 +1,18 @@
 module.exports = function (grunt) {
     /* ----------------------------------------- MAIN TASKS --------------------------------------------------------- */
-    // Default task(s).
+
+    // Default task
     grunt.registerTask('default', [
         'setup-project'
     ]);
 
-
-    //setup project ready for development
+    // Project setup for development
     grunt.registerTask("setup-project", "Setup Project files and folders", function () {
         grunt.task.run('clean:setup_vendor');
         grunt.task.run('copy:setup_vendor');
-        //@todo: we need to copy ui-bootstrap template folder to app folder
     });
 
-    //build project in 'build/tmp' ready to be packed
+    // Build project optimized for production release
     grunt.registerTask("build-project", "Build Project files", function () {
         grunt.task.run('clean:build_before');
         grunt.task.run('copy:build');
@@ -23,12 +22,12 @@ module.exports = function (grunt) {
         grunt.task.run('replace:build_popup');
     });
 
-    //build project from 'build/tmp' to Google Chrome installable crx package
+    // Create Google Chrome installable .crx package
     grunt.registerTask("pack-project", "Build Project files", function () {
-        //
+        //TBD
     });
 
-
+    /* ---------------------------------------------- CONFIGURATIONS ------------------------------------------------ */
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),

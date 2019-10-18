@@ -19,7 +19,7 @@
                         <span ng-show="!profile.active" class="badge badge-pill badge-dark">Inactive</span>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-primary d-inline-flex" ng-hide="profile.active" ng-click="editProfile(profile.name)" title="Edit">
+                        <button class="btn btn-sm btn-primary d-inline-flex" ng-show="profile.active" ng-click="editProfile(profile.name)" title="Edit">
                             <i class="fas fa-pen"></i>
                         </button>
                         <button class="btn btn-sm btn-danger d-inline-flex" ng-hide="profile.active" ng-click="deleteProfile(profile.name)" title="Delete">
