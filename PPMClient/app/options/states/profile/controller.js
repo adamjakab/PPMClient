@@ -2,12 +2,14 @@ define([
     'angular'
 ], function () {
     angular.module('App').controller('profile.controller',
-        function ($scope, settings, $state, storageFactory, $modal) {
+        function ($scope, settings, $state, storageFactory, $uibModal) {
             $scope.settings = settings;
-            var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
-            var ChromeStorage = PPM.getComponent("CHROMESTORAGE");
+
+            let PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
+            let ChromeStorage = PPM.getComponent("CHROMESTORAGE");
+
             /** log shorthand */
-            var log = function (msg, type) {
+            let log = function (msg, type) {
                 PPM.getComponent("LOGGER").log(msg, "OPTIONS(profile)", type);
             };
 
@@ -16,14 +18,16 @@ define([
             /**
              * @param {string|null} name
              */
-            $scope.editProfile = function(name) {
+            $scope.editProfile = function (name) {
                 log("EDIT PROFILE: " + name);
-                var modalInstance = $modal.open({
+                let modalInstance = $uibModal.open({
                     templateUrl: 'options/states/profile/profile.edit.html',
                     controller: 'profile.edit.controller',
                     size: 'lg',
                     backdrop: 'static',
                     backdropClass: 'modalBackdrop',
+                    windowClass: 'show',
+                    animation: true,
                     resolve: {
                         name: function () {
                             return name;
@@ -31,10 +35,10 @@ define([
                     }
                 });
 
-                modalInstance.result.then(function(modifiedItem) {
+                modalInstance.result.then(function (modifiedItem) {
                     //MODAL CLOSE(save)
                     log("closed");
-                }, function() {
+                }, function () {
                     //MODAL DISMISS(cancel)
                     log("cancelled")
                 });
@@ -43,11 +47,11 @@ define([
             /**
              * @param {string} name
              */
-            $scope.deleteProfile = function(name) {
-                if(confirm("Are you sure you want to remove the profile named: " + name + "?")) {
-                    ChromeStorage.removeProfile(name).then(function() {
-                        _.defer(function() {
-                            $scope.$apply(function() {
+            $scope.deleteProfile = function (name) {
+                if (confirm("Are you sure you want to remove the profile named: " + name + "?")) {
+                    ChromeStorage.removeProfile(name).then(function () {
+                        _.defer(function () {
+                            $scope.$apply(function () {
                                 $scope.profiles = storageFactory.getProfiles();
                             });
                         });
@@ -62,19 +66,21 @@ define([
     );
 
     /**
-     * Profile Edit Modal Controller
+     * Profile Edit Modal Controller (https://angular-ui.github.io/bootstrap/#!#modal)
      */
     angular.module('App').controller('profile.edit.controller', [
-            '$scope', '$modalInstance', 'storageFactory', 'cryptorFactory', 'name',
-            function ($scope, $modalInstance, storageFactory, cryptorFactory, name) {
-                var PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
-                var ChromeStorage = PPM.getComponent("CHROMESTORAGE");
-                var PPMUtils = PPM.getComponent("UTILS");
+            '$scope', '$uibModalInstance', 'storageFactory', 'cryptorFactory', 'name',
+            function ($scope, $uibModalInstance, storageFactory, cryptorFactory, name) {
+                let PPM = chrome.extension.getBackgroundPage().ParanoiaPasswordManager;
+                let ChromeStorage = PPM.getComponent("CHROMESTORAGE");
+                let PPMUtils = PPM.getComponent("UTILS");
+
                 /** log shorthand */
-                var log = function (msg, type) {
+                let log = function (msg, type) {
                     PPM.getComponent("LOGGER").log(msg, "OPTIONS(profile)", type);
                 };
-                var profileNames = ChromeStorage.getAvailableProfiles();
+
+                let profileNames = ChromeStorage.getAvailableProfiles();
 
                 $scope.showPassword = false;
                 $scope.noItemMessage = "Fetching profile...";
@@ -89,7 +95,7 @@ define([
                 };
 
                 $scope.save = function () {
-                    var unmodifiedItem = storageFactory.getProfile(name);
+                    let unmodifiedItem = storageFactory.getProfile(name);
                     if(_.isEqual($scope.item, unmodifiedItem)) {
                         $modalInstance.dismiss('cancel');
                         return;
@@ -129,13 +135,13 @@ define([
                     ).catch(
                         function (e) {
                             alert(e);
-                            $modalInstance.dismiss('cancel');
+                            $uibModalInstance.dismiss('cancel');
                         }
                     );
                 };
 
                 $scope.cancel = function () {
-                    $modalInstance.dismiss('cancel');
+                    $uibModalInstance.dismiss('cancel');
                 };
 
             }

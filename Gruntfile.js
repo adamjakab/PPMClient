@@ -68,7 +68,7 @@ module.exports = function (grunt) {
                         ],
                         dest: 'PPMClient/vendor/js/crypto-js'
                     },
-                    /* CSS*/
+                    /* CSS */
                     {
                         expand: true,
                         flatten: true,
@@ -76,10 +76,21 @@ module.exports = function (grunt) {
                         src: [
                             'angular/angular-csp.css',
                             'bootstrap-css-only/css/bootstrap.css',
-                            'bootstrap-css-only/css/bootstrap-grid.css',
-                            'bootstrap-css-only/css/bootstrap-reboot.css',
                         ],
                         dest: 'PPMClient/vendor/css'
+                    },
+                    /* FONTAWESOME */
+                    {
+                        expand: true,
+                        flatten: false,
+                        cwd: 'node_modules/@fortawesome/fontawesome-free',
+                        src: [
+                            'css/fontawesome.css',
+                            'css/solid.css',
+                            'css/brands.css',
+                            'webfonts/*',
+                        ],
+                        dest: 'PPMClient/vendor/css/fontawesome'
                     },
                 ]
             },

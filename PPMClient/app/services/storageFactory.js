@@ -39,7 +39,8 @@ define([
                         encryptionKey: ""
                     };
                 }
-                var currentProfile = ChromeStorage.getCurrentProfile();
+
+                let currentProfile = ChromeStorage.getCurrentProfile();
                 return {
                     name: profileName,
                     active: (profileName === currentProfile),

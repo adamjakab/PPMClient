@@ -3,12 +3,9 @@ define([
         'states/profile/dependencies'
 ],
 function(angular) {
-    var module = angular.module('App');
+    let module = angular.module('App');
 
     module.config(function($stateProvider, $urlRouterProvider) {
-        //any unmatched url will go to info state
-        $urlRouterProvider.otherwise("/profile");
-
         $stateProvider
             .state('profile', {
                 url: '/profile',
