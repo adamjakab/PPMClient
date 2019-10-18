@@ -40,6 +40,7 @@ module.exports = function (grunt) {
         copy: {
             setup_vendor: {
                 files: [
+                    /* Generic JS */
                     {
                         expand: true,
                         flatten: true,
@@ -48,20 +49,16 @@ module.exports = function (grunt) {
                             /* JS */
                             'angular/angular.js',
                             'angular-ui-bootstrap/dist/ui-bootstrap.js',
+                            'angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
                             'angular-ui-router/release/angular-ui-router.js',
-                            /*'angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',*/
                             'bluebird/js/browser/bluebird.js',
                             'requirejs/require.js',
                             'requirejs-domready/domReady.js',
                             'underscore/underscore.js',
-                            /* CSS */
-                            'angular/angular-csp.css',
-                            'bootstrap-css-only/css/bootstrap.css',
-                            'bootstrap-css-only/css/bootstrap-grid.css',
-                            'bootstrap-css-only/css/bootstrap-reboot.css',
                         ],
-                        dest: 'PPMClient/vendor/'
+                        dest: 'PPMClient/vendor/js'
                     },
+                    /* Crypto JS Suite */
                     {
                         expand: true,
                         flatten: true,
@@ -69,8 +66,21 @@ module.exports = function (grunt) {
                         src: [
                             'crypto-js/*.js',
                         ],
-                        dest: 'PPMClient/vendor/crypto-js'
-                    }
+                        dest: 'PPMClient/vendor/js/crypto-js'
+                    },
+                    /* CSS*/
+                    {
+                        expand: true,
+                        flatten: true,
+                        cwd: 'node_modules',
+                        src: [
+                            'angular/angular-csp.css',
+                            'bootstrap-css-only/css/bootstrap.css',
+                            'bootstrap-css-only/css/bootstrap-grid.css',
+                            'bootstrap-css-only/css/bootstrap-reboot.css',
+                        ],
+                        dest: 'PPMClient/vendor/css'
+                    },
                 ]
             },
             build: {

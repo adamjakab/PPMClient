@@ -1,11 +1,11 @@
 requirejs.config({
     baseUrl: 'background',
     paths: {
-        /* PATHS */
-        CryptoJs: '../../vendor/crypto-js',
-        /* MODULES */
-        underscore: '../../vendor/underscore',
-        bluebird: '../../vendor/bluebird',
+        /** PATHS */
+        CryptoJs: '../../vendor/js/crypto-js',
+        /** MODULES */
+        underscore: '../../vendor/js/underscore',
+        bluebird: '../../vendor/js/bluebird',
         localConfig: '../config/localConfig',
         syncConfig: '../config/syncConfig',
         ConfigurationManager: '../lib/ConfigurationManager',

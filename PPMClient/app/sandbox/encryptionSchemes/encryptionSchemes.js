@@ -9,9 +9,9 @@ requirejs.config({
     baseUrl: '',
     paths: {
         /* PATHS */
-        CryptoJs: '../../../vendor/crypto-js',
+        CryptoJs: '../../../vendor/js/crypto-js',
         /* MODULES */
-        underscore: '../../../vendor/underscore',
+        underscore: '../../../vendor/js/underscore',
         CryptoModule: '../../lib/CryptoModule'
     },
     shim: {},

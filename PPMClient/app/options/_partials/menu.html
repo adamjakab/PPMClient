@@ -1,22 +1,18 @@
-<div class="container">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" ui-sref="info">{{ app_name }}</a>
-    </div>
-    <div id="navbar" class="collapse navbar-collapse">
-        <ul class="nav navbar-nav">
-            <li ui-sref-active="active"><a ui-sref="passcard">Passcards</a></li>
-            <li ui-sref-active="active"><a ui-sref="server">Servers</a></li>
-            <li ui-sref-active="active"><a ui-sref="configuration">Configuration</a></li>
-            <li ui-sref-active="active"><a ui-sref="profile">Profiles</a></li>
-            <li ui-sref-active="active"><a ui-sref="encryptionscheme">Encryption Schemes</a></li>
-            <li ui-sref-active="active"><a ui-sref="log">Logs</a></li>
-            <li ui-sref-active="active"><a ui-sref="info">Info</a></li>
-        </ul>
-    </div>
+<a class="navbar-brand" ui-sref="info">{{ app_name }}</a>
+
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item"><a class="nav-link" ui-sref="passcard">Passcards</a></li>
+        <li class="nav-item"><a class="nav-link" ui-sref="server">Servers</a></li>
+        <li class="nav-item"><a class="nav-link" ui-sref="configuration">Configuration</a></li>
+        <li class="nav-item"><a class="nav-link" ui-sref="profile">Profiles</a></li>
+        <li class="nav-item"><a class="nav-link" ui-sref="encryptionscheme">Encryption Schemes</a></li>
+        <li class="nav-item"><a class="nav-link" ui-sref="log">Logs</a></li>
+        <li class="nav-item"><a class="nav-link" ui-sref="info">Info</a></li>
+    </ul>
 </div>
