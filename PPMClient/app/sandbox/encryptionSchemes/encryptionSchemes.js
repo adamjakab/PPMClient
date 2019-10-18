@@ -9,10 +9,9 @@ requirejs.config({
     baseUrl: '',
     paths: {
         /* PATHS */
-        CryptoJs: '../../../vendor/crypto-js-evanvosberg/build/rollups',
-        CryptoJsComponents: '../../../vendor/crypto-js-evanvosberg/build/components',
+        CryptoJs: '../../../vendor/crypto-js',
         /* MODULES */
-        underscore: '../../../vendor/underscore/underscore',
+        underscore: '../../../vendor/underscore',
         CryptoModule: '../../lib/CryptoModule'
     },
     shim: {},

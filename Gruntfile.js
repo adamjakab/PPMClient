@@ -45,22 +45,33 @@ module.exports = function (grunt) {
                         flatten: true,
                         cwd: 'node_modules',
                         src: [
+                            /* JS */
                             'angular/angular.js',
+                            'angular-ui-bootstrap/dist/ui-bootstrap.js',
                             'angular-ui-router/release/angular-ui-router.js',
                             /*'angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',*/
-                            'angular-ui-bootstrap/dist/ui-bootstrap.js',
+                            'bluebird/js/browser/bluebird.js',
+                            'configuration-manager/Configurator.js',
                             'requirejs/require.js',
                             'requirejs-domready/domReady.js',
                             'underscore/underscore.js',
-                            'bluebird/js/browser/bluebird.js',
-                            'configuration-manager/Configurator.js',
+                            /* CSS */
+                            'angular/angular-csp.css',
                             'bootstrap-css-only/css/bootstrap.css',
                             'bootstrap-css-only/css/bootstrap-grid.css',
                             'bootstrap-css-only/css/bootstrap-reboot.css',
-                            'angular/angular-csp.css'
                         ],
                         dest: 'PPMClient/vendor/'
                     },
+                    {
+                        expand: true,
+                        flatten: true,
+                        cwd: 'node_modules',
+                        src: [
+                            'crypto-js/*.js',
+                        ],
+                        dest: 'PPMClient/vendor/crypto-js'
+                    }
                 ]
             },
             build: {
