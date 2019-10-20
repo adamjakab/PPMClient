@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="c818d450-5505-4b62-846d-61f0d8bda88d" name="Default Changelist" comment="Recovered">
+      <change afterPath="$PROJECT_DIR$/.idea/PPMClient.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/jackisback.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/colors.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/dataTables.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/icons.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/animated-overlay.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-bg_diagonal-maze_20_6e4f1c_10x10.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-bg_diagonal-maze_40_000000_10x10.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-bg_fine-grain_10_eceadf_60x60.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-bg_fine-grain_10_f8f7f6_60x60.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-bg_fine-grain_15_eceadf_60x60.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-bg_fine-grain_15_f7f3de_60x60.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-bg_fine-grain_15_ffffff_60x60.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-bg_fine-grain_65_654b24_60x60.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-bg_fine-grain_68_b83400_60x60.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-icons_222222_256x240.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-icons_3572ac_256x240.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-icons_8c291d_256x240.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-icons_b83400_256x240.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-icons_fbdb93_256x240.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/images/ui-icons_ffffff_256x240.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/css/jquery-ui-theme/jquery-ui-1.10.1.custom.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/images/.directory" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/background/PPMCrypter.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/classes/GoogleAnalytics.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/classes/Passcard.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/common_tools.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/content/content.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/options.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/popup.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/schemes/aesmd5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/schemes/cleartext.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/schemes/crisscross.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/schemes/singlepass.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/schemes/wordbyword.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/vendors/aes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/vendors/aesctr.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/vendors/base64.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/vendors/jquery-1.9.1.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/vendors/jquery-ui-1.10.1.custom.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/vendors/jquery.blockUI.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/vendors/jquery.dataTables.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/vendors/jquery.passwordMask.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/vendors/md5.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/vendors/utf8.js" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="PPMClient" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="ProjectId" id="1SLavbJHjY4kpZBi6CI127GOK9S" />
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="js.buildTools.grunt.grunt-cli.package" value="$PROJECT_DIR$/node_modules/grunt" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path" value="node" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="settings.editor.selected.configurable" value="JavaScript.Libraries" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/tmp_root" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Grunt.js.default">
+    <configuration default="true" type="js.build_tools.grunt">
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="angular-ui-bootstrap-build-dist" type="js.build_tools.grunt" temporary="true">
+      <node-interpreter value="project" />
+      <gruntfile value="$PROJECT_DIR$/Gruntfile.js" />
+      <tasks>
+        <task value="angular-ui-bootstrap-build-dist" />
+      </tasks>
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="angular-ui-bootstrap-install-dependencies" type="js.build_tools.grunt" temporary="true">
+      <node-interpreter value="project" />
+      <gruntfile value="$PROJECT_DIR$/Gruntfile.js" />
+      <tasks>
+        <task value="angular-ui-bootstrap-install-dependencies" />
+      </tasks>
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="build-project" type="js.build_tools.grunt" temporary="true">
+      <node-interpreter value="project" />
+      <gruntfile value="$PROJECT_DIR$/Gruntfile.js" />
+      <tasks>
+        <task value="build-project" />
+      </tasks>
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="default" type="js.build_tools.grunt" temporary="true">
+      <node-interpreter value="project" />
+      <gruntfile value="$PROJECT_DIR$/Gruntfile.js" />
+      <tasks>
+        <task value="default" />
+      </tasks>
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Grunt.js.default" />
+        <item itemvalue="Grunt.js.build-project" />
+        <item itemvalue="Grunt.js.angular-ui-bootstrap-install-dependencies" />
+        <item itemvalue="Grunt.js.angular-ui-bootstrap-build-dist" />
+        <item itemvalue="Grunt.js.default" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c818d450-5505-4b62-846d-61f0d8bda88d" name="Default Changelist" comment="" />
+      <created>1571345560744</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1571345560744</updated>
+      <workItem from="1571345562155" duration="10049000" />
+      <workItem from="1571388180247" duration="31770000" />
+      <workItem from="1571590823429" duration="1033000" />
+    </task>
+    <task id="LOCAL-00001" summary="restarting in 2019">
+      <created>1571347697614</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1571347697614</updated>
+    </task>
+    <task id="LOCAL-00002" summary="moved package management from bower to yarn">
+      <created>1571348967182</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1571348967182</updated>
+    </task>
+    <task id="LOCAL-00003" summary="fixing">
+      <created>1571350958192</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1571350958192</updated>
+    </task>
+    <task id="LOCAL-00004" summary="getting around">
+      <created>1571356169346</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1571356169346</updated>
+    </task>
+    <task id="LOCAL-00005" summary="background is now loading all files">
+      <created>1571391494223</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1571391494223</updated>
+    </task>
+    <task id="LOCAL-00006" summary="background is up">
+      <created>1571396500686</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1571396500686</updated>
+    </task>
+    <task id="LOCAL-00007" summary="fixed some update issues">
+      <created>1571414001333</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1571414001333</updated>
+    </task>
+    <task id="LOCAL-00008" summary="fixing">
+      <created>1571423255810</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1571423255810</updated>
+    </task>
+    <task id="LOCAL-00009" summary="profile edit page fixes">
+      <created>1571438191277</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1571438191277</updated>
+    </task>
+    <task id="LOCAL-00010" summary="removed ui templates">
+      <created>1571439411231</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1571439411231</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Recovered">
+      <created>1571591400586</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1571591400586</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Recovered">
+      <created>1571591771406</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1571591771406</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="restarting in 2019" />
+    <MESSAGE value="moved package management from bower to yarn" />
+    <MESSAGE value="getting around" />
+    <MESSAGE value="background is now loading all files" />
+    <MESSAGE value="background is up" />
+    <MESSAGE value="fixed some update issues" />
+    <MESSAGE value="fixing" />
+    <MESSAGE value="profile edit page fixes" />
+    <MESSAGE value="removed ui templates" />
+    <MESSAGE value="Recovered" />
+    <option name="LAST_COMMIT_MESSAGE" value="Recovered" />
+  </component>
+</project>
