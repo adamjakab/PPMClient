@@ -1,48 +1,58 @@
 /**
- * Chrome storage interface for both local and synced storage
- * @param {ParanoiaPasswordManager} PPM
- * @param {object} [options]
+ *
+ * @constructor
  */
-function ChromeStorage(PPM, options) {
-    var cfg = new ConfigOptions({});
-    cfg.merge(options);
+function ChromeStorage() {
+    var _logzone = 'ChromeStorage';
+    var storage_data_local;
+    var storage_data_sync;
 
-    /** @type PPMUtils UTILS */
-    var UTILS = PPM.getComponent("UTILS");
-    /** @type ChromeStorageLocal local_storage */
-    var local_storage = null;
-    /** @type ChromeStorageSync sync_storage */
-    var sync_storage = null;
-    var log = function(msg, type) {PPM.getComponent("LOGGER").log(msg, "ChromeStorage", type);};
+    /*-------------------------------------------------------------------------------------PUBLIC METHODS*/
 
-    this.init = function() {
-        log("INITIALIZED: " + JSON.stringify(cfg.getRecursiveOptions()), "info");
-    };
+    this.init = function(pn, mk, es, callback) {
+        log("Initing...");
+        storage_data_local = null;
+        storage_data_sync = null;
 
-    this.shutdown = function(cb) {
-        log("shutting down...");
-        local_storage.shutdown(function() {
-            sync_storage.shutdown(function() {
-                UTILS.dispatchCustomEvent({type:"state_change"});
-                local_storage = null;
-                sync_storage = null;
-                if(UTILS.isFunction(cb)) {cb();}
+        document.dispatchEvent(new CustomEvent("PPM", {
+            detail: {type: "state_change"}, bubbles: true, cancelable: true
+        }));
+
+        //
+        if (!this.isInited()) {
+            var self = this;
+            storage_data_local = new ChromeStorageLocal();
+            storage_data_local.init();
+            storage_data_sync = new ChromeStorageSync();
+            storage_data_sync.init(pn, mk, es, function() {
+                if(self.isInited()) {
+                    log("Logged in.");
+                    //chrome.browserAction.setIcon({"path":"images/paranoia_19.png"});
+                    document.dispatchEvent(new CustomEvent("PPM", {
+                        detail: {type: "state_change"}, bubbles: true, cancelable: true
+                    }));
+                    storage_data_sync.setOption("logincount", Number(storage_data_sync.getOption("logincount"))+1);
+                } else {
+                    log("Not logged in!");
+                }
+                if(callback) {callback();};
             });
-        });
-    };
+        } else {
+            if(callback) {callback();};
+        }
+    }
 
-    this.setupLocalAndSyncedStorages = function(profile, masterKey, cb) {
-        log("setting up local storage...");
-        local_storage = new ChromeStorageLocal(PPM);
-        local_storage.init(function() {
-            log("setting up sync storage...");
-            sync_storage = new ChromeStorageSync(PPM);
-            sync_storage.init(profile, masterKey, function() {
-                UTILS.dispatchCustomEvent({type:"state_change"});
-                if(UTILS.isFunction(cb)) {cb();}
-            });
-        });
-    };
+    this.shutdown = function(callback) {
+        log("Shutting down...");
+        storage_data_local.shutdown();
+        storage_data_sync.shutdown(callback);
+        storage_data_local = null;
+        storage_data_sync = null;
+        //chrome.browserAction.setIcon({"path":"images/paranoia_19_off.png"});
+        document.dispatchEvent(new CustomEvent("PPM", {
+            detail: {type: "state_change"}, bubbles: true, cancelable: true
+        }));
+    }
 
     /**
      * GET STORAGE DATA
@@ -51,50 +61,63 @@ function ChromeStorage(PPM, options) {
      * @return {*}
      */
     this.getOption = function(location, key) {
-        var answer = false;
-        if(location == "local") {
-            answer = local_storage.getOption(key);
-        } else if (location == "sync") {
-            answer = sync_storage.getOption(key);
-        }
-        return(answer);
-    };
+        return(_getOption(location, key));
+    }
 
     /**
      * SET STORAGE DATA
-     * @param {string} location (local|sync)
-     * @param {string} key - Name of the key to set
-     * @param {*} val - Value of the key to set
+     * @param location (local|sync)
+     * @param key - Name of the key to set
+     * @param val - Value of the key to set
      */
     this.setOption = function(location, key, val) {
-        if(location == "local") {
-            local_storage.setOption(key, val);
-        } else if (location == "sync") {
-            sync_storage.setOption(key, val);
-        }
-    };
+        _setOption(location, key, val);
+    }
 
-    /**
-     * SET SYNC STORAGE SERVER DATA
-     * @param {int} index - The index of the server
-     * @param {string} key - Name of the key to set
-     * @param {*} val - Value of the key to set
-     */
-    this.setServerData = function(index, key, val) {
-        sync_storage.setServerData(index, key, val);
-    };
 
-    /**
-     * Returns true if sync_storage has decrypted data
-     * @returns {boolean}
-     */
     this.isInited = function() {
-        return(sync_storage && sync_storage.isInited());
-    };
+        return(storage_data_local && storage_data_local.isInited() && storage_data_sync && storage_data_sync.isInited());
+    }
 
-    this.getAvailableProfiles = function() {
-        return(sync_storage &&  sync_storage.getAvailableProfiles());
-    };
+    this.getCurrentSyncStoragePnEsMk = function() {
+        return(storage_data_sync.getCurrentPnEsMk());
+    }
+
+    /**
+     * change and immediately write out configuration encrypted with the new es/mk
+     * @param es
+     * @param mk
+     * @param callback
+     */
+    this.setCurrentSyncStorageEsMk = function(es, mk, callback) {
+        log("!!!CHANGING SYNCSTORAGE ES: " + es + " AND MK: " + mk);
+        storage_data_sync.setCurrentEsMk(es,mk);
+        this.forceSyncStorageDataWriteout(callback);
+    }
 
 
+    this.forceSyncStorageDataWriteout = function(callback) {
+        storage_data_sync.forceStorageDataWriteout(callback);
+    }
+    /*-------------------------------------------------------------------------------------PRIVATE METHODS*/
+    function _getOption(location, key) {
+        var answer = null;
+        if(location=="local") {
+            answer = storage_data_local.getOption(key);
+        } else if (location=="sync") {
+            answer = storage_data_sync.getOption(key);
+        }
+        //log("[STORAGE]:("+location+"?"+key+"): " + answer);
+        return(answer);
+    }
+
+    function _setOption(location, key, val) {
+        if(location=="local") {
+            storage_data_local.setOption(key, val);
+        } else if (location=="sync") {
+            storage_data_sync.setOption(key, val);
+        }
+    }
+
+    var log = function(msg) {PPM.log(msg, _logzone)};//just for comodity
 }

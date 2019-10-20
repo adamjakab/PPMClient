@@ -2,36 +2,29 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
+		<script type="text/javascript" src="js/vendors/aes.js"></script>
+		<script type="text/javascript" src="js/vendors/aesctr.js"></script>
+		<script type="text/javascript" src="js/vendors/base64.js"></script>
+		<script type="text/javascript" src="js/vendors/utf8.js"></script>
+		<script type="text/javascript" src="js/vendors/md5.js"></script>
 
-        <!-- PROTOTYPE -->
-        <script type="text/javascript" src="../js/prototype/prototype.js"></script>
+		<script type="text/javascript" src="js/schemes/cleartext.js"></script>
+		<script type="text/javascript" src="js/schemes/singlepass.js"></script>
+        <script type="text/javascript" src="js/schemes/aesmd5.js"></script>
+        <script type="text/javascript" src="js/schemes/crisscross.js"></script>
+        <script type="text/javascript" src="js/schemes/wordbyword.js"></script>
 
-        <!-- MAIN APPLICATION -->
-        <script type="text/javascript" src="js/background/ParanoiaPasswordManager.js"></script>
-
-        <!-- BACKGROUND SCRIPTS -->
-        <script type="text/javascript" src="js/background/PPMLogger.js"></script>
-        <script type="text/javascript" src="js/background/PPMUtils.js"></script>
-        <script type="text/javascript" src="js/background/PPMCryptor.js"></script>
-        <script type="text/javascript" src="js/background/GoogleAnalyticsTracker.js"></script>
-        <script type="text/javascript" src="js/background/ChromeStorage.js"></script>
-        <script type="text/javascript" src="js/background/PPMStorage.js"></script>
-
-        <!-- CLASSES -->
-        <script type="text/javascript" src="js/classes/ConfigOptions.js"></script>
         <script type="text/javascript" src="js/classes/ChromeStorageLocal.js"></script>
         <script type="text/javascript" src="js/classes/ChromeStorageSync.js"></script>
         <script type="text/javascript" src="js/classes/ParanoiaServer.js"></script>
+        <script type="text/javascript" src="js/classes/Passcard.js"></script>
+        <script type="text/javascript" src="js/classes/GoogleAnalytics.js"></script>
 
-        <!-- UTILS -->
-        <script type="text/javascript" src="js/utils/aesctr.js"></script>
-        <script type="text/javascript" src="js/utils/md5.js"></script>
-
-        <!-- ANGULARJS (PRELOADED FOR POPUP) -->
-        <script type="text/javascript" src="js/angularjs/angular.min.js"></script>
-        <script type="text/javascript" src="js/angularjs/ui-bootstrap-tpls-0.11.0.min.js"></script>
-        <script type="text/javascript" src="js/angularjs/directives.js"></script>
-
+        <script type="text/javascript" src="js/background/PPMUtils.js"></script>
+        <script type="text/javascript" src="js/background/PPMCrypter.js"></script>
+		<script type="text/javascript" src="js/background/ChromeStorage.js"></script>
+        <script type="text/javascript" src="js/background/PPMStorage.js"></script>
+		<script type="text/javascript" src="js/background/ParanoiaPasswordManager.js"></script>
 	</head>
 	<body></body>
 </html>

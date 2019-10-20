@@ -1,209 +1,255 @@
-/**
- * Various utility functions
- * @param {ParanoiaPasswordManager} PPM
- * @param {object} [options]
- */
-function PPMUtils(PPM, options) {
-    var cfg = new ConfigOptions({
-        close_config_tab_on_logout: false
-    });
-    cfg.merge(options);
-
-    var log = function(msg, type) {PPM.getComponent("LOGGER").log(msg, "PPMUtils", type);};
+function PPMUtils() {
+    var _logzone = 'PPMUtils';
+    var self = this;
+    var tabContentScriptStates = [];
+    var currentTab = null;
 
     this.init = function() {
-        log("INITIALIZED: " + JSON.stringify(cfg.getRecursiveOptions()), "info");
-    };
+        log("Initing...");
+    }
 
 
-    this.findAndCloseConfigurationTab = function(cb) {
-        var self = this;
-        var configPageUrl = "chrome-extension://"+chrome.runtime.id+"/options.html";
-        chrome.tabs.query({url:configPageUrl}, function(tabs) {
-            if (tabs.length) {
-                if(cfg.get("close_config_tab_on_logout")) {
-                    var tab = tabs[0];
-                    chrome.tabs.remove(tab.id, cb);
-                }
-            } else {
-                if(self.isFunction(cb)) {cb();}
+    this.windowFocusListener = function(wId) {
+        //log("WCH: " + wId);
+        chrome.tabs.query({windowId: wId, active: true}, function(tabs) {
+            var t = tabs.pop();
+            if(t) {
+                self.tabFocusListener({windowId: wId, tabId: t.id});
             }
         });
-    };
+    }
 
-    /**
-     * Sets PPM icon and badge text explicitly if set.
-     * If not set, Will check states of paranoia main components and server states and set icon accordingly
-     * @param {string} [badgeText]
-     * @param {string} [connectionState]
-     */
-    this.updateStateIcon = function(badgeText, connectionState) {
-        /** @type ChromeStorage CHROMESTORAGE */
-        var CHROMESTORAGE = PPM.getComponent("CHROMESTORAGE");
-        /** @type PPMStorage PPMSTORAGE */
-        var PPMSTORAGE = PPM.getComponent("PPMSTORAGE");
-        var connectionStateIcons = {
-            unauthenticated: "images/state_icons/offline.png",
-            loading: "images/state_icons/initing.png",
-            connected: "images/state_icons/ready.png",
-            disconnected: "images/state_icons/error.png"
-        };
-        //SET BADGE TEXT
-        badgeText = (badgeText?badgeText:"");
-        chrome.browserAction.setBadgeText({text: badgeText});
-        //SET ICON
-        if (!connectionState || connectionState=="undefined") {
-            if(CHROMESTORAGE && CHROMESTORAGE.isInited()) {
-                connectionState = "loading";
-                if(PPMSTORAGE && PPMSTORAGE.isInited()) {
-                    connectionState = "connected";
-                } else if (PPMSTORAGE && PPMSTORAGE.isInitialDataIndexLoaded() && !PPMSTORAGE.areAllServersConnected()) {
-                    connectionState = "disconnected";
-                }
-            }
-        }
-        if (!connectionStateIcons.hasOwnProperty(connectionState)) {
-            connectionState = "unauthenticated";
-        }
-        chrome.browserAction.setIcon({path:connectionStateIcons[connectionState]});
-    };
+    this.tabFocusListener = function(aInfo) {
+        _checkPasscardAvailabilityForTab(aInfo.tabId);
+    }
 
-    /**
-     * Fires CustomEvent listened for in main PPM
-     * @param {{}} details
-     */
-    this.dispatchCustomEvent = function(details) {
-        if(details && details.hasOwnProperty("type")) {
-            document.dispatchEvent(new CustomEvent("PPM", {
-                detail: details, bubbles: true, cancelable: true
-            }));
-            log("Dispatched customEvent: " + JSON.stringify(details));
+    this.tabUpdateListener = function(tId, changeInfo) {
+        tabContentScriptStates[tId] = false;
+        if(changeInfo.status == "complete") {
+            //log("TabCntUpdated!" + JSON.stringify(changeInfo));
+            _checkPasscardAvailabilityForTab(tId);
         } else {
-            log("customEvent cannot be dispatched: " + JSON.stringify(details));
+            //reset counter to zero
+            currentTab.passcards = [];
+            chrome.browserAction.setBadgeText({"text": ""});
+            //log("Tab status has changed to:  " + changeInfo.status);
         }
-    };
+    }
 
+    var _checkPasscardAvailabilityForTab = function(tId){
+        chrome.tabs.get(tId, function(cT) {
+            currentTab = cT;
+            currentTab.passcards = [];
+            var protocolRegExp = new RegExp('(http|https):\/\/', '');
+            if(protocolRegExp.test(currentTab.url)) {
+                //log("WinTabChange: " + currentTab.id + "/" + currentTab.windowId+" - url: " + currentTab.url);
+
+                var PPMSTORAGE = PPM.getPPMStorage();
+                var storageData = PPMSTORAGE.getStorageData();
+                if(storageData.length > 0) {
+                    for(var i=0; i<storageData.length; i++) {
+                        if (_check_if_hrefs_match(storageData[i].get("identifier"), currentTab.url)) {
+                            currentTab.passcards.push(storageData[i]);
+                        }
+                    }
+                }
+                chrome.browserAction.setBadgeText({"text": ""+(currentTab.passcards.length>0?currentTab.passcards.length:"")});
+                //load content script
+                if(currentTab.passcards.length > 0) {
+                    _injectContentScriptIntoTab(currentTab);
+                }
+            } else {
+                //it must be some chrome* tab
+                log("Tab was ignored for Passcard check because of protocol in url: " + currentTab.url);
+                currentTab.passcards = [];
+                chrome.browserAction.setBadgeText({"text": ""});
+            }
+        });
+    }
+
+    /**
+     * ONLY for http/https protocols
+     * OK: frames/Iframes work - sometimes page must be updated ++times because here we don't know loaded status of inner frame contents
+     *      - so we might be injecting script into half-loaded content -> and so content script doesn't work
+     * TODO: on closing tabs we should remove them from tabContentScriptStates array
+     * @param tab
+     * @private
+     */
+    var _injectContentScriptIntoTab = function(tab) {
+        if(!tabContentScriptStates[tab.id]) {
+            var protocolRegExp = new RegExp('(http|https):\/\/', '');
+            if(protocolRegExp.test(tab.url)) {
+                chrome.tabs.executeScript(tab.id, {file: "js/vendors/jquery-1.9.1.min.js", allFrames: true}, function() {
+                    chrome.tabs.executeScript(tab.id, {file: "js/content/content.js", allFrames: true}, function(resArr) {
+                        log("Content Script was injected into tab #" + tab.id + "RA: " + JSON.stringify(resArr));
+                        tabContentScriptStates[tab.id] = true;
+                    });
+                });
+            } else {
+                log("Content Script is not allowed in tab #" + tab.id + " - url: " + tab.url);
+            }
+        } else {
+            //log("Content Script is already loaded in tab #" + tab.id);
+        }
+    }
+
+
+
+    this.getCurrentTab = function() {
+        return(currentTab);
+    }
+
+    this.getPasscardsForCurrentTab = function() {
+        return((currentTab&&currentTab.passcards?currentTab.passcards:[]));
+    }
+
+    /**
+     * TODO: we need to find another way to identify this tab TITLE is no good ;)
+     */
+    this.findAndCloseConfigurationTab = function(callback) {
+        chrome.tabs.query({title:"PPM Configuration"}, function(tabs) {
+            if (tabs.length) {
+                var tab = tabs[0];
+                chrome.tabs.remove(tab.id, callback);
+            } else {
+                if(callback) {callback();};
+            }
+        });
+    }
 
     /**
      *
-     * @param {number} min
-     * @param {number} max
-     * @returns {number}
+     * @param Phref Passcard identifier HREF/REGEXP
+     * @param Bhref Browser href string
+     * @returns {boolean}
+     * @private
      */
-    this.getRandomNumberInRange = function(min, max) {
-        return(min + Math.round(Math.random()*(max-min)));
-    };
+    var _check_if_hrefs_match = function (Phref, Bhref) {
+        try {
+            if (Phref == "") {
+                return (false);
+            }//we don't want match on urlcards with NO url
+            var RE = new RegExp(Phref, '');
+            return (RE.test(Bhref));
+        } catch (e) {
+            log("_check_if_hrefs_match error: " + e + ": " + Phref);
+            return(false);
+        }
+    }
 
 
     /**
-     * Returns a very ugly string
-     * @param {int} minLength
-     * @param {int} [maxLength] will be same as minLength
-     * @param {boolean} [useSpecial=false]
-     * @returns {string}
+     * Will check states of paranoia main components and server states and set browser icon accordingly
      */
-    this.getUglyString = function(minLength, maxLength, useSpecial) {
-        var ugly_chars = {
-            "alpha": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            "numeric": "0123456789",
-            "special": "#@?!|&%^*+-=.:,;/([{<>}])"
-        };
-        minLength = minLength || 16;
-        maxLength = maxLength || minLength;
-        var length = minLength + Math.round((maxLength-minLength)*Math.random());
-        //
-        useSpecial = (useSpecial===true);
-        var typeLength = [];
-        typeLength["alpha"] = Math.floor(length/(useSpecial?3:2));//ALPHA
-        typeLength["numeric"] = (useSpecial?typeLength["alpha"]:length-typeLength["alpha"]);//NUMERIC
-        typeLength["special"] = (useSpecial?length-typeLength["alpha"]-typeLength["numeric"]:0);//SPECIAL
-        var charTypes = ["alpha","numeric"];
-        if(useSpecial) {
-            charTypes.push("special");
-        }
-        //console.log("L(tot):"+length+" L(alpha):"+typeLength["alpha"] + " L(num):"+typeLength["numeric"] + " L(spec):"+typeLength["special"]);
-
-        var answer = '';
-        var t, chars;
-        var i = 0;
-        while(answer.length < length) {
-            i++;
-            if(i>(length*2))break;//emergency break to avoid infinity loop
-            t = charTypes[Math.floor(Math.random() * charTypes.length)];
-            typeLength[t]--;
-            if(!typeLength[t]) {
-                charTypes.splice(charTypes.indexOf(t),1);
+    this.setStateIcon = function() {
+        //chrome.browserAction.setIcon({"path":"images/paranoia_19_off.png"});
+        var iconpath = "images/state_icons/offline.png";
+        var CHROMESTORAGE = PPM.getChromeStorage();
+        var PPMSTORAGE = PPM.getPPMStorage();
+        if(CHROMESTORAGE && CHROMESTORAGE.isInited()) {
+            iconpath = "images/state_icons/initing.png";
+            if(PPMSTORAGE && PPMSTORAGE.isInited()) {
+                iconpath = "images/state_icons/ready.png";
+            } else if (PPMSTORAGE && PPMSTORAGE.isInitialDataIndexLoaded() && !PPMSTORAGE.areAllServersConnected()) {
+                //server has disconnected!!! ERROR!
+                iconpath = "images/state_icons/error.png";
             }
-            chars = ugly_chars[t];
-            answer += chars[Math.floor(chars.length*Math.random())];
+        } else {
+            chrome.browserAction.setBadgeText({"text": ""});
+        }
+        chrome.browserAction.setIcon({"path":iconpath});
+    }
+
+    this.handleStorageChangeEvent = function() {
+        //TELL OPTIONS VIEW ABOUT STORAGE CHANGE
+        var optionsView = this.getExtensionViewReference("options");
+        if(optionsView) {
+            log("StorageChangeHandler...OPTIONS");
+            optionsView.OPP.handleStorageChanges();
+        }
+        //TELL WIN/TAB LISTENERS ABOUT THE CHANGE (for updating count)
+        this.windowFocusListener(chrome.windows.WINDOW_ID_CURRENT);
+
+    }
+
+    /**
+     *
+     * @param viewName String - the name of the view withouth the .html extension === background|options
+     */
+    this.getExtensionViewReference = function(viewName) {
+        var answer = false;
+        var viewUrl = chrome.extension.getURL(viewName+'.html');
+        var views = chrome.extension.getViews();
+        for (var i = 0; i < views.length; i++) {
+            //log(i+" + checking: " + views[i].location.href);
+            if (views[i].location.href == viewUrl) {
+                //log("FOUND");
+                answer = views[i];
+                break;
+            }
         }
         return(answer);
-    };
-
-
-    /**
-     * Pads a string on both sides with lft and rgt number of random(crypted-like) chars
-     * @param {string} str
-     * @param {int} lft
-     * @param {int} rgt
-     * @returns {string}
-     */
-    this.leftRightPadString = function(str, lft, rgt) {
-        /** @type PPMCryptor CRYPTOR */
-        var CRYPTOR = PPM.getComponent("CRYPTOR");
-        var ugly = this.getUglyString((lft>rgt?lft:rgt)*2);
-        var leftChars = CRYPTOR.encrypt(ugly, ugly).substr(0, lft);
-        var rightChars = CRYPTOR.encrypt(ugly, ugly).slice(rgt*-1);
-        return(leftChars + str + rightChars);
-    };
-
-    /**
-     * Removes random padding chars on both sides
-     * @param {string} str
-     * @param {int} lft
-     * @param {int} rgt
-     * @returns {string}
-     */
-    this.leftRightTrimString = function(str, lft, rgt) {
-        return(str.substr(lft,(str.length)-lft-rgt));
-    };
-
-
-    /** todo: it doesn't seem right, hmmmmm...
-     * Checks if passed parameter is an OBJECT
-     * @param {*} param
-     * @returns {boolean}
-     */
-    this.isObject = function(param) {
-        return (!!param) && (param.constructor === Object);
-    };
-
-    /** todo: it doesn't seem right, hmmmmm...
-     * Checks if passed parameter is an ARRAY
-     * @param {*} param
-     * @returns {boolean}
-     */
-    this.isArray = function(param) {
-        return (!!param) && (param.constructor === Array);
-    };
-
-    /**
-     * Checks if passed parameter is a FUNCTION
-     * @param {*} param
-     * @returns {boolean}
-     */
-    this.isFunction = function(param) {
-        return !!(param && param.constructor && param.call && param.apply);
-    };
-
-    /**
-     * Try to identify js variable type
-     * source: http://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
-     * @param {*} param
-     * @returns {string}
-     */
-    this.getType = function(param) {
-        return ({}).toString.call(param).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
     }
-}
 
+
+    /**
+     * Password Generator - I think we can do better than this ... but for now is ok
+     * @return {String}
+     */
+    this.generatePassword = function() {
+        var CHROMESTORAGE = PPM.getChromeStorage();
+        var pwlen = CHROMESTORAGE.getOption("sync", "pwgen_length");
+        var cs_alpha_lower = "abcdefghijklmnopqrstuvwxyz";
+        var cs_alpha_upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var cs_numeric = "0123456789";
+        var cs_special = CHROMESTORAGE.getOption("sync", "pwgen_specialchars");
+        var charset = ""
+            + (CHROMESTORAGE.getOption("sync", "pwgen_use_alpha_lower")?cs_alpha_lower:"")
+            + (CHROMESTORAGE.getOption("sync", "pwgen_use_alpha_upper")?cs_alpha_upper:"")
+            + (CHROMESTORAGE.getOption("sync", "pwgen_use_numeric")?cs_numeric:"")
+            + (CHROMESTORAGE.getOption("sync", "pwgen_use_special")?cs_special:"");
+        //
+        var pw = "";
+        for (var i = 0; i < pwlen; i++) {
+            pw += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        return(pw);
+    }
+
+    /* DON'T WE NEED THEESE?: "clipboardRead", "clipboardWrite"*/
+    this.copyTextToClipboard = function(text) {
+        var copyDiv = document.createElement('div');
+        copyDiv.contentEditable = true;
+        document.body.appendChild(copyDiv);
+        //copyDiv.innerHTML = text;
+        copyDiv.innerText = text;
+        copyDiv.unselectable = "off";
+        copyDiv.focus();
+        document.execCommand('SelectAll');
+        document.execCommand("Copy", false, null);
+        document.body.removeChild(copyDiv);
+    }
+
+    this.getHumanReadableDate = function(unixTS) {
+        var answer = '';
+        var ts = 1000 * parseInt(unixTS);
+        var jsDate = new Date(ts);
+        if(jsDate && jsDate instanceof Date) {
+            answer = '' +
+                jsDate.getFullYear() +
+                '-' +
+                (jsDate.getMonth()+1) +
+                '-' +
+                jsDate.getDate() +
+                ' ' +
+                jsDate.getHours() +
+                ':' +
+                jsDate.getMinutes() +
+                '';
+        }
+        return(answer);
+    }
+
+
+    var log = function(msg) {PPM.log(msg, _logzone)};//just for comodity
+}
