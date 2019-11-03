@@ -1,20 +1,3 @@
 .directory
 .idea/**
 
-# Bower project dependencies
-PPMClient/vendor
-
-# NodeJS project dependencies
-node_modules
-
-# The build directory where final minimized version of
-# the extension will be created
-build
-
-# Other
-yarn.lock
-yarn-error.log
-
-# playground folder
-ideas
-

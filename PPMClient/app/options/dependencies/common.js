@@ -1,5 +1,0 @@
-define([
-    'app.controller'
-], function() {
-
-});
